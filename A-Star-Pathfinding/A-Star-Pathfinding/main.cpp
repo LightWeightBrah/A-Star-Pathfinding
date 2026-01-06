@@ -119,21 +119,44 @@
 #include "main.h"
 #include <string>
 
+const char wallSign = '5';
+const char noWallSign = '0';
+const char routeSign = '1';
 
-
-
-
-int** GetArrayFromGrid(std::string& mapString)
+int** GetArrayFromGrid(const char* mapString)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	int width = 0;
+	int height = 1;
+
+	int i = 0;
+	while (mapString[i] != '\0')
+	{
+		if(height == 1)
+			if (mapString[i] != ' ' && mapString[i] != '\n')
+				width++;
+
+		if (mapString[i] == '\n')
+			height++;
+
+		i++;
+	}
+	
+	std::cout << "width is " << width << std::endl;
+	std::cout << "height is " << height << std::endl;
+
+	
+	
+	return new int*[width * height];
 }
+
+
 
 int main()
 {
 	const int size = 20;
 	std::tuple<int, int> start(0, 0);
 	std::tuple<int, int> end(size - 1, size - 1);
-	std::string mapString =
+	const char* mapString =
 R"(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 5 5 0 0
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0
@@ -157,6 +180,7 @@ R"(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0
 
 
 	int** map = GetArrayFromGrid(mapString);
+
 
 	return 0;
 }
