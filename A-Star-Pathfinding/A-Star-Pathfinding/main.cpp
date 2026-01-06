@@ -165,21 +165,21 @@ int** GetArrayFromGrid(const char* mapText)
 
 	MeasureMapDimensions(mapText, width, height);
 	
-	int** array = new int* [width];
-	for (int i = 0; i < width; i++)
-		array[i] = new int[height];
+	int** array = new int* [height];
+	for (int i = 0; i < height; i++)
+		array[i] = new int[width];
 
 	
 
 	
-	int x = 0;
 	int y = 0;
+	int x = 0;
 
 	int i = 0;
 	while (mapText[i] != '\0')
 	{
 		if (mapText[i] == WALL_SIGN)
-			array[x][y] = WALL_SIGN - '0';
+			array[x][y] = WALL_SIGN - '0'; //znaki liczb sa po kolei w ASCII wiec jezeli odejme poczatkowy znak 0 to jest gitara
 
 		if (mapText[i] == NO_WALL_SIGN)
 			array[x][y] = NO_WALL_SIGN - '0';
@@ -189,12 +189,12 @@ int** GetArrayFromGrid(const char* mapText)
 
 		if (mapText[i] == '\n')
 		{
-			x = 0;
-			y++;
+			y = 0;
+			x++;
 		}
 
 		if (mapText[i] != ' ' && mapText[i] != '\n')
-			x++;
+			y++;
 
 		i++;
 	}
