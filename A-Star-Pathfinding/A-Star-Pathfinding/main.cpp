@@ -119,31 +119,88 @@
 #include "main.h"
 #include <string>
 
-const char wallSign = '5';
-const char noWallSign = '0';
-const char routeSign = '1';
+const char WALL_SIGN = '5';
+const char NO_WALL_SIGN = '0';
+const char ROUTE_SIGN = '1';
 
-int** GetArrayFromGrid(const char* mapString)
+void Print2dArray(int** array, int width, int height)
 {
-	int width = 0;
-	int height = 1;
-
-	int i = 0;
-	while (mapString[i] != '\0')
+	for (int y = 0; y < height; y++)
 	{
-		if(height == 1)
-			if (mapString[i] != ' ' && mapString[i] != '\n')
+		for (int x = 0; x < width; x++)
+		{
+			std::cout << array[y][x] << " ";
+		}
+
+		std::cout << std::endl;
+	}
+
+	
+}
+
+void MeasureMapDimensions(const char* mapText, int& width, int& height)
+{
+	int i = 0;
+	while (mapText[i] != '\0')
+	{
+		if (height == 1)
+			if (mapText[i] != ' ' && mapText[i] != '\n')
 				width++;
 
-		if (mapString[i] == '\n')
+		if (mapText[i] == '\n')
 			height++;
 
 		i++;
 	}
-	
+
 	std::cout << "width is " << width << std::endl;
 	std::cout << "height is " << height << std::endl;
+	std::cout << std::endl;
+}
 
+int** GetArrayFromGrid(const char* mapText)
+{
+	int width = 0;
+	int height = 1;
+
+	MeasureMapDimensions(mapText, width, height);
+	
+	int** array = new int* [width];
+	for (int i = 0; i < width; i++)
+		array[i] = new int[height];
+
+	
+
+	
+	int x = 0;
+	int y = 0;
+
+	int i = 0;
+	while (mapText[i] != '\0')
+	{
+		if (mapText[i] == WALL_SIGN)
+			array[x][y] = WALL_SIGN - '0';
+
+		if (mapText[i] == NO_WALL_SIGN)
+			array[x][y] = NO_WALL_SIGN - '0';
+
+		if (mapText[i] == ROUTE_SIGN)
+			array[x][y] = ROUTE_SIGN - '0';
+
+		if (mapText[i] == '\n')
+		{
+			x = 0;
+			y++;
+		}
+
+		if (mapText[i] != ' ' && mapText[i] != '\n')
+			x++;
+
+		i++;
+	}
+
+	Print2dArray(array, width, height);
+	
 	
 	
 	return new int*[width * height];
@@ -153,10 +210,7 @@ int** GetArrayFromGrid(const char* mapString)
 
 int main()
 {
-	const int size = 20;
-	std::tuple<int, int> start(0, 0);
-	std::tuple<int, int> end(size - 1, size - 1);
-	const char* mapString =
+	const char* mapText =
 R"(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 5 5 0 0
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0
@@ -179,7 +233,13 @@ R"(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0
 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0)";
 
 
-	int** map = GetArrayFromGrid(mapString);
+	int one = 1;
+	std::cout << (int)WALL_SIGN << std::endl;
+
+
+	int** map = GetArrayFromGrid(mapText);
+
+	
 
 
 	return 0;
