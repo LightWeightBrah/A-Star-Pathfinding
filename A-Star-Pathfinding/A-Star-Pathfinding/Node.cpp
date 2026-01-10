@@ -15,7 +15,7 @@ Node::Node(int x, int y, CELL cellType)
 	this->x = x;
 	this->y = y;
 	this->cellType = cellType;
-	this->gCost = 1;
+	this->gCost = 0;
 }
 
 void Node::PrintPosition()
@@ -23,13 +23,27 @@ void Node::PrintPosition()
 	std::cout << "x is: " << x << " y is: " << y << " cellType = " << cellType << std::endl;
 }
 
-void Node::CalculateCost(Node endNode)
+double Node::CalculateHCost(int startX, int startY, int endX, int endY)
 {
-	this->hCost = sqrt(pow((this->x - endNode.x), 2) + 
-		pow((this->y - endNode.y), 2));
+	return sqrt(pow((startX - endX), 2) + pow((startY - endY), 2));
+}
 
+void Node::CalculateFCost(Node endNode)
+{
+	this->hCost = CalculateHCost(this->x, this->y, endNode.x, endNode.y);
 	this->fCost = gCost + hCost;
 }
+
+void Node::IncreaseG()
+{
+	this->gCost++;
+}
+
+void Node::SetParent(Node* parent)
+{
+	this->parent = parent;
+}
+
 
 bool Node::operator == (const Node& other) const
 {

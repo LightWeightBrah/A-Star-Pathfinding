@@ -20,7 +20,10 @@ struct Node
 
 
 	void PrintPosition();
-	void CalculateCost(Node endNode);
+	double CalculateHCost(int startX, int startY, int endX, int endY);
+	void CalculateFCost(Node endNode);
+	void IncreaseG();
+	void SetParent(Node* parent);
 
 	bool operator == (const Node& other) const;
 	bool operator != (const Node& other) const;

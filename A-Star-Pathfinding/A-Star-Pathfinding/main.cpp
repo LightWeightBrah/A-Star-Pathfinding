@@ -30,12 +30,12 @@ R"(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0
 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0)";
 
 const std::string gridTextTemplate30x20 =
-R"(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 1 1 1 1 1 1
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 5 5 0 0 0 0 0 0 0 0 0 0 0 1
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 1
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 1
-5 5 5 5 5 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 1
-0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1
+R"(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 5 5 0 0 0 0 0 0 0 0 0 0 0 5
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 5
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5
+5 5 5 5 5 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 5
+0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5
 0 0 0 0 0 0 0 5 0 0 5 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 5 0 0 5 5 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 0 0 0 5 5 5 5 5 5 5 5 5 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -46,8 +46,8 @@ R"(0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 1 1 1 1 1 1
 5 0 0 0 5 5 5 5 0 0 5 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0
 5 5 5 5 5 5 5 5 5 5 5 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0
 5 0 0 0 0 0 5 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)";
 
@@ -118,9 +118,9 @@ void GetGridDimensions(std::string& gridText, int& width, int& height)
 	std::cout << "width is: " << width << " height is: " << height << std::endl;
 }
 
-std::string TrimGrid(std::string& gridText)
+std::string TrimGrid(std::string girdTemplate)
 {
-	std::string output  = gridTextTemplate30x20;
+	std::string output  = girdTemplate;
 	output.erase(std::remove(output.begin(), output.end(), ' '), output.end());
 	std::cout << output << std::endl;
 	return output;
@@ -132,88 +132,125 @@ void RemoveItemFromVector(std::vector<Node>& vec, Node node)
 		node), vec.end());
 }
 
+void ResolveConflicts(Node& neighbour, Node& closedNode, Node& endNode)
+{
+	if (neighbour.fCost != NULL)
+	{
+		double gCost = closedNode.gCost + 1;
+		double hCost = neighbour.CalculateHCost(
+			neighbour.x, neighbour.y,
+			endNode.x, endNode.y);
+
+		int newFCost = gCost + hCost;
+
+		if (newFCost < neighbour.fCost)
+		{
+			neighbour.gCost = gCost;
+			neighbour.hCost = hCost;
+			neighbour.fCost = newFCost;
+			neighbour.SetParent(&closedNode);
+		}
+	}
+	else
+	{
+		neighbour.hCost = neighbour.CalculateHCost(
+			neighbour.x, neighbour.y,
+			endNode.x, endNode.y);
+		neighbour.SetParent(&closedNode);
+	}
+}
+
+void CheckNeighbour(Node& neighbour, Node& closedNode, Node& endNode, std::vector<Node>& openList)
+{
+	neighbour.IncreaseG();
+	ResolveConflicts(neighbour, closedNode, endNode);
+	openList.push_back(neighbour);
+}
+
+void UpdateLists(std::vector<Node>& closedList, Node& lowestCostNode, std::vector<Node>& openList)
+{
+	closedList.push_back(lowestCostNode);
+	RemoveItemFromVector(openList, lowestCostNode);
+}
+
+void FindLowestCostNode(std::vector<Node>& openList, Node& lowestCostNode)
+{
+	for (int i = 0; i < openList.size(); i++)
+	{
+		if (openList[i].fCost <= lowestCostNode.fCost)
+		{
+			lowestCostNode = openList[i];
+		}
+	}
+}
+
+void TraverseBackToStart(std::vector<Node>& closedList, Node& endNode, Node& startNode)
+{
+	if (closedList.back() == endNode)
+	{
+		Node* currentNode = &closedList.back();
+		while (currentNode != &startNode)
+		{
+			(*currentNode).cellType = CELL::ROUTE;
+			currentNode = (*currentNode).parent;
+		}
+	}
+}
+
 int main()
 {
-	std::string gridText = TrimGrid(gridText);
+	std::string gridText = TrimGrid(gridTextTemplate30x20);
 
 	int width = 0;
 	int height = 1;
 	GetGridDimensions(gridText, width, height);
 
 	std::vector<std::vector<Node>> grid = InitGrid(gridText, width, height);
-	Node& startNode = grid[0][0];
-	Node& endNode = grid[height - 1][width - 1];
+	Node& startNode = grid[height - 1][0];
+	Node& endNode = grid[0][width - 1];
 
 	std::vector<Node> openList;
 	std::vector<Node> closedList;
 	closedList.push_back(startNode);
 
-	//TESTING: delete line later
-	closedList.push_back(grid[3][28]);
-
 	while (closedList.back() != endNode)
 	{
 		Node closedNode = closedList.back();
+
 		if (closedNode.y + 1 < height)
 		{
-			Node& bottomNeighbour = grid[closedNode.y + 1][closedNode.x];
-			openList.push_back(bottomNeighbour);
-			
-			std::cout << "bottom neighbour " << std::endl;
-			bottomNeighbour.PrintPosition();
+			Node& neighbour = grid[closedNode.y + 1][closedNode.x];
+			CheckNeighbour(neighbour, closedNode, endNode, openList);
 		}
 
 		if (closedNode.x - 1 >= 0)
 		{
-			Node& leftNeighbour = grid[closedNode.y][closedNode.x - 1];
-			openList.push_back(leftNeighbour);
-
-			std::cout << "left neighbour" << std::endl;
-			leftNeighbour.PrintPosition();
+			Node& neighbour = grid[closedNode.y][closedNode.x - 1];
+			CheckNeighbour(neighbour, closedNode, endNode, openList);
 		}
 
-		if (closedNode.y - 0 >= 0)
+		if (closedNode.y - 1 >= 0)
 		{
-			Node& topNeighbour = grid[closedNode.y - 1][closedNode.x];
-			openList.push_back(topNeighbour);
-
-			std::cout << "top neighbour" << std::endl;
-			topNeighbour.PrintPosition();
+			Node& neighbour = grid[closedNode.y - 1][closedNode.x];
+			CheckNeighbour(neighbour, closedNode, endNode, openList);
 		}
 
 		if (closedNode.x + 1 < width)
 		{
-			Node& rightNeighbour = grid[closedNode.y][closedNode.x + 1];
-			openList.push_back(rightNeighbour);
-
-			std::cout << "right neighbour" << std::endl;
-			rightNeighbour.PrintPosition();
+			Node& neighbour = grid[closedNode.y][closedNode.x + 1];
+			CheckNeighbour(neighbour, closedNode, endNode, openList);
 		}
 
 		Node lowestCostNode = Node();
-		for (int i = 0; i < openList.size(); i++)
-		{
-			if (openList[i].fCost < lowestCostNode.fCost)
-			{
-				lowestCostNode = openList[i];
-			}
-		}
+		FindLowestCostNode(openList, lowestCostNode);
+		UpdateLists(closedList, lowestCostNode, openList);
 
-		closedList.push_back(lowestCostNode);
-		RemoveItemFromVector(openList, lowestCostNode);
-
-
-
-
-
-
-		//TESTING: get out of loop 
-		closedList.push_back(grid[height - 1][width - 1]);
+		TraverseBackToStart(closedList, endNode, startNode);
 	}
 
 	std::cout << "poza petla" << std::endl;
-
-
+	std::cout << gridText << std::endl;
+	
 	return 0;
 }
 
