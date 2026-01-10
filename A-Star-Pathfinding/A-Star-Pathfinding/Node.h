@@ -4,6 +4,7 @@ enum CELL {
 	WALL = 5,
 	NO_WALL = 0,
 	ROUTE = 1,
+	CLOSED = 2,
 	ERROR = -1
 };
 
@@ -27,4 +28,7 @@ struct Node
 
 	bool operator == (const Node& other) const;
 	bool operator != (const Node& other) const;
+
+	bool operator == (const int& other);
+	bool operator != (const int& other);
 };

@@ -15,7 +15,8 @@ Node::Node(int x, int y, CELL cellType)
 	this->x = x;
 	this->y = y;
 	this->cellType = cellType;
-	this->gCost = 0;
+	this->gCost = 0; 
+	this->fCost = NULL;
 }
 
 void Node::PrintPosition()
@@ -51,6 +52,15 @@ bool Node::operator == (const Node& other) const
 }
 
 bool Node::operator != (const Node& other) const
+{
+	return !(*this == other);
+}
+
+bool Node::operator == (const int& other)
+{
+	return x == -1 || y == -1 || cellType == CELL::ERROR;
+}
+bool Node::operator != (const int& other)
 {
 	return !(*this == other);
 }
