@@ -77,11 +77,6 @@ std::vector < std::vector<Node>> InitGrid(std::string& gridText, int& width, int
 			grid.push_back(singleRow);
 	}
 
-
-	PrintGrid(grid);
-
-
-
 	return grid;
 }
 
@@ -104,13 +99,11 @@ void GetGridDimensions(std::string& gridText, int& width, int& height)
 		i++;
 	}
 
-	std::cout << "width is: " << width << " height is: " << height << std::endl;
 }
 
 std::string TrimGrid(std::string girdTemplate)
 {
 	std::string output = girdTemplate;
 	output.erase(std::remove(output.begin(), output.end(), ' '), output.end());
-	std::cout << output << std::endl;
 	return output;
 }

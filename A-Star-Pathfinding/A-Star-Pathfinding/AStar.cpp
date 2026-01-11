@@ -1,5 +1,49 @@
 #include "AStar.h"
 #include <iostream>
+#include "Grid.h"
+
+void FindPath(std::vector<std::vector<Node>>& grid, int width, int height, int startX, int startY, int endX, int endY)
+{
+	int finalStartX = (startX == -1) ? 0 : startX;
+	int finalStartY = (startY == -1) ? height - 1 : startY;
+
+	int finalEndX = (endX == -1) ? width - 1 : endX;
+	int finalEndY = (endY == -1) ? 0 : endY;
+
+	if (finalStartX >= width || finalStartY >= height ||
+		finalEndX >= width || finalEndY >= height ||
+		finalStartX < 0 || finalStartY < 0 ||
+		finalEndX < 0 || finalEndY < 0)
+	{
+		std::cout << "ERROR: Coordinates out of grid bounds!!!" << std::endl;
+		return;
+	}
+
+	Node* startNode = &grid[finalStartY][finalStartX];
+	Node* endNode = &grid[finalEndY][finalEndX];
+
+	if (startNode->cellType == CELL::WALL || endNode->cellType == CELL::WALL)
+	{
+		std::cout << "ERROR: Start or End is a WALL (5)!!!" << std::endl;
+		return;
+	}
+
+	std::cout << "Width is: (" << width << ") Height is: (" << height << ")" << std::endl;
+	std::cout << "Start: [" << finalStartX << ", " << finalStartY << "] "
+		<< "End: [" << finalEndX << ", " << finalEndY << "]" << std::endl;
+
+	bool found = RunAStar(grid, startNode, endNode, width, height);
+	if (found)
+	{
+		TraverseBackToStart(grid, startNode, endNode);
+		RenderMap(grid, startNode, endNode);
+		std::cout << "\nYOU FOUND A PATH, LET'S GO!!!" << std::endl;
+	}
+	else
+	{
+		std::cout << "\nCouldn't find a path :C" << "Change map template..." << std::endl;
+	}
+}
 
 bool RunAStar(std::vector<std::vector<Node>>& grid, Node* startNode, Node* endNode, const int& width, const int& height)
 {

@@ -2,6 +2,7 @@
 #include <vector>
 #include "Node.h"
 
+void FindPath(std::vector<std::vector<Node>>& grid, int width, int height, int startX = -1, int startY = -1, int endX = -1, int endY = -1);
 bool RunAStar(std::vector<std::vector<Node>>& grid, Node* startNode, Node* endNode, const int& width, const int& height);
 void CheckNeighbour(std::vector<std::vector<Node>>& grid, Node* neighbour, Node* closedNode, Node* endNode, std::vector<Node*>& openList, std::vector<Node*>& closedList);
 void ResolveConflicts(std::vector<std::vector<Node>>& grid, Node& neighbour, Node& closedNode, Node& endNode);
