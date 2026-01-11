@@ -16,7 +16,7 @@ Node::Node(int x, int y, CELL cellType)
 	this->y = y;
 	this->cellType = cellType;
 	this->gCost = 0; 
-	this->fCost = NULL;
+	this->fCost = 9999;
 }
 
 void Node::PrintPosition()

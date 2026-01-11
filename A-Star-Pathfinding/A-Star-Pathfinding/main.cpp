@@ -64,7 +64,7 @@ const std::string gridTemplate6x6 = R"(0 0 0 0 0 0
 
 #pragma endregion
 
-void PrintGrid(std::vector<std::vector<Node>> grid)
+void PrintGrid(const std::vector<std::vector<Node>>& grid)
 {
 	for (const auto& row : grid)
 	{
@@ -76,28 +76,28 @@ void PrintGrid(std::vector<std::vector<Node>> grid)
 	}
 }
 
-void RenderMap(std::vector<std::vector<Node>>& grid, Node* startNode, Node* endNode)
+void RenderMap(const std::vector<std::vector<Node>>& grid, Node* startNode, Node* endNode)
 {
 	for (const auto& row : grid)
 	{
 		for (const auto& node : row)
 		{
 			if (&node == startNode)
-				std::cout << "BB";
+				std::cout << "OO";
 			else if (&node == endNode)
-				std::cout << "EE";
+				std::cout << "XX";
 			else
 			{
 				switch (node.cellType)
 				{
 				case CELL::WALL:
-					std::cout << "##";
+					std::cout << "||";
 					break;
 				case CELL::ROUTE:
-					std::cout << "++";
+					std::cout << "->";
 					break;
 				default:
-					std::cout << "..";
+					std::cout << "  ";
 					break;
 				}
 			}
@@ -188,32 +188,16 @@ bool IsNodeInVector(std::vector<Node*>& vec, Node* node)
 void ResolveConflicts(std::vector<std::vector<Node>>& grid, Node& neighbour, Node& closedNode, Node& endNode)
 {
 	double gCost = closedNode.gCost + 1;
-	if (neighbour.fCost != NULL)
-	{
-		double hCost = neighbour.CalculateHCost(
-			neighbour.x, neighbour.y,
-			endNode.x, endNode.y);
+	double hCost = neighbour.CalculateHCost(neighbour.x, neighbour.y, 
+		endNode.x, endNode.y);
+	double newFCost = gCost + hCost;
 
-		double newFCost = gCost + hCost;
-
-		if (newFCost < neighbour.fCost)
-		{
-			neighbour.gCost = gCost;
-			neighbour.hCost = hCost;
-			neighbour.fCost = newFCost;
-			neighbour.SetParent(&grid[closedNode.y][closedNode.x]);
-		}
-	}
-	else
+	if (newFCost < neighbour.fCost)
 	{
 		neighbour.gCost = gCost;
-		neighbour.hCost = neighbour.CalculateHCost(
-			neighbour.x, neighbour.y,
-			endNode.x, endNode.y);
-
-		neighbour.fCost = gCost + neighbour.hCost;
+		neighbour.hCost = hCost;
+		neighbour.fCost = newFCost;
 		neighbour.SetParent(&grid[closedNode.y][closedNode.x]);
-
 	}
 }
 
@@ -282,15 +266,22 @@ void TraverseBackToStart(std::vector<std::vector<Node>>& grid, std::vector<Node*
 
 int main()
 {
-	std::string gridText = TrimGrid(gridTemplate6x6);
+	std::string gridText = TrimGrid(gridTextTemplate30x20);
 
 	int width = 0;
 	int height = 1;
 	GetGridDimensions(gridText, width, height);
 
 	std::vector<std::vector<Node>> grid = InitGrid(gridText, width, height);
-	Node* startNode = &grid[2][1];
-	Node* endNode = &grid[1][width - 1];
+	
+	//TESTING: gridTemplate6x6
+	/*Node* startNode = &grid[2][1];
+	Node* endNode = &grid[1][width - 1];*/
+
+	//general start and end
+	Node* startNode = &grid[height - 1][0];
+	Node* endNode = &grid[0][width - 1];
+
 	(*startNode).PrintPosition();
 	(*endNode).PrintPosition();
 
@@ -338,6 +329,7 @@ int main()
 	TraverseBackToStart(grid, closedList, openList, startNode, endNode);
 	std::cout << "poza petla" << std::endl;
 	RenderMap(grid, startNode, endNode);
+	//PrintGrid(grid);
 
 	
 	return 0;
