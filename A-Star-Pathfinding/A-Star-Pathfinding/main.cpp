@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <tuple>
 #include <string>
 #include <vector>
@@ -71,6 +71,36 @@ void PrintGrid(std::vector<std::vector<Node>> grid)
 		for (const auto& node : row)
 		{
 			std::cout << (int)node.cellType << " ";
+		}
+		std::cout << std::endl;
+	}
+}
+
+void RenderMap(std::vector<std::vector<Node>>& grid, Node* startNode, Node* endNode)
+{
+	for (const auto& row : grid)
+	{
+		for (const auto& node : row)
+		{
+			if (&node == startNode)
+				std::cout << "BB";
+			else if (&node == endNode)
+				std::cout << "EE";
+			else
+			{
+				switch (node.cellType)
+				{
+				case CELL::WALL:
+					std::cout << "##";
+					break;
+				case CELL::ROUTE:
+					std::cout << "++";
+					break;
+				default:
+					std::cout << "..";
+					break;
+				}
+			}
 		}
 		std::cout << std::endl;
 	}
@@ -197,8 +227,11 @@ void CheckNeighbour(std::vector<std::vector<Node>>& grid, Node* neighbour, Node*
 
 	ResolveConflicts(grid, *neighbour, *closedNode, *endNode);
 
-	if(!IsNodeInVector(openList, neighbour))
+	if (!IsNodeInVector(openList, neighbour))
+	{
+		neighbour->cellType = CELL::OPEN;
 		openList.push_back(neighbour);
+	}
 }
 
 void UpdateLists(std::vector<Node*>& closedList, std::vector<Node*>& openList, Node* lowestCostNode)
@@ -304,10 +337,8 @@ int main()
 
 	TraverseBackToStart(grid, closedList, openList, startNode, endNode);
 	std::cout << "poza petla" << std::endl;
-	PrintGrid(grid);
+	RenderMap(grid, startNode, endNode);
 
 	
 	return 0;
 }
-
-
