@@ -5,6 +5,7 @@ enum CELL {
 	NO_WALL = 0,
 	ROUTE = 1,
 	CLOSED = 2,
+	OPEN = 4,
 	ERROR = -1
 };
 

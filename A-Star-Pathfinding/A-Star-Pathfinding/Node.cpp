@@ -48,7 +48,7 @@ void Node::SetParent(Node* parent)
 
 bool Node::operator == (const Node& other) const
 {
-	return x == other.x && y == other.y && cellType == other.cellType;
+	return x == other.x && y == other.y;
 }
 
 bool Node::operator != (const Node& other) const

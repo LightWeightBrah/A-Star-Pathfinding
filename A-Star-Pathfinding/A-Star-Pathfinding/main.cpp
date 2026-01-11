@@ -139,87 +139,111 @@ std::string TrimGrid(std::string girdTemplate)
 	return output;
 }
 
-void RemoveItemFromVector(std::vector<Node>& vec, Node& node)
+void RemoveItemFromVector(std::vector<Node*>& vec, Node* node)
 {
-	auto it = std::find(vec.begin(), vec.end(), node);
-
-	if (it != vec.end()) 
-		vec.erase(it);
+	vec.erase(std::remove(vec.begin(), vec.end(), node), vec.end());
 }
 
-int CountItemInVector(std::vector<Node>& vec, Node& node)
+
+bool IsNodeInVector(std::vector<Node*>& vec, Node* node)
 {
-	return count(vec.begin(), vec.end(), node);
+	for (Node* n : vec) 
+	{
+		if (n == node) 
+			return true;
+	}
+	return false;
 }
 
-void ResolveConflicts(Node& neighbour, Node& closedNode, Node& endNode, int& gCounter)
+void ResolveConflicts(std::vector<std::vector<Node>>& grid, Node& neighbour, Node& closedNode, Node& endNode)
 {
+	double gCost = closedNode.gCost + 1;
 	if (neighbour.fCost != NULL)
 	{
 		double hCost = neighbour.CalculateHCost(
 			neighbour.x, neighbour.y,
 			endNode.x, endNode.y);
 
-		int newFCost = gCounter + hCost;
+		double newFCost = gCost + hCost;
 
 		if (newFCost < neighbour.fCost)
 		{
-			neighbour.gCost = gCounter;
+			neighbour.gCost = gCost;
 			neighbour.hCost = hCost;
 			neighbour.fCost = newFCost;
-			neighbour.SetParent(&closedNode);
+			neighbour.SetParent(&grid[closedNode.y][closedNode.x]);
 		}
 	}
 	else
 	{
-		//zle bierze gCost
-		neighbour.gCost = gCounter;
+		neighbour.gCost = gCost;
 		neighbour.hCost = neighbour.CalculateHCost(
 			neighbour.x, neighbour.y,
 			endNode.x, endNode.y);
 
-		neighbour.fCost = gCounter + neighbour.hCost;
-		neighbour.SetParent(&closedNode);
+		neighbour.fCost = gCost + neighbour.hCost;
+		neighbour.SetParent(&grid[closedNode.y][closedNode.x]);
+
 	}
 }
 
-void CheckNeighbour(Node& neighbour, Node& closedNode, Node& endNode, std::vector<Node>& openList, int& gCounter)
+void CheckNeighbour(std::vector<std::vector<Node>>& grid, Node* neighbour, Node* closedNode, Node* endNode, std::vector<Node*>& openList, std::vector<Node*>& closedList)
 {
-	ResolveConflicts(neighbour, closedNode, endNode, gCounter);
-	openList.push_back(neighbour);
-}
-
-void UpdateLists(std::vector<Node>& closedList, Node& lowestCostNode, std::vector<Node>& openList)
-{
-	if (lowestCostNode == NULL)
+	if (neighbour->cellType == CELL::WALL)
 		return;
 
-	lowestCostNode.cellType == CELL::ROUTE;
-	closedList.push_back(lowestCostNode);
-	RemoveItemFromVector(openList, lowestCostNode);
+	if (IsNodeInVector(closedList, neighbour))
+		return;
+
+	ResolveConflicts(grid, *neighbour, *closedNode, *endNode);
+
+	if(!IsNodeInVector(openList, neighbour))
+		openList.push_back(neighbour);
 }
 
-void FindLowestCostNode(std::vector<Node>& openList, Node& lowestCostNode)
+void UpdateLists(std::vector<Node*>& closedList, std::vector<Node*>& openList, Node* lowestCostNode)
 {
-	for (int i = 0; i < openList.size(); i++)
+	if (lowestCostNode == nullptr)
+		return;
+
+	RemoveItemFromVector(openList, lowestCostNode);
+	lowestCostNode->cellType = CELL::CLOSED;
+	closedList.push_back(lowestCostNode);
+}
+
+Node* FindLowestCostNode(std::vector<Node*>& openList)
+{
+	if (openList.empty())
+		return nullptr;
+
+	Node* lowest = openList[0];
+	for (int i = 1; i < openList.size(); i++)
 	{
-		if (openList[i].fCost <= lowestCostNode.fCost)
+		if (openList[i]->fCost <= lowest->fCost)
 		{
-			lowestCostNode = openList[i];
+			lowest = openList[i];
 		}
 	}
+
+	return lowest;
 }
 
-void TraverseBackToStart(std::vector<Node>& closedList, Node& endNode, Node& startNode)
+void TraverseBackToStart(std::vector<std::vector<Node>>& grid, std::vector<Node*>& closedList, std::vector<Node*>& openList, Node* startNode, Node* endNode)
 {
 	if (closedList.back() == endNode)
 	{
-		Node* currentNode = &closedList.back();
-		while (currentNode != &startNode)
+
+		Node* currentNode = closedList.back();
+		while (currentNode != nullptr && currentNode != startNode)
 		{
-			//(*currentNode).cellType = CELL::ROUTE;
-			currentNode = (*currentNode).parent;
+			currentNode->cellType = CELL::ROUTE;
+			currentNode = currentNode->parent;
 		}
+		startNode->cellType = CELL::ROUTE;
+	}
+	else
+	{
+		std::cout << "Nie mozna znalezc drogi od startu do konca. Zmien grida" << std::endl;
 	}
 }
 
@@ -232,70 +256,56 @@ int main()
 	GetGridDimensions(gridText, width, height);
 
 	std::vector<std::vector<Node>> grid = InitGrid(gridText, width, height);
-	Node& startNode = grid[2][1];
-	Node& endNode = grid[1][width - 1];
-	startNode.PrintPosition();
-	endNode.PrintPosition();
+	Node* startNode = &grid[2][1];
+	Node* endNode = &grid[1][width - 1];
+	(*startNode).PrintPosition();
+	(*endNode).PrintPosition();
 
-	std::vector<Node> openList;
-	std::vector<Node> closedList;
+	std::vector<Node*> openList;
+	std::vector<Node*> closedList;
 	closedList.push_back(startNode);
 
-	int gCounter = 1;
 
 	do
 	{
-		Node closedNode = closedList.back();
+		Node* closedNode = closedList.back();
 
-		if (closedNode.y + 1 < height && 
-			grid[closedNode.y + 1][closedNode.x].cellType == CELL::NO_WALL
-			&& grid[closedNode.y + 1][closedNode.x].cellType == 0)
+		if (closedNode == endNode)
+			break;
+
+		if (closedNode->y + 1 < height)
 		{
-			Node& neighbour = grid[closedNode.y + 1][closedNode.x];
-			CheckNeighbour(neighbour, closedNode, endNode, openList, gCounter);
+			CheckNeighbour(grid, &grid[closedNode->y + 1][closedNode->x], closedNode, endNode, openList, closedList);
 		}
 
-		if (closedNode.x - 1 >= 0 &&
-			grid[closedNode.y][closedNode.x - 1].cellType == CELL::NO_WALL
-			 && CountItemInVector(closedList, grid[closedNode.y][closedNode.x - 1]) == 0)
+		if (closedNode->x - 1 >= 0)
 		{
-			Node& neighbour = grid[closedNode.y][closedNode.x - 1];
-			CheckNeighbour(neighbour, closedNode, endNode, openList, gCounter);
+			CheckNeighbour(grid, &grid[closedNode->y][closedNode->x - 1], closedNode, endNode, openList, closedList);
 		}
 
-		if (closedNode.y - 1 >= 0 &&
-			grid[closedNode.y - 1][closedNode.x].cellType == CELL::NO_WALL
-			&& CountItemInVector(closedList, grid[closedNode.y - 1][closedNode.x]) == 0)
+		if (closedNode->y - 1 >= 0)
 		{
-			Node& neighbour = grid[closedNode.y - 1][closedNode.x];
-			CheckNeighbour(neighbour, closedNode, endNode, openList, gCounter);
+			CheckNeighbour(grid, &grid[closedNode->y - 1][closedNode->x], closedNode, endNode, openList, closedList);
 		}
 
-		if (closedNode.x + 1 < width &&
-			grid[closedNode.y][closedNode.x + 1].cellType == CELL::NO_WALL
-			&& CountItemInVector(closedList, grid[closedNode.y][closedNode.x + 1]) == 0)
+		if (closedNode->x + 1 < width)
 		{
-			Node& neighbour = grid[closedNode.y][closedNode.x + 1];
-			CheckNeighbour(neighbour, closedNode, endNode, openList, gCounter);
+			CheckNeighbour(grid, &grid[closedNode->y][closedNode->x + 1], closedNode, endNode, openList, closedList);
 		}
 
-		Node lowestCostNode = Node();
-		FindLowestCostNode(openList, lowestCostNode);
-		UpdateLists(closedList, lowestCostNode, openList);
-		//TraverseBackToStart(closedList, endNode, startNode);
+		Node* lowestCostNode = FindLowestCostNode(openList);
+		if (lowestCostNode == nullptr)
+			break;
+
+		UpdateLists(closedList, openList, lowestCostNode);
 		std::cout << "oepn list size is: " << openList.size() << std::endl;
-
-		gCounter++;
 	} 
-	while (openList.size() > 0);
+	while (!openList.empty());
 
+	TraverseBackToStart(grid, closedList, openList, startNode, endNode);
 	std::cout << "poza petla" << std::endl;
-	//PrintGrid()
+	PrintGrid(grid);
 
-	for (int i = 0; i < closedList.size(); i++)
-	{
-		closedList[i].PrintPosition();
-	}
 	
 	return 0;
 }
