@@ -87,6 +87,13 @@ std::vector<std::vector<Node>> SetupWorld(int& width, int& height)
 	return SetupWorld("", width, height);
 }
 
+void PrintMapError(int y, int width, std::string issue)
+{
+	std::cout << "\nERROR: MAP ERROR!!!" << std::endl;
+	std::cout << "Line " << y + 1 << " is " << issue << std::endl;
+	std::cout << "Expected width: " << width << std::endl;
+}
+
 std::vector < std::vector<Node>> InitGrid(std::string& gridText, int& width, int& height)
 {
 	std::vector < std::vector<Node>> grid;
@@ -95,17 +102,26 @@ std::vector < std::vector<Node>> InitGrid(std::string& gridText, int& width, int
 	for (int y = 0; y < height; y++)
 	{
 		std::vector<Node> singleRow;
+		while (charIndex < gridText.length() && gridText[charIndex] == '\n')
+			charIndex++;
+
 		for (int x = 0; x < width; x++)
 		{
-			while (charIndex < gridText.length() && (gridText[charIndex] == '\n'))
-				charIndex++;
-
-			if (charIndex > gridText.length())
-				continue;
+			if (charIndex >= gridText.length() || gridText[charIndex] == '\n')
+			{
+				PrintMapError(y, width, "too short");
+				return std::vector<std::vector<Node>>();
+			}
 
 			char currentCell = gridText[charIndex];
 			singleRow.push_back(Node(x, y, (CELL)(currentCell - '0')));
 			charIndex++;
+		}
+
+		if (charIndex < gridText.length() && gridText[charIndex] != '\n')
+		{
+			PrintMapError(y, width, "too long");
+			return std::vector<std::vector<Node>>();
 		}
 
 		if (!singleRow.empty())

@@ -6,12 +6,11 @@
 #include "Node.h"
 #include "Grid.h"
 #include "AStar.h"
+#include "App.h"
 
 int main()
 {
-	int width = 0, height = 0;
-	auto grid = SetupWorld("grid.txt", width, height);
-	FindPath(grid, width, height);
+	FindPathInConsole();
 
 	return 0;
 }
