@@ -1,5 +1,6 @@
-#include "Grid.h"
 #include <iostream>
+#include <fstream>
+#include "Grid.h"
 
 void RenderMap(const std::vector<std::vector<Node>>& grid, Node* startNode, Node* endNode)
 {
@@ -43,13 +44,47 @@ void PrintGrid(const std::vector<std::vector<Node>>& grid)
 	}
 }
 
-std::vector<std::vector<Node>> SetupWorld(std::string templateString, int& width, int& height)
+std::vector<std::vector<Node>> BuildGrid(std::string templateString, int& width, int& height)
 {
 	std::string cleanText = TrimGrid(templateString);
-	width = 0;
-	height = 1;
+	
 	GetGridDimensions(cleanText, width, height);
 	return InitGrid(cleanText, width, height);
+}
+
+std::vector<std::vector<Node>> SetupWorld(std::string path, int& width, int& height)
+{
+	if (path.empty())
+	{
+		std::cout << "No file provided...\n" << std::endl;
+		std::cout << "Opening with default 30x20 grid template...\n" << std::endl;
+		return BuildGrid(MapTemplates::grid30x20, width, height);
+	}
+
+	std::ifstream file(path);
+	
+	if(!file.is_open())
+	{
+		std::cout << "ERROR: COULND'T OPEN FILE (\"" << path << "\")" << std::endl;
+		std::cout << "Opening with default 30x20 grid template...\n" << std::endl;
+		return BuildGrid(MapTemplates::grid30x20, width, height);
+	}
+
+	std::string content = "";
+	std::string line = "";
+	while (std::getline(file, line))
+	{
+		content += line + "\n";
+	}
+	file.close();
+	
+	std::cout << "Read file successfully!" << std::endl;
+	return BuildGrid(content, width, height);
+}
+
+std::vector<std::vector<Node>> SetupWorld(int& width, int& height)
+{
+	return SetupWorld("", width, height);
 }
 
 std::vector < std::vector<Node>> InitGrid(std::string& gridText, int& width, int& height)
@@ -83,27 +118,44 @@ std::vector < std::vector<Node>> InitGrid(std::string& gridText, int& width, int
 
 void GetGridDimensions(std::string& gridText, int& width, int& height)
 {
+	if (gridText.empty())
+	{
+		std::cout << "ERROR: MAP IS EMPTY!" << std::endl;
+		return;
+	}
+
+	width = 0;
+	height = 1;
+	bool widthFound = false;
 	int i = 0;
+
 	while (gridText[i] != '\0')
 	{
 		if (gridText[i] == '\n')
 		{
-			height++;
-			width = 0;
+			if (gridText[i + 1] != '\0' && gridText[i + 1] != '\n')
+			{
+				height++;
+			}
+			widthFound = true;
 		}
-		else
+		else if (!widthFound)
 		{
 			width++;
 		}
 
 		i++;
 	}
-
 }
 
 std::string TrimGrid(std::string girdTemplate)
 {
-	std::string output = girdTemplate;
-	output.erase(std::remove(output.begin(), output.end(), ' '), output.end());
+	std::string output = "";
+	for (char c : girdTemplate)
+	{
+		if ((c >= '0' && c <= '9') || c == '\n')
+			output += c;
+	}
+
 	return output;
 }

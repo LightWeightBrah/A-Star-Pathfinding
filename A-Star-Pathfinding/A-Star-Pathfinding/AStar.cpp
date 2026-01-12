@@ -15,7 +15,7 @@ void FindPath(std::vector<std::vector<Node>>& grid, int width, int height, int s
 		finalStartX < 0 || finalStartY < 0 ||
 		finalEndX < 0 || finalEndY < 0)
 	{
-		std::cout << "ERROR: Coordinates out of grid bounds!!!" << std::endl;
+		std::cout << "ERROR: COORDINATES OUT OF GRID BOUNDS!!!" << std::endl;
 		return;
 	}
 
