@@ -7,13 +7,12 @@
 #include "Grid.h"
 #include "AStar.h"
 #include "App.h"
+#include "GL/glew.h"
 #include <GLFW/glfw3.h>
 
 
 int main(void)
 {
-	FindPathInConsole();
-
 	GLFWwindow* window;
 
 	/* Initialize the library */
@@ -30,6 +29,13 @@ int main(void)
 
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
+
+	if (glewInit() != GLEW_OK)
+	{
+		std::cout << "ERROR: GLEW DOESN'T WORK" << std::endl;
+	}
+
+	std::cout << glGetString(GL_VERSION) << std::endl;
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
