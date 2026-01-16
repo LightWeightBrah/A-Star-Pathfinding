@@ -158,15 +158,21 @@
     <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\AStar.cpp" />
     <ClCompile Include="src\Grid.cpp" />
+    <ClCompile Include="src\ElementBuffer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Node.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\AStar.h" />
     <ClInclude Include="src\Grid.h" />
+    <ClInclude Include="src\ElementBuffer.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\Node.h" />
+    <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.shader" />
