@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "VertexArray.h"
 #include "ElementBuffer.h"
+#include "Texture.h"
 
 #define ASSERT(x) if (!(x)) __debugbreak();
 

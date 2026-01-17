@@ -79,28 +79,11 @@ int main()
 		VAO.AddAttrib(1, 3, GL_FLOAT, false, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 		VAO.AddAttrib(2, 2, GL_FLOAT, false, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
+		Texture texture1("res/Textures/container.jpg");
+		Texture texture2("res/Textures/chad.png");
 
-		unsigned int texture;
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		int width, height, nrChannels;
-		unsigned char* data = stbi_load("res/Textures/container.jpg", &width, &height, &nrChannels, 0);
-		if (data)
-		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
-		}
-		else
-		{
-			std::cout << "ERROR: COULDN'T LOAD TEXTURE" << std::endl;
-		}
-		stbi_image_free(data);
+		shader.SetUniform1i("texture1", 0);
+		shader.SetUniform1i("texture2", 1);
 
 		VAO.Unbind();
 		VBO.Unbind();
@@ -108,13 +91,16 @@ int main()
 		shader.Unbind();
 
 		Renderer renderer;
+
 		while (!glfwWindowShouldClose(window))
 		{
 			processInput(window);
 
 			renderer.Clear(0.2f, 0.3f, 0.3f, 1.0f);
 
-			glBindTexture(GL_TEXTURE_2D, texture);
+			texture1.Bind();
+			texture2.Bind(1);
+
 			renderer.Draw(VAO, EBO, shader);
 
 			glfwSwapBuffers(window);
