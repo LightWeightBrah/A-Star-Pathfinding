@@ -13,6 +13,7 @@
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "ElementBuffer.h"
+#include "VertexArray.h"
 
 #include "GL/glew.h"
 #include <GLFW/glfw3.h>
@@ -165,20 +166,25 @@ int main()
 		ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
 		unsigned int program = CreateProgram(source.vertexSource, source.fragmentSource);
 
-		unsigned int VAO;
+		/*unsigned int VAO;
 		GLCall(glGenVertexArrays(1, &VAO));
-		GLCall(glBindVertexArray(VAO));
+		GLCall(glBindVertexArray(VAO));*/
 
+		VertexArray VAO;
 		VertexBuffer VBO(verticies, sizeof(verticies));
-
 		ElementBuffer EBO(indicies, sizeof(indicies));
 
-		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0));
+		VAO.AddAttrib(0, 3, GL_FLOAT, false, 6 * sizeof(float), (void*)0);
+		VAO.AddAttrib(1, 3, GL_FLOAT, false, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+		/*GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0));
 		GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float))));
 		GLCall(glEnableVertexAttribArray(0));
-		GLCall(glEnableVertexAttribArray(1));
+		GLCall(glEnableVertexAttribArray(1));*/
 
-		GLCall(glBindVertexArray(0));
+		//GLCall(glBindVertexArray(0));
+		
+		VAO.Unbind();
 		VBO.Unbind();
 		EBO.Unbind();
 
@@ -201,14 +207,13 @@ int main()
 			int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
 			glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);*/
 
-			GLCall(glBindVertexArray(VAO));
+			VAO.Bind();
 			GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0));
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
 
-		GLCall(glDeleteVertexArrays(1, &VAO));
 		GLCall(glDeleteProgram(program));
 	}
 
