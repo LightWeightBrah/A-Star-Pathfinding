@@ -97,6 +97,8 @@ int main()
 
 		
 
+
+
 		VAO.Unbind();
 		VBO.Unbind();
 		EBO.Unbind();
@@ -110,15 +112,24 @@ int main()
 
 			renderer.Clear(0.2f, 0.3f, 0.3f, 1.0f);
 
-			glm::mat4 trans = glm::mat4(1.0f);
-			trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-			trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+			//glm::mat4 trans = glm::mat4(1.0f);
+			//trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+			//trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			glm::mat4 view = glm::mat4(1.0f);
+			view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+			glm::mat4 projection;
+			projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
 
 			shader.Bind();
 			texture1.Bind();
 			texture2.Bind(1);
 
-			shader.SetUniformMatrix4fv("transform", 1, false, glm::value_ptr(trans));
+			shader.SetUniformMatrix4fv("model", 1, false, glm::value_ptr(model));
+			shader.SetUniformMatrix4fv("view", 1, false, glm::value_ptr(view));
+			shader.SetUniformMatrix4fv("projection", 1, false, glm::value_ptr(projection));
 
 			renderer.Draw(VAO, EBO, shader);
 
