@@ -14,7 +14,11 @@
 
 #include "GL/glew.h"
 #include <GLFW/glfw3.h>
-#include "external/stb_image.h"
+#include "stb/stb_image.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
@@ -85,6 +89,14 @@ int main()
 		shader.SetUniform1i("texture1", 0);
 		shader.SetUniform1i("texture2", 1);
 
+		//glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+		//glm::mat4 trans = glm::mat4(1.0f);
+		//trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+		//vec = trans * vec;
+		//std::cout << vec.x << vec.y << vec.z << std::endl;
+
+		
+
 		VAO.Unbind();
 		VBO.Unbind();
 		EBO.Unbind();
@@ -98,8 +110,15 @@ int main()
 
 			renderer.Clear(0.2f, 0.3f, 0.3f, 1.0f);
 
+			glm::mat4 trans = glm::mat4(1.0f);
+			trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+			trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+			shader.Bind();
 			texture1.Bind();
 			texture2.Bind(1);
+
+			shader.SetUniformMatrix4fv("transform", 1, false, glm::value_ptr(trans));
 
 			renderer.Draw(VAO, EBO, shader);
 

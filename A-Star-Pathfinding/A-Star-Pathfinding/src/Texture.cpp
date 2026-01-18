@@ -3,7 +3,7 @@
 #include <GL/glew.h>
 
 #include "Renderer.h"
-#include "external/stb_image.h"
+#include "stb/stb_image.h"
 
 Texture::Texture(const std::string& filepath): 
 	id(0), filepath(filepath), data(nullptr), 
