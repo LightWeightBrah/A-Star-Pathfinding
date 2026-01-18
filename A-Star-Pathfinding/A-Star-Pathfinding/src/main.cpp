@@ -36,36 +36,62 @@ void processInput(GLFWwindow* window)
 
 float verticies[] = {
 	//positions				//colors			//textures
-	 0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
-	 0.5f, -0.5f,  0.5f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
-    -0.5f, -0.5f,  0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
-	-0.5f,  0.5f,  0.5f,		1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left		
+	//front
+	 0.5f,  0.5f,  0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
+	 0.5f, -0.5f,  0.5f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
+	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
+	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left		
 
-	 0.5f,  0.5f, -0.5f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
-	 0.5f, -0.5f, -0.5f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
-	-0.5f, -0.5f, -0.5f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
-	-0.5f,  0.5f, -0.5f,		1.0f, 1.0f, 0.0f,   0.0f, 1.0f	//top left		
+	//back
+	 0.5f,  0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
+	 0.5f, -0.5f, -0.5f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
+	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
+	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left		
+
+	//up
+	 0.5f,  0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
+	 0.5f,  0.5f,  0.5f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
+	-0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
+	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left		
+
+	//bottom
+	 0.5f, -0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
+	 0.5f, -0.5f,  0.5f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
+	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
+	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left
+
+	//right
+	 0.5f,  0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
+	 0.5f, -0.5f, -0.5f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
+	 0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
+	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left		
+
+	//left
+	-0.5f,  0.5f,  0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
+	-0.5f, -0.5f,  0.5f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
+	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
+	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left		
 };
 
 unsigned int indicies[] = {
 	//front
-	0, 1, 2, //first triangle
-	2, 3, 0, //2nd triangle
-	//back
-	4, 5, 6, 
-	6, 7, 4,
+	0,  1,  2, //first triangle  
+	2,  3,  0, //2nd triangle	   
+	//back					   
+	4,  5,  6, 				   
+	6,  7,  4,				   
 	//up
-	0, 3, 4,
-	3, 7, 4,
+	8,  9,  10,
+	10, 11,  8,
 	//down
-	5, 6, 2,
-	5, 1, 2,
-	//right
-	5, 4, 1,
-	4, 0, 1,
+	12, 13, 14,
+	14, 15, 12,
+	////right
+	16, 17, 18,
+	18, 19, 16,
 	//left
-	6, 7, 2,
-	7, 3, 2
+	20, 21, 22,
+	22, 23, 20,
 };
 
 int main()
@@ -141,7 +167,7 @@ int main()
 
 			glm::mat4 model = glm::mat4(1.0f);
 			//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(1.0f, 1.0f, 0.0f));
 			glm::mat4 view = glm::mat4(1.0f);
 			view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 			glm::mat4 projection;
