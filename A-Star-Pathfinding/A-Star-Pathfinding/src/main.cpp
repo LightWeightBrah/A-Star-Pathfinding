@@ -23,6 +23,14 @@
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
 
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
@@ -30,8 +38,19 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void processInput(GLFWwindow* window)
 {
+	const float cameraSpeed = 2.5f * deltaTime;
+
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		cameraPos += cameraFront * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		cameraPos -= cameraFront * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 float verticies[] = {
@@ -169,16 +188,47 @@ int main()
 			//trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
 			//trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 
+
+			
+
+			glm::mat4 model = glm::mat4(1.0f);
 			//model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 			//model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+			shader.SetUniformMatrix4fv("model", 1, false, glm::value_ptr(model));
+			renderer.Draw(VAO, EBO, shader);
+			model = glm::translate(model, glm::vec3(1.5f, 1.5f, 0.0f));
+			shader.SetUniformMatrix4fv("model", 1, false, glm::value_ptr(model));
+			renderer.Draw(VAO, EBO, shader);
+
+
+
 			glm::mat4 view = glm::mat4(1.0f);
+			//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+			//glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+			//glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+			//glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+			//glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+			//glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
+
+			//const float radius = 10.0f;
+			//float camX = sin(glfwGetTime()) * radius;
+			//float camZ = cos(glfwGetTime()) * radius;
+			//					//camera positon			//target position			//up vector in world space
+			//view = glm::lookAt(glm::vec3(camX, 0.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			
+			//view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+			
+			view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+
 			glm::mat4 projection = glm::mat4(1.0f);
-			view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 			projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
 			shader.SetUniformMatrix4fv("view", 1, false, glm::value_ptr(view));
 			shader.SetUniformMatrix4fv("projection", 1, false, glm::value_ptr(projection));
 
-			for (int y = 0; y < 20; y++)
+
+			/*for (int y = 0; y < 20; y++)
 			{
 				for (int x = 0; x < 20; x++)
 				{
@@ -189,8 +239,11 @@ int main()
 
 					renderer.Draw(VAO, EBO, shader);
 				}
-			}
+			}*/
 
+			float currentFrame = glfwGetTime();
+			deltaTime = currentFrame - lastFrame;
+			lastFrame = currentFrame;
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
