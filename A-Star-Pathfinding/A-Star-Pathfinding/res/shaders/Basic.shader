@@ -37,5 +37,7 @@ void main()
 	vec4 tex2 = texture(texture2, texCoord);
 	vec4 combined = mix(tex1, tex2, tex2.a);
 
-	FragColor = combined * vec4(objectColor, 1.0f);
+	vec4 tintedColor = combined * vec4(objectColor, 1.0f);
+
+	FragColor = mix(combined, tintedColor, 0.5f);
 }

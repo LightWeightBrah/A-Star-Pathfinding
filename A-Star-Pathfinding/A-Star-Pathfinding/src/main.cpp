@@ -24,11 +24,16 @@
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
 
+const unsigned int WALL_HEIGHT = 3;
+
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 float lastX = WINDOW_WIDTH / 2;
 float lastY = WINDOW_HEIGHT / 2;
+
+float astarInterval	= 0.1f;
+float astarCounter	= 0.0f;
 
 bool firstMouse = true;
 
@@ -146,8 +151,8 @@ unsigned int indicies[] = {
 
 int main()
 {
-	AStar aStar;
-	aStar.FindPathFull();
+	AStar aStar("grid.txt");
+	//aStar.FindPathFull();
 
 	//return 0;
 
@@ -211,7 +216,7 @@ int main()
 
 			HandleInput(window);
 
-			renderer.Clear(0.2f, 0.3f, 0.3f, 1.0f);
+			renderer.Clear(0.05f, 0.05f, 0.05f, 1.0f);
 
 			shader.Bind();
 			texture1.Bind();
@@ -223,19 +228,16 @@ int main()
 			glm::mat4 view = camera.GetViewMatrix();
 			shader.SetUniformMatrix4fv("view", view);
 
-			for (int y = 0; y < aStar.height; y++)
+			aStar.FindPathBySteps(deltaTime);
+
+			for (int z = 0; z < aStar.height; z++)
 			{
 				for (int x = 0; x < aStar.width; x++)
 				{
-					glm::mat4 model = glm::mat4(1.0f);
-					float visualZ = (float)(aStar.height - 1 - y);
-					float visualX = (float)(aStar.width  - 1 - x);
-					model = glm::translate(model, glm::vec3(visualX, 0.0f, visualZ));
-					shader.SetUniformMatrix4fv("model", model);
+					bool isWall = false;
 
 					glm::vec3 color;
-
-					Node* currentNode = &aStar.grid[y][x];
+					Node* currentNode = &aStar.grid[z][x];
 
 					if (currentNode == aStar.GetStartNode())
 					{
@@ -243,22 +245,30 @@ int main()
 					}
 					else if (currentNode == aStar.GetEndNode())
 					{
-						color = glm::vec3(1.0f, 0.5f, 0.0f);
+						color = glm::vec3(1.0f, 1.0f, 1.0f);
 					}
 					else
 					{
 						switch (currentNode->cellType)
 						{
-						case CELL::WALL:	color = glm::vec3(1.0f, 0.0f, 0.0f); break;
-						case CELL::ROUTE:	color = glm::vec3(1.0f, 1.0f, 0.0f); break;
-						case CELL::OPEN:	color = glm::vec3(0.0f, 1.0f, 0.0f); break;
-						case CELL::CLOSED:	color = glm::vec3(0.0f, 0.0f, 1.0f); break;
-						default:			color = glm::vec3(1.0f, 0.0f, 1.0f); break;
+						case CELL::WALL:	color = glm::vec3(1.0f, 0.0f, 0.0f); isWall = true; break;
+						case CELL::ROUTE:	color = glm::vec3(1.0f, 1.0f, 0.0f);				break;
+						case CELL::OPEN:	color = glm::vec3(0.36f, 0.84f, 0.42f);				break;
+						case CELL::CLOSED:	color = glm::vec3(0.0f, 0.0f, 0.3f);				break;
+						default:			color = glm::vec3(0.6f, 0.0f, 0.6f);				break;
 						}
 					}
-
 					shader.SetUniform3f("objectColor", color.x, color.y, color.z);
-					renderer.Draw(VAO, EBO, shader);
+
+					int maxHeight = isWall ? WALL_HEIGHT : 1;
+					for (int y = 0; y < maxHeight; y++)
+					{
+						glm::mat4 model = glm::mat4(1.0f);
+						model = glm::translate(model, glm::vec3(x, y, z));
+
+						shader.SetUniformMatrix4fv("model", model);
+						renderer.Draw(VAO, EBO, shader);
+					}
 				}
 			}
 

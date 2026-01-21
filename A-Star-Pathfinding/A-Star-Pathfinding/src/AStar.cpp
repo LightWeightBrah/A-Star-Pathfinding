@@ -23,39 +23,59 @@ AStar::AStar(std::string gridFilepath)
 	}
 }
 
-void AStar::FindPathBySteps(int startX, int startY, int endX, int endY)
+AStar::AStar(std::string gridFilepath, int startX, int startY, int endX, int endY) 
+	: startX(startX), startY(startY), endX(endX), endY(endY)
 {
-	if (pathFound)
+	grid = SetupWorld(gridFilepath, width, height);
+	if (grid.empty())
+	{
+		std::cout << "A Star won't be able to run. Please fix the map file..." << std::endl;
+		return;
+	}
+}
+
+void AStar::FindPathBySteps(float deltaTime)
+{
+	if (!ValidateStartEndCoordinates())
 		return;
 
-	if (!ValidateStartEndCoordinates(startX, startY, endX, endY))
+	if (finishedDrawing)
 		return;
 
 	Node* startNode = &grid[startY][startX];
 	Node* endNode = &grid[endY][endX];
 
-	pathFound = RunAStarStep(0);
-	if (pathFound)
+	astarCounter += deltaTime;
+	if (astarCounter >= astarInterval)
 	{
-		TraverseBackToStart();
-		//RenderMap(grid, startNode, endNode);
-		std::cout << "\nYOU FOUND A PATH, LET'S GO!!!" << std::endl;
-	}
-	else
-	{
-		std::cout << "\nCouldn't find a path :C" << "Change map template..." << std::endl;
+		astarCounter = 0;
+		if (!pathFound)
+		{
+			pathFound = RunAStarStep();
+			if (pathFound)
+			{
+				drawingPath = true;
+				std::cout << "\nYOU FOUND A PATH, STARTING DRAWING..." << std::endl;
+			}
+		}
+		else if(drawingPath)
+		{
+			TraverseBackToStartSteps();
+			std::cout << "\nCouldn't find a path :C" << "Change map template..." << std::endl;
+
+		}
 	}
 }
 
-void AStar::FindPathFull(int startX, int startY, int endX, int endY)
+void AStar::FindPathFull()
 {
-	if(!ValidateStartEndCoordinates(startX, startY, endX, endY))
+	if(!ValidateStartEndCoordinates())
 		return;
 
 	startNode = &grid[startY][startX];
 	endNode	  = &grid[endY][endX];
 
-	PrintCoordinates(startX, startY, endX, endY);
+	PrintCoordinates();
 
 	pathFound = RunAStarFull();
 	if (pathFound)
@@ -110,52 +130,86 @@ bool AStar::RunAStarFull()
 	return false;
 }
 
-bool AStar::RunAStarStep(int step)
+bool AStar::RunAStarStep()
 {
-	if (openList.empty() && pathFound)
+	if (pathFound)
 		return true;
 
-	if(closedList.empty() && !pathFound)
+	if (closedList.empty())
 		closedList.push_back(startNode);
 
 	Node* closedNode = closedList.back();
 	if (closedNode == endNode)
 		return true;
 
-	switch (step)
+	switch (neighbourStep)
 	{
 	case 0:
 		if (closedNode->y + 1 < height)
-		{
 			CheckNeighbour(&grid[closedNode->y + 1][closedNode->x], closedNode);
-		}
+		break;
+
 	case 1:
 		if (closedNode->x - 1 >= 0)
-		{
 			CheckNeighbour(&grid[closedNode->y][closedNode->x - 1], closedNode);
-		}
+		break;
+
 	case 2:
 		if (closedNode->y - 1 >= 0)
-		{
 			CheckNeighbour(&grid[closedNode->y - 1][closedNode->x], closedNode);
-		}
+		break;
+
 	case 3:
 		if (closedNode->x + 1 < width)
-		{
 			CheckNeighbour(&grid[closedNode->y][closedNode->x + 1], closedNode);
-		}
+		break;
 	}
+
+	neighbourStep++;
 	
-	if (step == 3)
+	if (neighbourStep > 3)
 	{
+		neighbourStep = 0;
+
 		Node* lowest = FindLowestCostNode();
 		if (!lowest)
 			return false;
 
 		UpdateLists(lowest);
+		if (lowest == endNode)
+			return true;
 	}
 
 	return false;
+}
+
+void AStar::TraverseBackToStart()
+{
+	Node* currentNode = endNode;
+
+	while (currentNode != nullptr && currentNode != startNode)
+	{
+		if (currentNode != endNode)
+			currentNode->cellType = CELL::ROUTE;
+
+		currentNode = currentNode->parent;
+	}
+}
+
+void AStar::TraverseBackToStartSteps()
+{
+	if (pathTracker == nullptr)
+		pathTracker = endNode;
+
+	if (pathTracker == startNode)
+	{
+		drawingPath = false;
+		finishedDrawing = true;
+		return;
+	}
+
+	pathTracker->cellType = CELL::ROUTE;
+	pathTracker = pathTracker->parent;
 }
 
 void AStar::CheckNeighbour(Node* neighbour, Node* closedNode)
@@ -218,20 +272,9 @@ void AStar::UpdateLists(Node* lowestCostNode)
 	closedList.push_back(lowestCostNode);
 }
 
-void AStar::TraverseBackToStart()
-{
-	Node* currentNode = endNode;
 
-	while (currentNode != nullptr && currentNode != startNode)
-	{
-		if (currentNode != endNode)
-			currentNode->cellType = CELL::ROUTE;
-	
-		currentNode = currentNode->parent;
-	}
-}
 
-bool AStar::ValidateStartEndCoordinates(int& startX, int& startY, int& endX, int& endY)
+bool AStar::ValidateStartEndCoordinates()
 {
 	startX = (startX ==  -1) ?     0		: startX;
 	startY = (startY ==  -1) ?  height - 1  : startY;
@@ -248,8 +291,8 @@ bool AStar::ValidateStartEndCoordinates(int& startX, int& startY, int& endX, int
 		return false;
 	}
 
-	Node* startNode = &grid[startY][startX];
-	Node* endNode = &grid[endY][endX];
+	startNode = &grid[startY][startX];
+	endNode	  = &grid[endY][endX];
 
 	if (startNode->cellType == CELL::WALL || endNode->cellType == CELL::WALL)
 	{
@@ -260,7 +303,7 @@ bool AStar::ValidateStartEndCoordinates(int& startX, int& startY, int& endX, int
 	return true;
 }
 
-void AStar::PrintCoordinates(int& startX, int& startY, int& endX, int& endY)
+void AStar::PrintCoordinates()
 {
 	std::cout << "Width is: (" << endX << ") Height is: (" << endY << ")" << std::endl;
 	std::cout << "Start: [" << endX << ", " << endY << "] "

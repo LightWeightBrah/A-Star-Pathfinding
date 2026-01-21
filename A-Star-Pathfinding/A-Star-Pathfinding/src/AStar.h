@@ -9,10 +9,22 @@ class AStar
 private:
 	std::vector<Node*> openList;
 	std::vector<Node*> closedList;
-	bool pathFound = false;
+	
+	bool drawingPath	 = false;
+	bool finishedDrawing = false;
+	Node* pathTracker    = nullptr;
+
+	bool pathFound		 = false;
+	int neighbourStep	 = 0;
+	float astarCounter	 = 0.0f;
+	float astarInterval	 = 0.01f;
+
+	int startX	= -1, startY = -1, 
+		endX	= -1, endY	 = -1;
 
 	Node* startNode;
 	Node* endNode;
+
 
 public:
 	int width = 0, height = 0;
@@ -21,26 +33,29 @@ public:
 public:
 	AStar();
 	AStar(std::string gridFilepath);
+	AStar(std::string gridFilepath, int startX, int startY, int endX, int endY);
 
-	void FindPathBySteps(int startX, int startY, int endX, int endY);
-	void FindPathFull(int startX = -1, int startY = -1, int endX = -1, int endY = -1);
+	void FindPathBySteps(float deltaTime);
+	void FindPathFull();
 
 	inline Node* GetStartNode() const { return startNode; }
-	inline Node* GetEndNode()   const { return startNode; }
+	inline Node* GetEndNode()   const { return endNode; }
 
 
 private:
 	bool RunAStarFull();
-	bool RunAStarStep(int step);
+	bool RunAStarStep();
+
+	void TraverseBackToStart();
+	void TraverseBackToStartSteps();
 
 	void CheckNeighbour(Node* neighbour, Node* closedNode);
 	void ResolveConflicts(Node& neighbour, Node& closedNode);
 	Node* FindLowestCostNode();
 	void UpdateLists(Node* lowestCostNode);
-	void TraverseBackToStart();
 	
-	bool ValidateStartEndCoordinates(int& startX, int& startY, int& endX, int& endY);
-	void PrintCoordinates(int& startX, int& startY, int& endX, int& endY);
+	bool ValidateStartEndCoordinates();
+	void PrintCoordinates();
 
 	void RemoveItemFromVector(std::vector<Node*>& vec, Node* node);
 	bool IsNodeInVector(const std::vector<Node*>& vec, Node* node);
