@@ -23,6 +23,7 @@ struct Node
 
 
 	void PrintPosition();
+	void Reset();
 	double CalculateHCost(int startX, int startY, int endX, int endY);
 	void CalculateFCost(Node endNode);
 	void IncreaseG();

@@ -37,7 +37,10 @@ float astarCounter	= 0.0f;
 
 bool firstMouse = true;
 
-Camera camera(glm::vec3(10.0f, 40.0f, 8.0f));
+Camera camera(glm::vec3(9.4f, 34.2f, 30.8f), -60.1f, -89.9);
+
+AStar aStar("grid.txt");
+
 
 void OnWindowResized(GLFWwindow* window, int width, int height)
 {
@@ -50,6 +53,14 @@ void HandleInput(GLFWwindow* window)
 
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+		aStar.Reset();
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+	{
+		aStar.Reset();
+		aStar.FindPathFull();
+	}
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.HandleKeyboard(MOVEMENT::FORWARD, deltaTime);
@@ -151,7 +162,6 @@ unsigned int indicies[] = {
 
 int main()
 {
-	AStar aStar("grid.txt");
 	//aStar.FindPathFull();
 
 	//return 0;
@@ -229,6 +239,8 @@ int main()
 			shader.SetUniformMatrix4fv("view", view);
 
 			aStar.FindPathBySteps(deltaTime);
+
+			//camera.PrintCamera();
 
 			for (int z = 0; z < aStar.height; z++)
 			{

@@ -24,6 +24,16 @@ void Node::PrintPosition()
 	std::cout << "x is: " << x << " y is: " << y << " cellType = " << cellType << std::endl;
 }
 
+void Node::Reset()
+{
+	parent = nullptr;
+	cellType = CELL::NO_WALL;
+
+	fCost = 9999;
+	gCost = 0;
+	hCost = 9999;
+}
+
 double Node::CalculateHCost(int startX, int startY, int endX, int endY)
 {
 	return sqrt(pow((startX - endX), 2) + pow((startY - endY), 2));

@@ -37,17 +37,19 @@ public:
 
 	void FindPathBySteps(float deltaTime);
 	void FindPathFull();
+	void Reset();
 
 	inline Node* GetStartNode() const { return startNode; }
 	inline Node* GetEndNode()   const { return endNode; }
 
 
 private:
-	bool RunAStarFull();
 	bool RunAStarStep();
-
-	void TraverseBackToStart();
 	void TraverseBackToStartSteps();
+
+	bool RunAStarFull();
+	void TraverseBackToStartFull();
+	
 
 	void CheckNeighbour(Node* neighbour, Node* closedNode);
 	void ResolveConflicts(Node& neighbour, Node& closedNode);

@@ -1,6 +1,8 @@
+#include <iostream>
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position) : position(position)
+Camera::Camera(glm::vec3 position, float pitch, float yaw) : 
+	position(position), pitch(pitch), yaw(yaw)
 {
 	UpdateCamera();
 }
@@ -48,6 +50,15 @@ void Camera::HandleScrolling(float yOffset)
 		fov = 1.0f;
 	if (fov > 45.0f)
 		fov = 45.0f;
+}
+
+void Camera::PrintCamera()
+{
+	std::cout << "Camera position is: [" << position.x << ", " << position.y
+		<< ", " << position.z << "]\n";
+
+	std::cout << "Camera pitch is: [" << pitch << "]\n ";
+	std::cout << "Camera yaw   is: [" << yaw   << "]\n ";
 }
 
 glm::mat4 Camera::GetViewMatrix()

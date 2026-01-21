@@ -61,10 +61,78 @@ void AStar::FindPathBySteps(float deltaTime)
 		else if(drawingPath)
 		{
 			TraverseBackToStartSteps();
-			std::cout << "\nCouldn't find a path :C" << "Change map template..." << std::endl;
 
 		}
 	}
+}
+
+bool AStar::RunAStarStep()
+{
+	if (pathFound)
+		return true;
+
+	if (closedList.empty())
+		closedList.push_back(startNode);
+
+	Node* closedNode = closedList.back();
+	if (closedNode == endNode)
+		return true;
+
+	switch (neighbourStep)
+	{
+	case 0:
+		if (closedNode->y + 1 < height)
+			CheckNeighbour(&grid[closedNode->y + 1][closedNode->x], closedNode);
+		break;
+
+	case 1:
+		if (closedNode->x - 1 >= 0)
+			CheckNeighbour(&grid[closedNode->y][closedNode->x - 1], closedNode);
+		break;
+
+	case 2:
+		if (closedNode->y - 1 >= 0)
+			CheckNeighbour(&grid[closedNode->y - 1][closedNode->x], closedNode);
+		break;
+
+	case 3:
+		if (closedNode->x + 1 < width)
+			CheckNeighbour(&grid[closedNode->y][closedNode->x + 1], closedNode);
+		break;
+	}
+
+	neighbourStep++;
+
+	if (neighbourStep > 3)
+	{
+		neighbourStep = 0;
+
+		Node* lowest = FindLowestCostNode();
+		if (!lowest)
+			return false;
+
+		UpdateLists(lowest);
+		if (lowest == endNode)
+			return true;
+	}
+
+	return false;
+}
+
+void AStar::TraverseBackToStartSteps()
+{
+	if (pathTracker == nullptr)
+		pathTracker = endNode;
+
+	if (pathTracker == startNode)
+	{
+		drawingPath = false;
+		finishedDrawing = true;
+		return;
+	}
+
+	pathTracker->cellType = CELL::ROUTE;
+	pathTracker = pathTracker->parent;
 }
 
 void AStar::FindPathFull()
@@ -80,7 +148,7 @@ void AStar::FindPathFull()
 	pathFound = RunAStarFull();
 	if (pathFound)
 	{
-		TraverseBackToStart();
+		TraverseBackToStartFull();
 		RenderMap(grid, startNode, endNode);
 		std::cout << "\nYOU FOUND A PATH, LET'S GO!!!" << std::endl;
 	}
@@ -130,60 +198,7 @@ bool AStar::RunAStarFull()
 	return false;
 }
 
-bool AStar::RunAStarStep()
-{
-	if (pathFound)
-		return true;
-
-	if (closedList.empty())
-		closedList.push_back(startNode);
-
-	Node* closedNode = closedList.back();
-	if (closedNode == endNode)
-		return true;
-
-	switch (neighbourStep)
-	{
-	case 0:
-		if (closedNode->y + 1 < height)
-			CheckNeighbour(&grid[closedNode->y + 1][closedNode->x], closedNode);
-		break;
-
-	case 1:
-		if (closedNode->x - 1 >= 0)
-			CheckNeighbour(&grid[closedNode->y][closedNode->x - 1], closedNode);
-		break;
-
-	case 2:
-		if (closedNode->y - 1 >= 0)
-			CheckNeighbour(&grid[closedNode->y - 1][closedNode->x], closedNode);
-		break;
-
-	case 3:
-		if (closedNode->x + 1 < width)
-			CheckNeighbour(&grid[closedNode->y][closedNode->x + 1], closedNode);
-		break;
-	}
-
-	neighbourStep++;
-	
-	if (neighbourStep > 3)
-	{
-		neighbourStep = 0;
-
-		Node* lowest = FindLowestCostNode();
-		if (!lowest)
-			return false;
-
-		UpdateLists(lowest);
-		if (lowest == endNode)
-			return true;
-	}
-
-	return false;
-}
-
-void AStar::TraverseBackToStart()
+void AStar::TraverseBackToStartFull()
 {
 	Node* currentNode = endNode;
 
@@ -196,20 +211,33 @@ void AStar::TraverseBackToStart()
 	}
 }
 
-void AStar::TraverseBackToStartSteps()
+void AStar::Reset()
 {
-	if (pathTracker == nullptr)
-		pathTracker = endNode;
+	openList.clear();
+	closedList.clear();
 
-	if (pathTracker == startNode)
+	pathFound = false;
+	drawingPath = false;
+	finishedDrawing = false;
+	pathTracker = nullptr;
+	neighbourStep = 0;
+	astarCounter = 0.0f;
+
+	startNode->Reset();
+	endNode->Reset();
+
+	for (int y = 0; y < height; y++)
 	{
-		drawingPath = false;
-		finishedDrawing = true;
-		return;
+		for (int x = 0; x < width; x++)
+		{
+			if (grid[y][x].cellType != CELL::WALL)
+			{
+				grid[y][x].Reset();
+			}
+		}
 	}
 
-	pathTracker->cellType = CELL::ROUTE;
-	pathTracker = pathTracker->parent;
+	ValidateStartEndCoordinates();
 }
 
 void AStar::CheckNeighbour(Node* neighbour, Node* closedNode)

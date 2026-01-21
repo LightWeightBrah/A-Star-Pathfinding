@@ -31,11 +31,13 @@ private:
 	float mouseSensitivity	= 0.1f;
 
 public:
-	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f));
+	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float pitch = 0.0f, float yaw = -90.0f);
 
 	void HandleKeyboard(MOVEMENT direction, float deltaTime);
 	void HandleMouse(float xOffset, float yOffset);
 	void HandleScrolling(float yOffset);
+
+	void PrintCamera();
 
 	glm::mat4 GetViewMatrix();
 	inline float GetFov() const { return fov; }
