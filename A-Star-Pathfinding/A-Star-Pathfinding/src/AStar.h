@@ -2,13 +2,48 @@
 #include <vector>
 #include "Node.h"
 
-void FindPath(std::vector<std::vector<Node>>& grid, int width, int height, int startX = -1, int startY = -1, int endX = -1, int endY = -1);
-bool RunAStar(std::vector<std::vector<Node>>& grid, Node* startNode, Node* endNode, const int& width, const int& height);
-void CheckNeighbour(std::vector<std::vector<Node>>& grid, Node* neighbour, Node* closedNode, Node* endNode, std::vector<Node*>& openList, std::vector<Node*>& closedList);
-void ResolveConflicts(std::vector<std::vector<Node>>& grid, Node& neighbour, Node& closedNode, Node& endNode);
-Node* FindLowestCostNode(std::vector<Node*>& openList);
-void UpdateLists(std::vector<Node*>& closedList, std::vector<Node*>& openList, Node* lowestCostNode);
-void TraverseBackToStart(std::vector<std::vector<Node>>& grid, Node* startNode, Node* endNode);
 
-void RemoveItemFromVector(std::vector<Node*>& vec, Node* node);
-bool IsNodeInVector(const std::vector<Node*>& vec, Node* node);
+
+class AStar 
+{
+private:
+	std::vector<Node*> openList;
+	std::vector<Node*> closedList;
+	bool pathFound = false;
+
+	Node* startNode;
+	Node* endNode;
+
+public:
+	int width = 0, height = 0;
+	std::vector<std::vector<Node>> grid;
+
+public:
+	AStar();
+	AStar(std::string gridFilepath);
+
+	void FindPathBySteps(int startX, int startY, int endX, int endY);
+	void FindPathFull(int startX = -1, int startY = -1, int endX = -1, int endY = -1);
+
+	inline Node* GetStartNode() const { return startNode; }
+	inline Node* GetEndNode()   const { return startNode; }
+
+
+private:
+	bool RunAStarFull();
+	bool RunAStarStep(int step);
+
+	void CheckNeighbour(Node* neighbour, Node* closedNode);
+	void ResolveConflicts(Node& neighbour, Node& closedNode);
+	Node* FindLowestCostNode();
+	void UpdateLists(Node* lowestCostNode);
+	void TraverseBackToStart();
+	
+	bool ValidateStartEndCoordinates(int& startX, int& startY, int& endX, int& endY);
+	void PrintCoordinates(int& startX, int& startY, int& endX, int& endY);
+
+	void RemoveItemFromVector(std::vector<Node*>& vec, Node* node);
+	bool IsNodeInVector(const std::vector<Node*>& vec, Node* node);
+
+
+};

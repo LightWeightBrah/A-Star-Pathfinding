@@ -443,6 +443,10 @@
     <None Include="src\external\glm\gtx\vector_query.inl" />
     <None Include="src\external\glm\gtx\wrap.inl" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="grid.txt" />
+    <Text Include="src\grid.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

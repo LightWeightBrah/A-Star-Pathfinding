@@ -29,8 +29,13 @@ in vec2 texCoord;
 
 uniform sampler2D texture1;
 uniform sampler2D texture2;
+uniform vec3 objectColor;
 
 void main()
 {
-	FragColor = mix(texture(texture1, texCoord), texture(texture2, texCoord), texture(texture2, texCoord).a);
+	vec4 tex1 = texture(texture1, texCoord);
+	vec4 tex2 = texture(texture2, texCoord);
+	vec4 combined = mix(tex1, tex2, tex2.a);
+
+	FragColor = combined * vec4(objectColor, 1.0f);
 }

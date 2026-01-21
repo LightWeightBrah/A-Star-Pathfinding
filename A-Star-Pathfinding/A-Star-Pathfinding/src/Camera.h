@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-enum Movement
+enum MOVEMENT
 {
 	FORWARD = 0,
 	BACKWARD,
@@ -27,13 +27,13 @@ private:
 	float yaw		=  -90.0f;
 	float fov		=   45.0f;
 
-	float movementSpeed		= 2.5f;
+	float movementSpeed		= 10.5f;
 	float mouseSensitivity	= 0.1f;
 
 public:
 	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f));
 
-	void HandleKeyboard(Movement direction, float deltaTime);
+	void HandleKeyboard(MOVEMENT direction, float deltaTime);
 	void HandleMouse(float xOffset, float yOffset);
 	void HandleScrolling(float yOffset);
 

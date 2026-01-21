@@ -1,12 +1,13 @@
 #pragma once
 
-enum CELL {
-	WALL = 5,
-	NO_WALL = 0,
-	ROUTE = 1,
-	CLOSED = 2,
-	OPEN = 4,
-	ERROR = -1
+enum CELL 
+{
+	WALL	=  5,
+	NO_WALL =  0,
+	ROUTE	=  1,
+	CLOSED	=  2,
+	OPEN	=  4,
+	ERROR	= -1
 };
 
 struct Node

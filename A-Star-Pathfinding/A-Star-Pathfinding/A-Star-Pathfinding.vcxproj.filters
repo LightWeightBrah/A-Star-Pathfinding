@@ -867,4 +867,8 @@
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\grid.txt" />
+    <Text Include="grid.txt" />
+  </ItemGroup>
 </Project>

@@ -65,7 +65,6 @@ void PrintGrid(const std::vector<std::vector<Node>>& grid);
 
 std::vector<std::vector<Node>> BuildGrid(std::string templateString, int& width, int& height);
 std::vector<std::vector<Node>> SetupWorld(std::string path, int& width, int& height);
-std::vector<std::vector<Node>> SetupWorld(int& width, int& height);
 void PrintMapError(int y, int width, std::string issue);
 std::vector < std::vector<Node>> InitGrid(std::string& gridText, int& width, int& height);
 void GetGridDimensions(std::string& gridText, int& width, int& height);

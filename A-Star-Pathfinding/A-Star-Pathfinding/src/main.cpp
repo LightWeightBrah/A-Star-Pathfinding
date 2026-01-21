@@ -24,10 +24,6 @@
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
 
-glm::vec3 cameraPos		=	glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront	=	glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp		=	glm::vec3(0.0f, 1.0f, 0.0f);
-
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -36,7 +32,7 @@ float lastY = WINDOW_HEIGHT / 2;
 
 bool firstMouse = true;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(10.0f, 40.0f, 8.0f));
 
 void OnWindowResized(GLFWwindow* window, int width, int height)
 {
@@ -51,17 +47,17 @@ void HandleInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.HandleKeyboard(Movement::FORWARD, deltaTime);
+		camera.HandleKeyboard(MOVEMENT::FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.HandleKeyboard(Movement::BACKWARD, deltaTime);
+		camera.HandleKeyboard(MOVEMENT::BACKWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.HandleKeyboard(Movement::LEFT, deltaTime);
+		camera.HandleKeyboard(MOVEMENT::LEFT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.HandleKeyboard(Movement::RIGHT, deltaTime);
+		camera.HandleKeyboard(MOVEMENT::RIGHT, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		camera.HandleKeyboard(Movement::UP, deltaTime);
+		camera.HandleKeyboard(MOVEMENT::UP, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		camera.HandleKeyboard(Movement::DOWN, deltaTime);
+		camera.HandleKeyboard(MOVEMENT::DOWN, deltaTime);
 
 }
 
@@ -150,7 +146,10 @@ unsigned int indicies[] = {
 
 int main()
 {
-	FindPathInConsole();
+	AStar aStar;
+	aStar.FindPathFull();
+
+	//return 0;
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -224,13 +223,45 @@ int main()
 			glm::mat4 view = camera.GetViewMatrix();
 			shader.SetUniformMatrix4fv("view", view);
 
-			for (int i = 0; i < 2; i++)
+			for (int y = 0; y < aStar.height; y++)
 			{
-				glm::mat4 model = glm::mat4(1.0f);
-				model = glm::translate(model, glm::vec3(1.5f * i, 1.5f * i, 0.0f));
-				shader.SetUniformMatrix4fv("model", model);
-				renderer.Draw(VAO, EBO, shader);
+				for (int x = 0; x < aStar.width; x++)
+				{
+					glm::mat4 model = glm::mat4(1.0f);
+					float visualZ = (float)(aStar.height - 1 - y);
+					float visualX = (float)(aStar.width  - 1 - x);
+					model = glm::translate(model, glm::vec3(visualX, 0.0f, visualZ));
+					shader.SetUniformMatrix4fv("model", model);
+
+					glm::vec3 color;
+
+					Node* currentNode = &aStar.grid[y][x];
+
+					if (currentNode == aStar.GetStartNode())
+					{
+						color = glm::vec3(1.0f, 1.0f, 1.0f);
+					}
+					else if (currentNode == aStar.GetEndNode())
+					{
+						color = glm::vec3(1.0f, 0.5f, 0.0f);
+					}
+					else
+					{
+						switch (currentNode->cellType)
+						{
+						case CELL::WALL:	color = glm::vec3(1.0f, 0.0f, 0.0f); break;
+						case CELL::ROUTE:	color = glm::vec3(1.0f, 1.0f, 0.0f); break;
+						case CELL::OPEN:	color = glm::vec3(0.0f, 1.0f, 0.0f); break;
+						case CELL::CLOSED:	color = glm::vec3(0.0f, 0.0f, 1.0f); break;
+						default:			color = glm::vec3(1.0f, 0.0f, 1.0f); break;
+						}
+					}
+
+					shader.SetUniform3f("objectColor", color.x, color.y, color.z);
+					renderer.Draw(VAO, EBO, shader);
+				}
 			}
+
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();

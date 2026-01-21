@@ -82,11 +82,6 @@ std::vector<std::vector<Node>> SetupWorld(std::string path, int& width, int& hei
 	return BuildGrid(content, width, height);
 }
 
-std::vector<std::vector<Node>> SetupWorld(int& width, int& height)
-{
-	return SetupWorld("", width, height);
-}
-
 void PrintMapError(int y, int width, std::string issue)
 {
 	std::cout << "\nERROR: MAP ERROR!!!" << std::endl;

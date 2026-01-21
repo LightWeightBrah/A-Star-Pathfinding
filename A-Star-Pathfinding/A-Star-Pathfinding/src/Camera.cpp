@@ -5,21 +5,21 @@ Camera::Camera(glm::vec3 position) : position(position)
 	UpdateCamera();
 }
 
-void Camera::HandleKeyboard(Movement direction, float deltaTime)
+void Camera::HandleKeyboard(MOVEMENT direction, float deltaTime)
 {
 	float speed = this->movementSpeed * deltaTime;
 
-	if (direction == Movement::FORWARD)
+	if (direction == MOVEMENT::FORWARD)
 		position += front		*	speed;
-	if (direction == Movement::BACKWARD)
+	if (direction == MOVEMENT::BACKWARD)
 		position -= front		*	speed;
-	if (direction == Movement::LEFT)
+	if (direction == MOVEMENT::LEFT)
 		position -= right		*	speed;
-	if (direction == Movement::RIGHT)
+	if (direction == MOVEMENT::RIGHT)
 		position += right		*	speed;
-	if (direction == Movement::UP)
+	if (direction == MOVEMENT::UP)
 		position += worldUp		*	speed;
-	if (direction == Movement::DOWN)
+	if (direction == MOVEMENT::DOWN)
 		position -= worldUp		*	speed;
 
 }
