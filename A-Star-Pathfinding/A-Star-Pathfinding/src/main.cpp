@@ -20,11 +20,12 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <cstdlib>
 
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
 
-const unsigned int WALL_HEIGHT = 3;
+const unsigned int WALL_HEIGHT = 2;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -162,6 +163,8 @@ unsigned int indicies[] = {
 
 int main()
 {
+
+	//system("GeneratorMapy.exe");
 	//aStar.FindPathFull();
 
 	//return 0;

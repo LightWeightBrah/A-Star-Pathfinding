@@ -866,6 +866,7 @@
     <None Include="src\external\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="map_generator.exe" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\grid.txt" />

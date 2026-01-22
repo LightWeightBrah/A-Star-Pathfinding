@@ -50,9 +50,9 @@ private:
 	bool RunAStarFull();
 	void TraverseBackToStartFull();
 	
+	void CheckNeighbour(Node* neighbour, Node* currentNode);
+	void ResolveConflicts(Node& neighbour, Node& currentNode);
 
-	void CheckNeighbour(Node* neighbour, Node* closedNode);
-	void ResolveConflicts(Node& neighbour, Node& closedNode);
 	Node* FindLowestCostNode();
 	void UpdateLists(Node* lowestCostNode);
 	

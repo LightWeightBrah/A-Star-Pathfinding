@@ -27,22 +27,17 @@ void Node::PrintPosition()
 void Node::Reset()
 {
 	parent = nullptr;
-	cellType = CELL::NO_WALL;
-
-	fCost = 9999;
 	gCost = 0;
+	fCost = 9999;
 	hCost = 9999;
+
+	if (cellType != CELL::WALL)
+		cellType = CELL::NO_WALL;
 }
 
 double Node::CalculateHCost(int startX, int startY, int endX, int endY)
 {
 	return sqrt(pow((startX - endX), 2) + pow((startY - endY), 2));
-}
-
-void Node::CalculateFCost(Node endNode)
-{
-	this->hCost = CalculateHCost(this->x, this->y, endNode.x, endNode.y);
-	this->fCost = gCost + hCost;
 }
 
 void Node::IncreaseG()

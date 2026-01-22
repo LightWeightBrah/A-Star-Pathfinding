@@ -74,30 +74,30 @@ bool AStar::RunAStarStep()
 	if (closedList.empty())
 		closedList.push_back(startNode);
 
-	Node* closedNode = closedList.back();
-	if (closedNode == endNode)
+	Node* currentNode = closedList.back();
+	if (currentNode == endNode)
 		return true;
 
 	switch (neighbourStep)
 	{
 	case 0:
-		if (closedNode->y + 1 < height)
-			CheckNeighbour(&grid[closedNode->y + 1][closedNode->x], closedNode);
+		if (currentNode->y + 1 < height)
+			CheckNeighbour(&grid[currentNode->y + 1][currentNode->x], currentNode);
 		break;
 
 	case 1:
-		if (closedNode->x - 1 >= 0)
-			CheckNeighbour(&grid[closedNode->y][closedNode->x - 1], closedNode);
+		if (currentNode->x - 1 >= 0)
+			CheckNeighbour(&grid[currentNode->y][currentNode->x - 1], currentNode);
 		break;
 
 	case 2:
-		if (closedNode->y - 1 >= 0)
-			CheckNeighbour(&grid[closedNode->y - 1][closedNode->x], closedNode);
+		if (currentNode->y - 1 >= 0)
+			CheckNeighbour(&grid[currentNode->y - 1][currentNode->x], currentNode);
 		break;
 
 	case 3:
-		if (closedNode->x + 1 < width)
-			CheckNeighbour(&grid[closedNode->y][closedNode->x + 1], closedNode);
+		if (currentNode->x + 1 < width)
+			CheckNeighbour(&grid[currentNode->y][currentNode->x + 1], currentNode);
 		break;
 	}
 
@@ -107,12 +107,12 @@ bool AStar::RunAStarStep()
 	{
 		neighbourStep = 0;
 
-		Node* lowest = FindLowestCostNode();
-		if (!lowest)
+		currentNode = FindLowestCostNode();
+		if (!currentNode)
 			return false;
 
-		UpdateLists(lowest);
-		if (lowest == endNode)
+		UpdateLists(currentNode);
+		if (currentNode == endNode)
 			return true;
 	}
 
@@ -137,6 +137,12 @@ void AStar::TraverseBackToStartSteps()
 
 void AStar::FindPathFull()
 {
+	if (grid.empty() || grid[0].empty())
+	{
+		std::cout << "ERROR: GRID IS EMPTY! CHECK YOUR MAP .TXT FILE!";
+		return;
+	}
+
 	if(!ValidateStartEndCoordinates())
 		return;
 
@@ -161,39 +167,35 @@ void AStar::FindPathFull()
 bool AStar::RunAStarFull()
 {
 	closedList.push_back(startNode);
+	Node* currentNode = closedList.back();
 
-	do
+	while (currentNode != endNode)
 	{
-		Node* closedNode = closedList.back();
-		if (closedNode == endNode)
-			return true;
+		if (currentNode->y + 1 < height)
+			CheckNeighbour(&grid[currentNode->y + 1][currentNode->x], currentNode);
 
-		if (closedNode->y + 1 < height)
+		if (currentNode->x - 1 >= 0)
+			CheckNeighbour(&grid[currentNode->y][currentNode->x - 1], currentNode);
+
+		if (currentNode->y - 1 >= 0)
+			CheckNeighbour(&grid[currentNode->y - 1][currentNode->x], currentNode);
+
+		if (currentNode->x + 1 < width)
+			CheckNeighbour(&grid[currentNode->y][currentNode->x + 1], currentNode);
+
+		currentNode = FindLowestCostNode();
+
+		if (currentNode == nullptr)
 		{
-			CheckNeighbour(&grid[closedNode->y + 1][closedNode->x], closedNode);
-		}
-
-		if (closedNode->x - 1 >= 0)
-		{
-			CheckNeighbour(&grid[closedNode->y][closedNode->x - 1], closedNode);
-		}
-
-		if (closedNode->y - 1 >= 0)
-		{
-			CheckNeighbour(&grid[closedNode->y - 1][closedNode->x], closedNode);
-		}
-
-		if (closedNode->x + 1 < width)
-		{
-			CheckNeighbour(&grid[closedNode->y][closedNode->x + 1], closedNode);
-		}
-
-		Node* lowest = FindLowestCostNode();
-		if (!lowest)
+			std::cout << "ERROR: NIE MA ŒCIE¯KI DO CELU!" << std::endl;
 			return false;
+		}
 
-		UpdateLists(lowest);
-	} while (!openList.empty());
+		UpdateLists(currentNode);
+
+		if (currentNode == endNode) 
+			return true;
+	}
 
 	return false;
 }
@@ -223,6 +225,9 @@ void AStar::Reset()
 	neighbourStep = 0;
 	astarCounter = 0.0f;
 
+	startX = -1, startY = -1;
+	endX   = -1, endY   = -1;
+
 	startNode->Reset();
 	endNode->Reset();
 
@@ -237,10 +242,12 @@ void AStar::Reset()
 		}
 	}
 
+	
+
 	ValidateStartEndCoordinates();
 }
 
-void AStar::CheckNeighbour(Node* neighbour, Node* closedNode)
+void AStar::CheckNeighbour(Node* neighbour, Node* currentNode)
 {
 	if (neighbour->cellType == CELL::WALL)
 		return;
@@ -248,7 +255,7 @@ void AStar::CheckNeighbour(Node* neighbour, Node* closedNode)
 	if (IsNodeInVector(closedList, neighbour))
 		return;
 
-	ResolveConflicts(*neighbour, *closedNode);
+	ResolveConflicts(*neighbour, *currentNode);
 
 	if (!IsNodeInVector(openList, neighbour))
 	{
@@ -257,9 +264,9 @@ void AStar::CheckNeighbour(Node* neighbour, Node* closedNode)
 	}
 }
 
-void AStar::ResolveConflicts(Node& neighbour, Node& closedNode)
+void AStar::ResolveConflicts(Node& neighbour, Node& currentNode)
 {
-	double gCost = closedNode.gCost + 1;
+	double gCost = currentNode.gCost + 1;
 	double hCost = neighbour.CalculateHCost(neighbour.x, neighbour.y,
 		endNode->x, endNode->y);
 	double newFCost = gCost + hCost;
@@ -269,7 +276,7 @@ void AStar::ResolveConflicts(Node& neighbour, Node& closedNode)
 		neighbour.gCost = gCost;
 		neighbour.hCost = hCost;
 		neighbour.fCost = newFCost;
-		neighbour.SetParent(&grid[closedNode.y][closedNode.x]);
+		neighbour.SetParent(&grid[currentNode.y][currentNode.x]);
 	}
 }
 
@@ -333,8 +340,8 @@ bool AStar::ValidateStartEndCoordinates()
 
 void AStar::PrintCoordinates()
 {
-	std::cout << "Width is: (" << endX << ") Height is: (" << endY << ")" << std::endl;
-	std::cout << "Start: [" << endX << ", " << endY << "] "
+	std::cout << "Width is: (" << width << ") Height is: (" << height << ")" << std::endl;
+	std::cout << "Start: [" << startX << ", " << startY << "] "
 		<< "End: [" << endX << ", " << endY << "]" << std::endl;
 }
 
