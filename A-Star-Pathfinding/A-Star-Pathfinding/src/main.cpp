@@ -21,6 +21,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <assimp/Importer.hpp>
+#include <assimp/version.h>
+
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
 
@@ -183,6 +186,9 @@ int main()
 	int nrAttributes;
 	GLCall(glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes));
 	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
+
+	Assimp::Importer importer;
+	std::cout << "Wersja Assimpa: " << aiGetVersionMajor() << std::endl;
 
 	GLCall(glEnable(GL_DEPTH_TEST));
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
