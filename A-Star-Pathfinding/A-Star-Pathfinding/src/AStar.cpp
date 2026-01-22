@@ -187,7 +187,7 @@ bool AStar::RunAStarFull()
 
 		if (currentNode == nullptr)
 		{
-			std::cout << "ERROR: NIE MA ŒCIE¯KI DO CELU!" << std::endl;
+			std::cout << "ERROR: THERE'S NO ROUTE TO END POINT!" << std::endl;
 			return false;
 		}
 
