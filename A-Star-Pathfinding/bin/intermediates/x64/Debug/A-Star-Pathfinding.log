@@ -1,0 +1,7 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(523,5): warning MSB8004: Intermediate Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Intermediate Directory.
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(524,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+  A-Star-Pathfinding.vcxproj -> C:\Dev\A-Star-Pathfinding\A-Star-Pathfinding\bin\x64\Debug\A-Star-Pathfinding.exe
+  C:\Dev\A-Star-Pathfinding\A-Star-Pathfinding\Dependencies\Assimp\bin\x64\assimp-vc143-mt.dll
+  C:\Dev\A-Star-Pathfinding\A-Star-Pathfinding\Dependencies\Assimp\bin\x64\D3DCompiler_42.dll
+  C:\Dev\A-Star-Pathfinding\A-Star-Pathfinding\Dependencies\Assimp\bin\x64\D3DX9_42.dll
+  3 File(s) copied
