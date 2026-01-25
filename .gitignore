@@ -13,3 +13,8 @@ A-Star-Pathfinding/bin/
 
 !Dependencies/
 !Dependencies/**
+
+!**/res/Models/
+!**/res/Models/**
+!**/res/Models/**/*.obj
+!**/res/Models/**/*.mtl
