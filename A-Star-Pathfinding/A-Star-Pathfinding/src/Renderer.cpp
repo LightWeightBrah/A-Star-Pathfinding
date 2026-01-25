@@ -31,3 +31,17 @@ void Renderer::Draw(const VertexArray& VAO, const ElementBuffer& EBO, const Shad
 	EBO.Bind();
 	GLCall(glDrawElements(GL_TRIANGLES, EBO.GetCount(), GL_UNSIGNED_INT, 0));
 }
+
+void Renderer::DrawModel(const Model& model, Shader& shader) const
+{
+	shader.Bind();
+
+	for (const auto& mesh : model.GetMeshes())
+		DrawMesh(mesh, shader);
+}
+
+void Renderer::DrawMesh(const Mesh& mesh, Shader& shader) const
+{
+	mesh.BindTextures(shader);
+	Draw(mesh.GetVAO(), mesh.GetEBO(), shader);
+}

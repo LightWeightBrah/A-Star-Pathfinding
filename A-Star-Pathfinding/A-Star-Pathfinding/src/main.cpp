@@ -12,6 +12,7 @@
 #include "App.h"
 #include "Renderer.h"
 #include "Camera.h"
+#include "Model.h"
 
 #include "GL/glew.h"
 #include <GLFW/glfw3.h>
@@ -196,6 +197,15 @@ int main()
 	glfwSetFramebufferSizeCallback(window, OnWindowResized);
 	glfwSetCursorPosCallback(window, OnMouse);
 	glfwSetScrollCallback(window, OnScroll);
+
+	Renderer renderer;
+
+
+	glEnable(GL_DEPTH_TEST);
+	renderer.Clear(0.05f, 0.05f, 0.05f, 1.0f);
+	glfwSwapBuffers(window);
+	glfwPollEvents();
+
 	{
 		Shader shader("res/shaders/Basic.shader");
 
@@ -218,7 +228,9 @@ int main()
 		EBO.Unbind();
 		shader.Unbind();
 
-		Renderer renderer;
+		Model characterModel("res/Models/backpack/backpack.obj");
+		Shader characterShader("res/shaders/Model.shader");
+		characterShader.Unbind();
 
 		while (!glfwWindowShouldClose(window))
 		{
@@ -284,6 +296,17 @@ int main()
 					}
 				}
 			}
+
+			characterShader.Bind();
+			characterShader.SetUniform1i("texture_diffuse1", 0);
+			characterShader.SetUniformMatrix4fv("projection", projection);
+			characterShader.SetUniformMatrix4fv("view", view);
+
+			glm::mat4 modelMatrix = glm::mat4(1.0f);
+			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 5, 0));
+			characterShader.SetUniformMatrix4fv("model", modelMatrix);
+
+			renderer.DrawModel(characterModel, characterShader);
 
 
 			glfwSwapBuffers(window);

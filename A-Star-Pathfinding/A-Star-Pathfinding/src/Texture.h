@@ -12,4 +12,5 @@ public:
 	~Texture();
 	void Bind(unsigned int slot = 0) const;
 	void Unbind() const;
+	inline std::string GetFilepath() const { return filepath; }
 };

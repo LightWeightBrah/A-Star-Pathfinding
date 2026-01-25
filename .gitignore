@@ -1,0 +1,21 @@
+.vs/
+*.user
+*.suo
+*.db
+*.opendb
+
+# Twoje foldery wynikowe (tam gdzie xcopy wrzuca DLLki)
+bin/
+A-Star-Pathfinding/bin/
+A-Star-Pathfinding/A-Star-Pathfinding/bin/
+
+*.obj
+*.exe
+*.pdb
+*.dll
+*.lib
+*.ipch
+*.ilk
+*.recipe
+
+A-Star-Pathfinding/A-Star-Pathfinding/v17/
