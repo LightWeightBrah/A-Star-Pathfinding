@@ -1,25 +1,15 @@
 .vs/
-*.user
-*.suo
-*.db
-*.opendb
-A-Star-Pathfinding/A-Star-Pathfinding/v17/
-*.ipch
-*.obj
-*.ilk
-*.recipe
-*.pdb
-
 bin/
 A-Star-Pathfinding/bin/
-A-Star-Pathfinding/A-Star-Pathfinding/bin/
-
+*.obj
+*.ipch
 *.exe
+*.pdb
+*.ilk
+*.recipe
 
-*.dll
 *.lib
+*.dll
 
 !Dependencies/
 !Dependencies/**
-!Dependencies/**/*.dll
-!Dependencies/**/*.lib
