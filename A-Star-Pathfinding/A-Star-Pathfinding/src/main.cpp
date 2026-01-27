@@ -83,11 +83,11 @@ void OnSingleKey(GLFWwindow* window, int key, int scancode, int action, int mods
 		switch (key)
 		{
 		case GLFW_KEY_R:
-			aStar.Reset();
+			aStar.Reset(modelX, modelZ);
 			break;
 
 		case GLFW_KEY_F:
-			aStar.Reset();
+			aStar.Reset(modelX, modelZ);
 			aStar.FindPathFull();
 			break;
 

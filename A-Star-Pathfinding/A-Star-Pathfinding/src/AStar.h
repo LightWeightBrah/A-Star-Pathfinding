@@ -43,7 +43,7 @@ public:
 	void FindPathBySteps(float deltaTime);
 	void TravelWithModel(int& x, int& z, float deltaTime);
 	void FindPathFull();
-	void Reset();
+	void Reset(int& modelX, int& modelZ);
 
 	inline Node* GetStartNode() const { return startNode; }
 	inline Node* GetEndNode()   const { return endNode; }

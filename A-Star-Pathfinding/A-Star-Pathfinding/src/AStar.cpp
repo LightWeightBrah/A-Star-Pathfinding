@@ -244,17 +244,23 @@ void AStar::TraverseBackToStartFull()
 
 }
 
-void AStar::Reset()
+void AStar::Reset(int& modelX, int& modelZ)
 {
 	openList.clear();
 	closedList.clear();
+	fullPath.clear();
 
 	pathFound = false;
 	drawingPath = false;
 	finishedDrawing = false;
+	modelFinished = false;
 	pathTracker = nullptr;
 	neighbourStep = 0;
 	astarCounter = 0.0f;
+	modelCounter = modelInterval;
+
+	modelX = 0;
+	modelZ = width - 1;
 
 	startX = -1, startY = -1;
 	endX   = -1, endY   = -1;
