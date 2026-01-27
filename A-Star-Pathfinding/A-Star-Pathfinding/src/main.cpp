@@ -25,8 +25,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/version.h>
 
-const unsigned int WINDOW_WIDTH = 1500;
-const unsigned int WINDOW_HEIGHT = 1000;
+const unsigned int WINDOW_WIDTH = 1200;
+const unsigned int WINDOW_HEIGHT = 800;
 
 const unsigned int WALL_HEIGHT = 2;
 
@@ -264,6 +264,10 @@ int main()
 					glm::vec3 color;
 					Node* currentNode = &aStar.grid[z][x];
 
+					shader.Bind();
+					texture1.Bind();
+					texture2.Bind(1);
+
 					if (currentNode == aStar.GetStartNode())
 					{
 						color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -283,6 +287,7 @@ int main()
 						default:			color = glm::vec3(0.6f, 0.0f, 0.6f);				break;
 						}
 					}
+
 					shader.SetUniform3f("objectColor", color.x, color.y, color.z);
 
 					int maxHeight = isWall ? WALL_HEIGHT : 1;
@@ -294,6 +299,8 @@ int main()
 						shader.SetUniformMatrix4fv("model", model);
 						renderer.Draw(VAO, EBO, shader);
 					}
+
+					
 				}
 			}
 
@@ -303,11 +310,10 @@ int main()
 			characterShader.SetUniformMatrix4fv("view", view);
 
 			glm::mat4 modelMatrix = glm::mat4(1.0f);
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
+			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.37, 19));
 			modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
-			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 10, 3));
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.035f, 0.035f, 0.035f));
 			characterShader.SetUniformMatrix4fv("model", modelMatrix);
-
 			renderer.DrawModel(characterModel, characterShader);
 
 
