@@ -39,6 +39,8 @@ float lastY = WINDOW_HEIGHT / 2;
 float astarInterval	= 0.1f;
 float astarCounter	= 0.0f;
 
+int modelX = 0, modelZ = 19;
+
 bool firstMouse = true;
 
 Camera camera(glm::vec3(9.4f, 34.2f, 30.8f), -60.1f, -89.9);
@@ -66,19 +68,24 @@ void HandleInput(GLFWwindow* window)
 		aStar.FindPathFull();
 	}
 
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.HandleKeyboard(MOVEMENT::FORWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.HandleKeyboard(MOVEMENT::BACKWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.HandleKeyboard(MOVEMENT::LEFT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.HandleKeyboard(MOVEMENT::RIGHT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		camera.HandleKeyboard(MOVEMENT::UP, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		camera.HandleKeyboard(MOVEMENT::DOWN, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		camera.HandleKeyboardHeight(true);
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)
+		camera.HandleKeyboardHeight(false);
+	
 
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camera.HandleKeyboardMove(MOVEMENT::FORWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera.HandleKeyboardMove(MOVEMENT::BACKWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera.HandleKeyboardMove(MOVEMENT::LEFT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera.HandleKeyboardMove(MOVEMENT::RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		camera.HandleKeyboardMove(MOVEMENT::UP, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		camera.HandleKeyboardMove(MOVEMENT::DOWN, deltaTime);
 }
 
 void OnMouse(GLFWwindow* window, double xPos, double yPos)
@@ -310,7 +317,8 @@ int main()
 			characterShader.SetUniformMatrix4fv("view", view);
 
 			glm::mat4 modelMatrix = glm::mat4(1.0f);
-			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.37, 19));
+			aStar.TravelWithModel(modelX, modelZ, deltaTime);
+			modelMatrix = glm::translate(modelMatrix, glm::vec3(modelX, 0.37, modelZ));
 			modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
 			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.035f, 0.035f, 0.035f));
 			characterShader.SetUniformMatrix4fv("model", modelMatrix);

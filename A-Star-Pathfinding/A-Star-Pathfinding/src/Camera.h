@@ -10,7 +10,8 @@ enum MOVEMENT
 	LEFT,
 	RIGHT,
 	UP,
-	DOWN
+	DOWN,
+	STAY_ON_HEIGHT
 };
 
 class Camera
@@ -27,13 +28,17 @@ private:
 	float yaw		=  -90.0f;
 	float fov		=   45.0f;
 
-	float movementSpeed		= 10.5f;
+	float movementSpeed		= 6.5f;
 	float mouseSensitivity	= 0.1f;
+
+	bool stayOnHeight = false;
 
 public:
 	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float pitch = 0.0f, float yaw = -90.0f);
 
-	void HandleKeyboard(MOVEMENT direction, float deltaTime);
+	void HandleKeyboardMove(MOVEMENT direction, float deltaTime);
+	inline void HandleKeyboardHeight(bool stayOnHeight) { this->stayOnHeight = stayOnHeight; }
+	
 	void HandleMouse(float xOffset, float yOffset);
 	void HandleScrolling(float yOffset);
 

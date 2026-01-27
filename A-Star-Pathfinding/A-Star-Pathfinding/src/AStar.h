@@ -13,11 +13,16 @@ private:
 	bool drawingPath	 = false;
 	bool finishedDrawing = false;
 	Node* pathTracker    = nullptr;
+	std::vector<Node*> fullPath;
 
 	bool pathFound		 = false;
 	int neighbourStep	 = 0;
 	float astarCounter	 = 0.0f;
 	float astarInterval	 = 0.01f;
+
+	float modelCounter  = 0.0f;
+	float modelInterval = 0.4f;
+	bool modelFinished  = false;
 
 	int startX	= -1, startY = -1, 
 		endX	= -1, endY	 = -1;
@@ -36,6 +41,7 @@ public:
 	AStar(std::string gridFilepath, int startX, int startY, int endX, int endY);
 
 	void FindPathBySteps(float deltaTime);
+	void TravelWithModel(int& x, int& z, float deltaTime);
 	void FindPathFull();
 	void Reset();
 

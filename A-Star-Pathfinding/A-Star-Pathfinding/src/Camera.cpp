@@ -7,18 +7,32 @@ Camera::Camera(glm::vec3 position, float pitch, float yaw) :
 	UpdateCamera();
 }
 
-void Camera::HandleKeyboard(MOVEMENT direction, float deltaTime)
+void Camera::HandleKeyboardMove(MOVEMENT direction, float deltaTime)
 {
 	float speed = this->movementSpeed * deltaTime;
 
+	glm::vec3 moveFront;
+	glm::vec3 moveRight;
+
+	if (stayOnHeight)
+	{
+		moveFront = glm::vec3(front.x, 0.0f, front.z);
+		moveRight = glm::vec3(right.x, 0.0f, right.z);
+	}
+	else
+	{
+		moveFront = front;
+		moveRight = right;
+	}
+
 	if (direction == MOVEMENT::FORWARD)
-		position += front		*	speed;
+		position += moveFront	*	speed;
 	if (direction == MOVEMENT::BACKWARD)
-		position -= front		*	speed;
+		position -= moveFront	*	speed;
 	if (direction == MOVEMENT::LEFT)
-		position -= right		*	speed;
+		position -= moveRight	*	speed;
 	if (direction == MOVEMENT::RIGHT)
-		position += right		*	speed;
+		position += moveRight	*	speed;
 	if (direction == MOVEMENT::UP)
 		position += worldUp		*	speed;
 	if (direction == MOVEMENT::DOWN)

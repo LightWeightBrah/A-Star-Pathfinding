@@ -122,7 +122,10 @@ bool AStar::RunAStarStep()
 void AStar::TraverseBackToStartSteps()
 {
 	if (pathTracker == nullptr)
+	{
 		pathTracker = endNode;
+		fullPath.push_back(pathTracker);
+	}
 
 	if (pathTracker == startNode)
 	{
@@ -133,6 +136,29 @@ void AStar::TraverseBackToStartSteps()
 
 	pathTracker->cellType = CELL::ROUTE;
 	pathTracker = pathTracker->parent;
+	fullPath.push_back(pathTracker);
+}
+
+void AStar::TravelWithModel(int& x, int& z, float deltaTime)
+{
+	if (modelFinished)
+		return;
+
+	if (!finishedDrawing)
+		return;
+
+	modelCounter += deltaTime;
+	if (modelCounter >= modelInterval)
+	{
+		Node* current = fullPath.back();
+		x = current->x;
+		z = current->y;
+		fullPath.pop_back();
+
+		modelCounter = 0.0f;
+		if (fullPath.size() == 0)
+			modelFinished = true;
+	}
 }
 
 void AStar::FindPathFull()
@@ -203,6 +229,7 @@ bool AStar::RunAStarFull()
 void AStar::TraverseBackToStartFull()
 {
 	Node* currentNode = endNode;
+	fullPath.push_back(currentNode);
 
 	while (currentNode != nullptr && currentNode != startNode)
 	{
@@ -210,7 +237,11 @@ void AStar::TraverseBackToStartFull()
 			currentNode->cellType = CELL::ROUTE;
 
 		currentNode = currentNode->parent;
+		fullPath.push_back(currentNode);
 	}
+
+	finishedDrawing = true;
+
 }
 
 void AStar::Reset()
