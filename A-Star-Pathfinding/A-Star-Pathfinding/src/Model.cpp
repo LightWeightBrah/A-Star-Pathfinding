@@ -4,16 +4,21 @@
 #include "Texture.h"
 #include "Mesh.h"
 
-Model::Model(const std::string& path) 
+Model::Model(const std::string& path, bool flipUV)
 {
-	LoadModel(path);
+	LoadModel(path, flipUV);
 }
 
-void Model::LoadModel(std::string path) 
+void Model::LoadModel(std::string path, bool flipUV) 
 {
 	std::cout << "Loading model: " << path << std::endl;
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
+	const aiScene* scene;
+	if (flipUV)
+		scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
+	else
+		scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals);
+
 
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
 	{

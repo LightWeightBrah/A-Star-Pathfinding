@@ -25,8 +25,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/version.h>
 
-const unsigned int WINDOW_WIDTH = 800;
-const unsigned int WINDOW_HEIGHT = 600;
+const unsigned int WINDOW_WIDTH = 1500;
+const unsigned int WINDOW_HEIGHT = 1000;
 
 const unsigned int WALL_HEIGHT = 2;
 
@@ -228,7 +228,7 @@ int main()
 		EBO.Unbind();
 		shader.Unbind();
 
-		Model characterModel("res/Models/backpack/backpack.obj");
+		Model characterModel("res/Models/solair masterpiece/Solair Final Model.obj", false);
 		Shader characterShader("res/shaders/Model.shader");
 		characterShader.Unbind();
 
@@ -303,7 +303,9 @@ int main()
 			characterShader.SetUniformMatrix4fv("view", view);
 
 			glm::mat4 modelMatrix = glm::mat4(1.0f);
-			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 5, 0));
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f, 0.1f, 0.1f));
+			modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
+			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 10, 3));
 			characterShader.SetUniformMatrix4fv("model", modelMatrix);
 
 			renderer.DrawModel(characterModel, characterShader);
