@@ -57,22 +57,10 @@ void HandleInput(GLFWwindow* window)
 {
 	const float cameraSpeed = 2.5f * deltaTime;
 
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-
-	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-		aStar.Reset();
-	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-	{
-		aStar.Reset();
-		aStar.FindPathFull();
-	}
-
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 		camera.HandleKeyboardHeight(true);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)
 		camera.HandleKeyboardHeight(false);
-	
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.HandleKeyboardMove(MOVEMENT::FORWARD, deltaTime);
@@ -86,6 +74,28 @@ void HandleInput(GLFWwindow* window)
 		camera.HandleKeyboardMove(MOVEMENT::UP, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		camera.HandleKeyboardMove(MOVEMENT::DOWN, deltaTime);
+}
+
+void OnSingleKey(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		switch (key)
+		{
+		case GLFW_KEY_R:
+			aStar.Reset();
+			break;
+
+		case GLFW_KEY_F:
+			aStar.Reset();
+			aStar.FindPathFull();
+			break;
+
+		case GLFW_KEY_ESCAPE:
+			glfwSetWindowShouldClose(window, true);
+			break;
+		}
+	}
 }
 
 void OnMouse(GLFWwindow* window, double xPos, double yPos)
@@ -203,6 +213,7 @@ int main()
 
 	glfwSetFramebufferSizeCallback(window, OnWindowResized);
 	glfwSetCursorPosCallback(window, OnMouse);
+	glfwSetKeyCallback(window, OnSingleKey);
 	glfwSetScrollCallback(window, OnScroll);
 
 	Renderer renderer;
