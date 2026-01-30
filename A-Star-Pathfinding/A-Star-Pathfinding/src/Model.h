@@ -7,14 +7,18 @@
 class Model 
 {
 private:
-	std::vector<Mesh> meshes;
-	std::string directory;
+	std::vector<Mesh>		 meshes;
+	std::string				 directory;
 	std::vector<TextureItem> texturesLoaded;
 
 private:
 	void LoadModel(std::string path, bool flipUV);
 	void ProcessNode(aiNode* node, const aiScene* scene);
 	Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
+
+	void ProcessMeshBones(aiMesh* mesh);
+	void ProcessMeshSingleBone(int boneIndex, aiBone* bone);
+
 	std::vector<TextureItem> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 
 public:

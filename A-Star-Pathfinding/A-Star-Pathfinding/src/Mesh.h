@@ -21,18 +21,18 @@ struct Vertex
 struct TextureItem 
 {
 	std::shared_ptr<Texture> texture;
-	std::string type;
+	std::string				 type;
 };
 
 class Mesh	
 {
 private:
-	std::vector<Vertex> vertices;
+	std::vector<Vertex>		  vertices;
 	std::vector<unsigned int> indices;
-	std::vector<TextureItem> textures;
+	std::vector<TextureItem>  textures;
 
-	std::unique_ptr<VertexArray> VAO;
-	std::unique_ptr<VertexBuffer> VBO;
+	std::unique_ptr<VertexArray>   VAO;
+	std::unique_ptr<VertexBuffer>  VBO;
 	std::unique_ptr<ElementBuffer> EBO;
 
 private:
@@ -43,7 +43,7 @@ public:
 
 	void BindTextures(const Shader& shader) const;
 
-	inline const VertexArray& GetVAO() const { return *VAO; }
-	inline const ElementBuffer& GetEBO() const { return *EBO; }
-	inline unsigned int GetIndexCount() const { return (unsigned int)indices.size(); }
+	inline const VertexArray& GetVAO()		const { return *VAO; }
+	inline const ElementBuffer& GetEBO()	const { return *EBO; }
+	inline unsigned int GetIndexCount()		const { return (unsigned int)indices.size(); }
 };

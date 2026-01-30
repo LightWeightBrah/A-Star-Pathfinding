@@ -227,8 +227,8 @@ int main()
 	{
 		Shader shader("res/shaders/Basic.shader");
 
-		VertexArray VAO;
-		VertexBuffer VBO(verticies, sizeof(verticies));
+		VertexArray   VAO;
+		VertexBuffer  VBO(verticies, sizeof(verticies));
 		ElementBuffer EBO(indicies, sizeof(indicies));
 
 		VAO.AddAttrib(0, 3, GL_FLOAT, false, 8 * sizeof(float), (void*)0);
@@ -246,7 +246,8 @@ int main()
 		EBO.Unbind();
 		shader.Unbind();
 
-		Model characterModel("res/Models/solair masterpiece/Solair Final Model.obj", false);
+		//Model characterModel("res/Models/solair masterpiece/Solair Final Model.obj", false);
+		Model characterModel("res/Models/vampire/dancing_vampire.dae", false);
 		Shader characterShader("res/shaders/Model.shader");
 		characterShader.Unbind();
 
@@ -327,13 +328,23 @@ int main()
 			characterShader.SetUniformMatrix4fv("projection", projection);
 			characterShader.SetUniformMatrix4fv("view", view);
 
-			glm::mat4 modelMatrix = glm::mat4(1.0f);
+			/*glm::mat4 modelMatrix = glm::mat4(1.0f);
 			aStar.TravelWithModel(modelX, modelZ, deltaTime);
 			modelMatrix = glm::translate(modelMatrix, glm::vec3(modelX, 0.37, modelZ));
 			modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
 			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.035f, 0.035f, 0.035f));
 			characterShader.SetUniformMatrix4fv("model", modelMatrix);
+			renderer.DrawModel(characterModel, characterShader);*/
+
+			
+			glm::mat4 modelMatrix = glm::mat4(1.0f);
+			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.37, 20));
+			//modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.035f, 0.035f, 0.035f));
+			characterShader.SetUniformMatrix4fv("model", modelMatrix);
 			renderer.DrawModel(characterModel, characterShader);
+
+
 
 
 			glfwSwapBuffers(window);
