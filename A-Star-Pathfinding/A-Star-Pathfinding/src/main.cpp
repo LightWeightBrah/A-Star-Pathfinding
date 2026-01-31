@@ -39,6 +39,10 @@ float lastY = WINDOW_HEIGHT / 2;
 float astarInterval	= 0.1f;
 float astarCounter	= 0.0f;
 
+float bonesChangeInterval = 0.5f;
+float bonesChangeCounter  = 0.0f;
+int   boneIndex = 0;
+
 int modelX = 0, modelZ = 19;
 
 bool firstMouse = true;
@@ -340,7 +344,18 @@ int main()
 			glm::mat4 modelMatrix = glm::mat4(1.0f);
 			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.37, 20));
 			//modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.035f, 0.035f, 0.035f));
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.005f, 0.005f, 0.005f));
+			
+			bonesChangeCounter += deltaTime;
+
+			if (bonesChangeCounter >= bonesChangeInterval)
+			{
+				int displayIndex = boneIndex % characterModel.GetTotalBones();
+				characterShader.SetUniform1i("displayBoneIndex", displayIndex);
+				boneIndex++;
+				bonesChangeCounter = 0.0f;	
+			}
+
 			characterShader.SetUniformMatrix4fv("model", modelMatrix);
 			renderer.DrawModel(characterModel, characterShader);
 

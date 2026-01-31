@@ -37,4 +37,7 @@ void Mesh::SetupMesh()
 	VAO->AddAttrib(0, 3, GL_FLOAT, false, sizeof(Vertex), (void*)0);
 	VAO->AddAttrib(1, 3, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
 	VAO->AddAttrib(2, 2, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+	
+	VAO->AddIntegerAttrib(3, 4, GL_INT,			 sizeof(Vertex), (void*)offsetof(Vertex, boneIDs));
+	VAO->AddAttrib		 (4, 4, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, weights));
 }

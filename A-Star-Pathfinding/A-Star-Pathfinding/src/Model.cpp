@@ -42,7 +42,7 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) 
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.emplace_back(ProcessMesh(mesh, scene));
+		meshes.emplace_back(ProcessMesh(mesh, i, scene));
 	}
 	for (unsigned int i = 0; i < node->mNumChildren; i++) 
 	{
@@ -50,7 +50,7 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	}
 }
 
-Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Mesh Model::ProcessMesh(aiMesh* mesh, int meshIndex, const aiScene* scene)
 {
 	std::vector<Vertex>		  vertices;
 	std::vector<unsigned int> indices;
@@ -62,6 +62,12 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		v.Position = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
 		v.Normal   = { mesh->mNormals[i].x , mesh->mNormals[i].y , mesh->mNormals[i].z  };
 		v.TexCoords = mesh->mTextureCoords[0] ? glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y) : glm::vec2(0.0f);
+		for (unsigned int j = 0; j < MAX_NUM_BONES_PER_VERTEX; j++)
+		{
+			v.boneIDs[j] = 0;
+			v.weights[j] = 0.0f;
+		}
+		
 		vertices.push_back(v);
 	}
 
@@ -72,7 +78,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	}
 
 	if (mesh->HasBones())
-		ProcessMeshBones(mesh);
+		ProcessMeshBones(mesh, vertices, meshIndex);
 
 	if (mesh->mMaterialIndex >= 0)
 	{
@@ -91,24 +97,67 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	return Mesh(vertices, indices, meshTextures);
 }
 
-void Model::ProcessMeshBones(aiMesh* mesh)
+void Model::ProcessMeshBones(aiMesh* mesh, std::vector<Vertex>& vertices, int meshIndex)
 {
 	for (int i = 0; i < mesh->mNumBones; i++)
-		ProcessMeshSingleBone(i, mesh->mBones[i]);
+		ProcessMeshSingleBone(mesh, vertices, meshIndex, i);
 }
 
-void Model::ProcessMeshSingleBone(int boneIndex, aiBone* bone)
+void Model::ProcessMeshSingleBone(aiMesh* mesh, std::vector<Vertex>& vertices, int meshIndex, int boneIndex)
 {
+	aiBone* bone = mesh->mBones[boneIndex];
+	totalBones++;
+
 	std::cout << "\nBone: " << boneIndex << " " << bone->mName.C_Str()
 		<< "\nNumber of vertices affected by this bone: " << bone->mNumWeights << std::endl;
 
+	
 	for (int i = 0; i < bone->mNumWeights; i++)
 	{
 		aiVertexWeight& vertexWeight = bone->mWeights[i];
 
+		unsigned int vertexId = vertexWeight.mVertexId;
+		unsigned int boneId   = GetBoneId(bone);
+		float        weight   = vertexWeight.mWeight;
+		
+		SetBonesForVertex(vertices, vertexId, boneId, weight);
+
 		/*std::cout << "\nVertex id: " << vertexWeight.mVertexId << "\nWeight: " 
 			<< vertexWeight.mWeight << std::endl;*/
 	}
+}
+
+void Model::SetBonesForVertex(std::vector<Vertex>& vertices, unsigned int vertexId, unsigned int boneId, float weight)
+{
+	for (unsigned int i = 0; i < MAX_NUM_BONES_PER_VERTEX; i++)
+	{
+		Vertex& vertex = vertices[vertexId];
+
+		if (vertex.weights[i] == 0.0)
+		{
+			vertex.boneIDs[i] = boneId;
+			vertex.weights[i] = weight;
+			break;
+		}
+	}
+}
+
+unsigned int Model::GetBoneId(aiBone* bone)
+{
+	unsigned int boneId = 0;
+	std::string boneName(bone->mName.C_Str());
+
+	if (boneNameToIndex.find(boneName) == boneNameToIndex.end())
+	{
+		boneId					  = boneNameToIndex.size();
+		boneNameToIndex[boneName] = boneId;
+	}
+	else
+	{
+		boneId = boneNameToIndex[boneName];
+	}
+
+	return boneId;
 }
 
 std::vector<TextureItem> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)

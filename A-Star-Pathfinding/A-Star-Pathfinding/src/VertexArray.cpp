@@ -20,6 +20,13 @@ void VertexArray::AddAttrib(unsigned int index, unsigned int size,
 	GLCall(glEnableVertexAttribArray(index));
 }
 
+void VertexArray::AddIntegerAttrib(unsigned int index, unsigned int size,
+	unsigned int type, unsigned int stride, const void* offset) const
+{
+	GLCall(glVertexAttribIPointer(index, size, type, stride, (void*)offset));
+	GLCall(glEnableVertexAttribArray(index));
+}
+
 void VertexArray::Bind() const
 {
 	GLCall(glBindVertexArray(id));

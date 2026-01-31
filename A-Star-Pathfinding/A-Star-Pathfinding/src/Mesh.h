@@ -10,12 +10,16 @@
 #include "Texture.h"
 #include "Shader.h"
 
+#define MAX_NUM_BONES_PER_VERTEX 4
 
 struct Vertex 
 {
 	glm::vec3 Position;
 	glm::vec3 Normal;
 	glm::vec2 TexCoords;
+
+	unsigned int boneIDs[MAX_NUM_BONES_PER_VERTEX];
+	float		 weights[MAX_NUM_BONES_PER_VERTEX];
 };
 
 struct TextureItem 
