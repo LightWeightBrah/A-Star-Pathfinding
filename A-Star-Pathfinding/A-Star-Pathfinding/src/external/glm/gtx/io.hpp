@@ -47,7 +47,7 @@ namespace glm
 
 		public:
 
-			static std::locale::id id;
+			static std::locale::boneId boneId;
 
 			bool       formatted;
 			unsigned   precision;

@@ -16,7 +16,7 @@ class Shader
 {
 private:
 	std::string filepath;
-	unsigned int id;
+	unsigned int boneId;
 	mutable std::unordered_map<std::string, int> uniformLocationCache;
 public:
 	Shader(const std::string& filepath);

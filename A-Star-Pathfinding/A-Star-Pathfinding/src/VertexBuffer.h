@@ -3,7 +3,7 @@
 class VertexBuffer
 {
 private:
-	unsigned int id;
+	unsigned int boneId;
 public:
 	VertexBuffer(const void* data, unsigned int size);
 	~VertexBuffer();

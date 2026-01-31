@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Texture.h"
 #include "Mesh.h"
+#include "AssimpUtilities.h"
 
 Model::Model(const std::string& path, bool flipUV)
 {
@@ -31,22 +32,37 @@ void Model::LoadModel(std::string path, bool flipUV)
 		return;
 	}
 	directory = path.substr(0, path.find_last_of('\\/'));
-	ProcessNode(scene->mRootNode, scene);
+
+	aiMatrix4x4 parentTransform;
+	ProcessNode(scene->mRootNode, scene, parentTransform);
 
 	std::cout << "Model loaded successfully!" << std::endl;
 
 }
 
-void Model::ProcessNode(aiNode* node, const aiScene* scene) 
+void Model::ProcessNode(aiNode* node, const aiScene* scene, aiMatrix4x4& parentTransform) 
 {
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) 
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		meshes.emplace_back(ProcessMesh(mesh, i, scene));
 	}
+
+	std::string nodeName = node->mName.data;
+	aiMatrix4x4 globalTransform = parentTransform * node->mTransformation;
+
+	if (boneNameToInfo.find(nodeName) != boneNameToInfo.end())
+	{
+		BoneInfo& boneInfo = boneNameToInfo[nodeName];
+		glm::mat4 glmGlobalTransform = AssimpUtilities::ConvertAssimpMatrixToGLM(globalTransform);
+		
+		boneInfo.finalTransformation = glmGlobalTransform * boneInfo.offset;
+	}
+
+
 	for (unsigned int i = 0; i < node->mNumChildren; i++) 
 	{
-		ProcessNode(node->mChildren[i], scene);
+		ProcessNode(node->mChildren[i], scene, globalTransform);
 	}
 }
 
@@ -105,7 +121,9 @@ void Model::ProcessMeshBones(aiMesh* mesh, std::vector<Vertex>& vertices, int me
 
 void Model::ProcessMeshSingleBone(aiMesh* mesh, std::vector<Vertex>& vertices, int meshIndex, int boneIndex)
 {
-	aiBone* bone = mesh->mBones[boneIndex];
+	aiBone* bone		= mesh->mBones[boneIndex];
+	unsigned int boneId = GetBoneId(bone);
+
 	totalBones++;
 
 	std::cout << "\nBone: " << boneIndex << " " << bone->mName.C_Str()
@@ -117,7 +135,6 @@ void Model::ProcessMeshSingleBone(aiMesh* mesh, std::vector<Vertex>& vertices, i
 		aiVertexWeight& vertexWeight = bone->mWeights[i];
 
 		unsigned int vertexId = vertexWeight.mVertexId;
-		unsigned int boneId   = GetBoneId(bone);
 		float        weight   = vertexWeight.mWeight;
 		
 		SetBonesForVertex(vertices, vertexId, boneId, weight);
@@ -147,14 +164,15 @@ unsigned int Model::GetBoneId(aiBone* bone)
 	unsigned int boneId = 0;
 	std::string boneName(bone->mName.C_Str());
 
-	if (boneNameToIndex.find(boneName) == boneNameToIndex.end())
+	if (boneNameToInfo.find(boneName) == boneNameToInfo.end())
 	{
-		boneId					  = boneNameToIndex.size();
-		boneNameToIndex[boneName] = boneId;
+		boneId							= boneNameToInfo.size();
+		boneNameToInfo[boneName].boneId = boneId;
+		boneNameToInfo[boneName].offset = AssimpUtilities::ConvertAssimpMatrixToGLM(bone->mOffsetMatrix);
 	}
 	else
 	{
-		boneId = boneNameToIndex[boneName];
+		boneId = boneNameToInfo[boneName].boneId;
 	}
 
 	return boneId;

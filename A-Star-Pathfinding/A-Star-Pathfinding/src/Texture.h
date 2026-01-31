@@ -3,7 +3,7 @@
 class Texture
 {
 private:
-	unsigned int id;
+	unsigned int boneId;
 	std::string filepath;
 	unsigned char* data;
 	int width, height, nrChannels;

@@ -38,7 +38,7 @@ namespace io
 		, order(a.order)
 	{}
 
-	template <typename CTy> std::locale::id format_punct<CTy>::id;
+	template <typename CTy> std::locale::boneId format_punct<CTy>::boneId;
 
 	template <typename CTy, typename CTr>
 	GLM_FUNC_QUALIFIER basic_state_saver<CTy, CTr>::basic_state_saver(std::basic_ios<CTy, CTr>& a)

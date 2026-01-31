@@ -3,13 +3,13 @@
 
 VertexArray::VertexArray()
 {
-	GLCall(glGenVertexArrays(1, &id));
+	GLCall(glGenVertexArrays(1, &boneId));
 	Bind();
 }
 
 VertexArray::~VertexArray()
 {
-	GLCall(glDeleteVertexArrays(1, &id));
+	GLCall(glDeleteVertexArrays(1, &boneId));
 }
 
 void VertexArray::AddAttrib(unsigned int index, unsigned int size, 
@@ -29,7 +29,7 @@ void VertexArray::AddIntegerAttrib(unsigned int index, unsigned int size,
 
 void VertexArray::Bind() const
 {
-	GLCall(glBindVertexArray(id));
+	GLCall(glBindVertexArray(boneId));
 }
 
 void VertexArray::Unbind() const

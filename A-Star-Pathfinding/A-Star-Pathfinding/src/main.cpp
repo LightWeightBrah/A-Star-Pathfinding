@@ -346,7 +346,7 @@ int main()
 			//modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
 			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.005f, 0.005f, 0.005f));
 			
-			bonesChangeCounter += deltaTime;
+			/*bonesChangeCounter += deltaTime;
 
 			if (bonesChangeCounter >= bonesChangeInterval)
 			{
@@ -354,7 +354,16 @@ int main()
 				characterShader.SetUniform1i("displayBoneIndex", displayIndex);
 				boneIndex++;
 				bonesChangeCounter = 0.0f;	
-			}
+			}*/
+
+
+			/*for (auto& finalTransform : characterModel.GetBoneNameToInfo())
+			{
+				characterShader.SetUniformMatrix4fv()
+			}*/
+
+
+
 
 			characterShader.SetUniformMatrix4fv("model", modelMatrix);
 			renderer.DrawModel(characterModel, characterShader);
