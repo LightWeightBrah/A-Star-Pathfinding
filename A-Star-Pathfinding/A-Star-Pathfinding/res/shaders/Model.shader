@@ -27,16 +27,15 @@ void main()
     boneIDs  = aBoneIDs;
     weights  = aWeights;
 
-    mat4 boneTransform = bones[BoneIDS[0]] * weights[0];
-    boneTransform     += bones[BoneIDS[1]] * weights[1];
-    boneTransform     += bones[BoneIDS[2]] * weights[2];
-    boneTransform     += bones[BoneIDS[3]] * weights[3];
+    mat4 boneTransform = bones[aBoneIDs[0]] * aWeights[0];
+    boneTransform     += bones[aBoneIDs[1]] * aWeights[1];
+    boneTransform     += bones[aBoneIDs[2]] * aWeights[2];
+    boneTransform     += bones[aBoneIDs[3]] * aWeights[3];
 
-    vec4 localSpace = boneTransform * vec4(aPos, 1.0);
+    vec4 boneSpacePos = boneTransform * vec4(aPos, 1.0);
+    gl_Position = projection * view * model * boneSpacePos;
 
-    gl_Position = projection * view * model * localSpace;
-
-    Normal = mat3(transpose(inverse(model))) * aNormal;
+    Normal = mat3(model * boneTransform) * aNormal;
 }
 
 #shader fragment
@@ -58,35 +57,8 @@ void main()
     vec4 diffuseColor = texture(texture_diffuse1, TexCoord);
     vec4 specularColor = texture(texture_specular1, TexCoord);
     
-    bool found = false;
+    if(diffuseColor.a < 0.1)
+        discard;
 
-    for(int i = 0; i < 4; i++)
-    {
-        if(boneIDs[i] == displayBoneIndex)
-        {
-            if(weights[i] >= 0.7)
-            {
-                FragColor = vec4(1.0, 0.0, 0.0, 1.0) * weights[i];
-            }
-            else if(weights[i] >= 0.4 && weights[i] <= 0.6)
-            {
-                FragColor = vec4(0.0, 1.0, 0.0, 1.0) * weights[i];
-            }
-            else if(weights[i] >= 0.1)
-            {
-                FragColor = vec4(1.0, 1.0, 0.0, 1.0) * weights[i];
-            }
-
-            found = true;
-            break;
-        }
-    }
-
-    if(!found)
-    {
-        FragColor = vec4(0.0, 0.0, 1.0, 1.0);
-    }
-
-
-    // FragColor = diffuseColor + specularColor * 0.5;
+    FragColor = diffuseColor;
 }

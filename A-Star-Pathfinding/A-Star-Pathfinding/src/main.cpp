@@ -340,11 +340,19 @@ int main()
 			characterShader.SetUniformMatrix4fv("model", modelMatrix);
 			renderer.DrawModel(characterModel, characterShader);*/
 
-			
+			characterModel.PlayAnimation((float)glfwGetTime());
+
+			auto boneInfoMap = characterModel.GetBoneNameToInfo();
+			for (auto& it : boneInfoMap)
+			{
+				std::string name = "bones[" + std::to_string(it.second.boneId) + "]";
+				characterShader.SetUniformMatrix4fv(name.c_str(), it.second.finalTransformation);
+			}
+
 			glm::mat4 modelMatrix = glm::mat4(1.0f);
 			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.37, 20));
 			//modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.005f, 0.005f, 0.005f));
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.015f, 0.015f, 0.015f));
 			
 			/*bonesChangeCounter += deltaTime;
 
