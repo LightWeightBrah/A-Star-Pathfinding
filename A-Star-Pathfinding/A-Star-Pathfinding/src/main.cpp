@@ -24,6 +24,7 @@
 
 #include <assimp/Importer.hpp>
 #include <assimp/version.h>
+#include "Animator.h"
 
 const unsigned int WINDOW_WIDTH = 1200;
 const unsigned int WINDOW_HEIGHT = 800;
@@ -252,6 +253,11 @@ int main()
 
 		//Model characterModel("res/Models/solair masterpiece/Solair Final Model.obj", false);
 		Model characterModel("res/Models/vampire/dancing_vampire.dae", false);
+		Animator animator(&characterModel);
+		
+		if (characterModel.GetScene() && characterModel.GetScene()->mNumAnimations > 0) 
+			animator.PlayAnimation(characterModel.GetScene()->mAnimations[0]);
+
 		Shader characterShader("res/shaders/Model.shader");
 		characterShader.Unbind();
 
@@ -340,14 +346,22 @@ int main()
 			characterShader.SetUniformMatrix4fv("model", modelMatrix);
 			renderer.DrawModel(characterModel, characterShader);*/
 
-			characterModel.PlayAnimation((float)glfwGetTime());
+			//characterModel.PlayAnimation((float)glfwGetTime());
+			animator.UpdateAnimation(deltaTime);
+			
+			auto transforms = animator.GetFinalBoneMatrices();
+			for (unsigned int i = 0; i < transforms.size(); i++)
+			{
+				std::string uniformName = "bones[" + std::to_string(i) + "]";
+				characterShader.SetUniformMatrix4fv(uniformName.c_str(), transforms[i]);
+			}
 
-			auto boneInfoMap = characterModel.GetBoneNameToInfo();
+			/*auto boneInfoMap = characterModel.GetBoneNameToInfo();
 			for (auto& it : boneInfoMap)
 			{
 				std::string name = "bones[" + std::to_string(it.second.boneId) + "]";
 				characterShader.SetUniformMatrix4fv(name.c_str(), it.second.finalTransformation);
-			}
+			}*/
 
 			glm::mat4 modelMatrix = glm::mat4(1.0f);
 			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.37, 20));

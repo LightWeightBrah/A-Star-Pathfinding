@@ -53,146 +53,6 @@ void Model::ProcessNode(aiNode* node)
 	}
 }
 
-void Model::PlayAnimation(float time)
-{
-	if (!scene || !scene->HasAnimations()) 
-		return;
-
-	float TicksPerSecond = (float)(scene->mAnimations[0]->mTicksPerSecond != 0 ?
-		scene->mAnimations[0]->mTicksPerSecond : 25.0f);
-	float TimeInTicks = time * TicksPerSecond;
-	float AnimationTimeTicks = fmod(TimeInTicks, (float)scene->mAnimations[0]->mDuration);
-
-	UpdateBoneMatrices(AnimationTimeTicks, scene->mRootNode, glm::mat4(1.0f));
-}
-
-void Model::UpdateBoneMatrices(float animTimeTicks, aiNode* node, glm::mat4 parentTransform)
-{
-	std::string nodeName = node->mName.data;
-	glm::mat4 nodeTransform = AssimpUtilities::ConvertAssimpMatrixToGLM(node->mTransformation);
-
-	if (scene->HasAnimations())
-	{
-		aiAnimation* anim = scene->mAnimations[0];
-		const aiNodeAnim* nodeAnim = FindNodeAnim(anim, nodeName);
-
-		if (nodeAnim)
-		{
-			glm::vec3 scale = InterpolateScaling(animTimeTicks, nodeAnim);
-			glm::mat4 scaleMat = glm::scale(glm::mat4(1.0f), scale);
-
-			glm::quat rotation = InterpolateRotation(animTimeTicks, nodeAnim);
-			glm::mat4 rotationMat = glm::toMat4(rotation);
-
-			glm::vec3 translation = InterpolatePosition(animTimeTicks, nodeAnim);
-			glm::mat4 translationMat = glm::translate(glm::mat4(1.0f), translation);
-
-			nodeTransform = translationMat * rotationMat * scaleMat;
-		}
-	}
-
-	glm::mat4 globalTransform = parentTransform * nodeTransform;
-
-	if (boneNameToInfo.find(nodeName) != boneNameToInfo.end())
-	{
-		boneNameToInfo[nodeName].finalTransformation =
-			globalInverseTransform * globalTransform * boneNameToInfo[nodeName].offset;
-	}
-
-	for (unsigned int i = 0; i < node->mNumChildren; i++)
-	{
-		UpdateBoneMatrices(animTimeTicks, node->mChildren[i], globalTransform);
-	}
-}
-
-template<typename T>
-unsigned int Model::GetKeyIndex(float animTime, const T* keys, unsigned int numKeys)
-{
-	//we are searching for frame that is before the current animation time
-	for (unsigned int i = 0; i < numKeys - 1; i++)
-	{
-		if (animTime < (float)keys[i + 1].mTime)
-			return i;
-	}
-	return 0;
-}
-
-float Model::CalculateFactor(float animTime, float frameTime, float nextFrameTime)
-{
-	float deltaTime = nextFrameTime - frameTime;
-	float factor	= (animTime - frameTime) / deltaTime;
-	return factor;
-}
-
-glm::vec3 Model::InterpolatePosition(float animTime, const aiNodeAnim* nodeAnim)
-{
-	if (nodeAnim->mNumPositionKeys == 1)
-		return glm::vec3(nodeAnim->mPositionKeys[0].mValue.x, nodeAnim->mPositionKeys[0].mValue.y, nodeAnim->mPositionKeys[0].mValue.z);
-
-	unsigned int index = GetKeyIndex(animTime, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys);
-	unsigned int nextIndex = index + 1;
-
-	float factor = CalculateFactor(animTime, (float)nodeAnim->mPositionKeys[index].mTime, (float)nodeAnim->mPositionKeys[nextIndex].mTime);
-
-	const aiVector3D& start = nodeAnim->mPositionKeys[index].mValue;
-	const aiVector3D& end	= nodeAnim->mPositionKeys[nextIndex].mValue;
-	aiVector3D result = start + factor * (end - start);
-
-	return glm::vec3(result.x, result.y, result.z);
-}
-
-glm::vec3 Model::InterpolateScaling(float animTime, const aiNodeAnim* nodeAnim)
-{
-	if (nodeAnim->mNumScalingKeys == 1)
-		return glm::vec3(nodeAnim->mScalingKeys[0].mValue.x, nodeAnim->mScalingKeys[0].mValue.y, nodeAnim->mScalingKeys[0].mValue.z);
-
-	unsigned int index = GetKeyIndex(animTime, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys);
-	unsigned int nextIndex = index + 1;
-
-	float factor = CalculateFactor(animTime, (float)nodeAnim->mScalingKeys[index].mTime, (float)nodeAnim->mScalingKeys[nextIndex].mTime);
-
-	const aiVector3D& start = nodeAnim->mScalingKeys[index].mValue;
-	const aiVector3D& end	= nodeAnim->mScalingKeys[nextIndex].mValue;
-	aiVector3D result = start + factor * (end - start);
-
-	return glm::vec3(result.x, result.y, result.z);
-}
-
-glm::quat Model::InterpolateRotation(float animTime, const aiNodeAnim* nodeAnim)
-{
-	if (nodeAnim->mNumRotationKeys == 1)
-	{
-		auto q = nodeAnim->mRotationKeys[0].mValue;
-		return glm::quat(q.w, q.x, q.y, q.z);
-	}
-
-	unsigned int index = GetKeyIndex(animTime, nodeAnim->mRotationKeys, nodeAnim->mNumRotationKeys);
-	unsigned int nextIndex = index + 1;
-
-	float factor = CalculateFactor(animTime, (float)nodeAnim->mRotationKeys[index].mTime, (float)nodeAnim->mRotationKeys[nextIndex].mTime);
-
-	const aiQuaternion& start = nodeAnim->mRotationKeys[index].mValue;
-	const aiQuaternion& end	  = nodeAnim->mRotationKeys[nextIndex].mValue;
-
-	aiQuaternion out;
-	aiQuaternion::Interpolate(out, start, end, factor);
-	out = out.Normalize();
-
-	return glm::quat(out.w, out.x, out.y, out.z);
-}
-
-const aiNodeAnim* Model::FindNodeAnim(const aiAnimation* animation, std::string& nodeName)
-{
-	for (unsigned int i = 0; i < animation->mNumChannels; i++) 
-	{
-		const aiNodeAnim* nodeAnim = animation->mChannels[i];
-		
-		if (std::string(nodeAnim->mNodeName.data) == nodeName) 
-			return nodeAnim;
-	}
-	return nullptr;
-}
-
 Mesh Model::ProcessMesh(aiMesh* mesh)
 {
 	std::vector<Vertex>		  vertices;
@@ -253,8 +113,8 @@ void Model::ProcessMeshSingleBone(aiMesh* mesh, std::vector<Vertex>& vertices, i
 
 	totalBones++;
 
-	std::cout << "\nBone: " << boneIndex << " " << bone->mName.C_Str()
-		<< "\nNumber of vertices affected by this bone: " << bone->mNumWeights << std::endl;
+	/*std::cout << "\nBone: " << boneIndex << " " << bone->mName.C_Str()
+		<< "\nNumber of vertices affected by this bone: " << bone->mNumWeights << std::endl;*/
 
 	
 	for (int i = 0; i < bone->mNumWeights; i++)
