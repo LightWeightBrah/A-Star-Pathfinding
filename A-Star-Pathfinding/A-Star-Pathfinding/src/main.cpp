@@ -252,11 +252,21 @@ int main()
 		shader.Unbind();
 
 		//Model characterModel("res/Models/solair masterpiece/Solair Final Model.obj", false);
-		Model characterModel("res/Models/vampire mixamo fbx/Vampire A Lusth.fbx", false);
-		Animation breathingAnimation("res/Models/vampire mixamo fbx/Breathing Idle.fbx", &characterModel);
 		
+
+		//TODO: THIS ANIMATIONS FROM MIXAMO AREN'T WORKING AND NEED FIXING
+		// 
+		//Model characterModel("res/Models/vampire mixamo fbx/Vampire A Lusth.fbx", false);
+		//Animation animation("res/Models/vampire mixamo fbx/Breathing Idle.fbx", &characterModel);
+		// 
+		//TODO: THIS ANIMATIONS FROM MIXAMO AREN'T WORKING AND NEED FIXING
+
+
+		Model characterModel("res/Models/vampire/dancing_vampire.dae", false);
+		Animation animation("res/Models/vampire/dancing_vampire.dae", &characterModel);
+
 		Animator animator(&characterModel);
-		animator.PlayAnimation(&breathingAnimation);
+		animator.PlayAnimation(&animation);
 
 		Shader characterShader("res/shaders/Model.shader");
 		characterShader.Unbind();
