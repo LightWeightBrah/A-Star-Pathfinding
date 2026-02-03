@@ -3,7 +3,7 @@
 class VertexArray
 {
 private:
-	unsigned int boneId;
+	unsigned int id;
 public:
 	VertexArray();
 	~VertexArray();

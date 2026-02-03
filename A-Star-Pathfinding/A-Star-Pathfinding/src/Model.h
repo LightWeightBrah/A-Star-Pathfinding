@@ -7,24 +7,24 @@
 
 struct BoneInfo
 {
-	unsigned int boneId = 0;
+	unsigned int id = 0;
 	glm::mat4	 offset;
 };
 
 class Model 
 {
 private:
-	Assimp::Importer importer;
-	const aiScene* scene;
+	Assimp::Importer				importer;
+	const aiScene*					scene;
+	std::string						directory;
 
 	std::vector<Mesh>				meshes;
-	std::string						directory;
 	std::vector<TextureItem>		texturesLoaded;
 
 	std::map<std::string, BoneInfo> boneNameToInfo;
-	glm::mat4 globalInverseTransform;
+	glm::mat4						globalInverseTransform;
 
-	int totalBones = 0;
+	bool							hasAnimations;
 
 private:
 	void LoadModel(std::string path, bool flipUV);
@@ -35,7 +35,7 @@ private:
 	void ProcessMeshBones		(aiMesh* mesh, std::vector<Vertex>& vertices);
 	void ProcessMeshSingleBone	(aiMesh* mesh, std::vector<Vertex>& vertices, int boneIndex);
 
-	void SetBonesForVertex		(std::vector<Vertex>& vertices, unsigned int vertexId, unsigned int boneId, float weight);
+	void SetBonesForVertex		(std::vector<Vertex>& vertices, unsigned int vertexId, unsigned int id, float weight);
 
 	unsigned int GetBoneId		(aiBone* bone);
 
@@ -44,9 +44,8 @@ private:
 public:
 	Model(const std::string& path, bool flipUV);
 
-	inline const aiScene* GetScene()			const { return scene; }
+	inline const bool HasAnimations()			const { return hasAnimations; }
 	inline const std::vector<Mesh>& GetMeshes() const { return meshes; }
-	inline const int GetTotalBones()			const { return totalBones; }
 	
 	inline const std::map<std::string, BoneInfo> GetBoneNameToInfo() const { return boneNameToInfo; }
 	inline const glm::mat4				 GetGlobalInverseTransform() const { return globalInverseTransform; }

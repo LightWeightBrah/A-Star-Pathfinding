@@ -18,10 +18,9 @@ private:
 
     glm::mat4 localTransform;
     std::string name;
-    unsigned int id;
 
 public:
-    Bone(const std::string& name, unsigned int id, const aiNodeAnim* channel);
+    Bone(const std::string& name, const aiNodeAnim* channel);
 
     void Update(float animationTime);
 

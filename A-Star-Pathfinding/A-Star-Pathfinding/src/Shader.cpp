@@ -6,16 +6,16 @@
 #include "Renderer.h"
 
 Shader::Shader(const std::string& filepath)
-	: filepath(filepath), boneId(0)
+	: filepath(filepath), id(0)
 {
 	ShaderProgramSource source = ParseShader(filepath);
-	boneId = CreateProgram(source.vertexSource, source.fragmentSource);
+	id = CreateProgram(source.vertexSource, source.fragmentSource);
 	Bind();
 }
 
 Shader::~Shader()
 {
-	GLCall(glDeleteProgram(boneId));
+	GLCall(glDeleteProgram(id));
 }
 
 ShaderProgramSource Shader::ParseShader(const std::string& filepath)
@@ -53,26 +53,26 @@ ShaderProgramSource Shader::ParseShader(const std::string& filepath)
 
 unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 {
-	unsigned int boneId = glCreateShader(type);
+	unsigned int id = glCreateShader(type);
 	const char* src = source.c_str();
-	glShaderSource(boneId, 1, &src, nullptr);
-	glCompileShader(boneId);
+	glShaderSource(id, 1, &src, nullptr);
+	glCompileShader(id);
 
 	int success;
-	glGetShaderiv(boneId, GL_COMPILE_STATUS, &success);
+	glGetShaderiv(id, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
 		int length;
-		glGetShaderiv(boneId, GL_INFO_LOG_LENGTH, &length);
+		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 		char* message = (char*)alloca(length * sizeof(char));
-		glGetShaderInfoLog(boneId, length, &length, message);
+		glGetShaderInfoLog(id, length, &length, message);
 		std::cout << "ERROR: COULDN'T COMPILE " <<
 			(type == GL_VERTEX_SHADER ? "VERTEX" : "FRAGMENT") << " SHADER: " << message << std::endl;
-		glDeleteShader(boneId);
+		glDeleteShader(id);
 		return 0;
 	}
 
-	return boneId;
+	return id;
 }
 
 unsigned int Shader::CreateProgram(const std::string& vertexShader, const std::string& fragmentShader)
@@ -106,7 +106,7 @@ unsigned int Shader::CreateProgram(const std::string& vertexShader, const std::s
 
 void Shader::Bind() const
 {
-	GLCall(glUseProgram(boneId));
+	GLCall(glUseProgram(id));
 }
 
 void Shader::Unbind() const
@@ -134,12 +134,23 @@ void Shader::SetUniformMatrix4fv(const std::string& name, const glm::mat4& matri
 	GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
 }
 
+void Shader::SetBoneMatrices(const std::vector<glm::mat4>& matrices)
+{
+    int location = GetUniformLocation("bones[0]");
+    
+    if (location != -1 && !matrices.empty())
+    {
+        unsigned int count = std::min((unsigned int)matrices.size(), 100u);
+        GLCall(glUniformMatrix4fv(location, count, GL_FALSE, glm::value_ptr(matrices[0])));
+    }
+}
+
 int Shader::GetUniformLocation(const std::string& name) const
 {
 	if (uniformLocationCache.find(name) != uniformLocationCache.end())
 		return uniformLocationCache[name];
 
-	GLCall(int location = glGetUniformLocation(boneId, name.c_str()));
+	GLCall(int location = glGetUniformLocation(id, name.c_str()));
 	if (location == -1)
 		std::cout << "UNIFORM: " << name << " DOESN'T EXIST" << std::endl;
 	

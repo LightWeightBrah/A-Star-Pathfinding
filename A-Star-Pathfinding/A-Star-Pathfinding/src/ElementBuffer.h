@@ -3,7 +3,7 @@
 class ElementBuffer
 {
 private:
-	unsigned int boneId;
+	unsigned int id;
 	unsigned int count;
 public:
 	ElementBuffer(const unsigned int* data, unsigned int size);

@@ -9,6 +9,8 @@
 #include "Model.h"
 #include "Mesh.h"
 
+class Animator;
+
 #define ASSERT(x) if (!(x)) __debugbreak();
 
 #ifdef _DEBUG
@@ -26,6 +28,6 @@ class Renderer
 public:
 	void Clear(float r, float g, float b, float a) const;
 	void Draw(const VertexArray& VAO, const ElementBuffer& EBO, const Shader& shader) const;
-	void DrawModel(const Model& model, Shader& shader) const;
 	void DrawMesh(const Mesh& mesh, Shader& shader) const;
+	void DrawModel(const Model& model, Shader& shader, Animator* animator = nullptr) const;
 };

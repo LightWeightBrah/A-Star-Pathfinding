@@ -11,21 +11,23 @@ layout (location = 4) in vec4  aWeights;
 out vec2 TexCoord;
 out vec3 Normal;
 
-flat out ivec4 boneIDs;
-out vec4       weights;
-
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
 const int MAX_BONES = 100;
 uniform mat4 bones[MAX_BONES];
+uniform bool hasAnimations;
 
 void main()
 {
     TexCoord = aTexCoord;
-    boneIDs  = aBoneIDs;
-    weights  = aWeights;
+
+    if(!hasAnimations)
+    {
+        gl_Position = projection * view * model * vec4(aPos, 1.0);
+        return;
+    }
 
     mat4 boneTransform = bones[aBoneIDs[0]] * aWeights[0];
     boneTransform     += bones[aBoneIDs[1]] * aWeights[1];
@@ -34,8 +36,6 @@ void main()
 
     vec4 boneSpacePos = boneTransform * vec4(aPos, 1.0);
     gl_Position = projection * view * model * boneSpacePos;
-
-    Normal = mat3(model * boneTransform) * aNormal;
 }
 
 #shader fragment
@@ -44,13 +44,9 @@ void main()
 out vec4 FragColor;
 
 in vec2 TexCoord;
-in vec3 Normal;
-flat in ivec4 boneIDs;
-in vec4       weights;
 
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_specular1;
-uniform int displayBoneIndex;
 
 void main()
 {

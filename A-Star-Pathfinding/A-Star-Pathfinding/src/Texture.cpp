@@ -6,7 +6,7 @@
 #include "stb/stb_image.h"
 
 Texture::Texture(const std::string& filepath): 
-	boneId(0), filepath(filepath), data(nullptr), 
+	id(0), filepath(filepath), data(nullptr), 
 	width(0), height(0), nrChannels(0)
 {
 	std::cout << "Ladowanie tekstury: " << filepath << std::endl;
@@ -21,8 +21,8 @@ Texture::Texture(const std::string& filepath):
 	if (nrChannels == 4)
 		format = GL_RGBA;
 
-	GLCall(glGenTextures(1, &boneId));
-	GLCall(glBindTexture(GL_TEXTURE_2D, boneId));
+	GLCall(glGenTextures(1, &id));
+	GLCall(glBindTexture(GL_TEXTURE_2D, id));
 
 	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
 	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
@@ -36,13 +36,13 @@ Texture::Texture(const std::string& filepath):
 
 Texture::~Texture()
 {
-	GLCall(glDeleteTextures(1, &boneId));
+	GLCall(glDeleteTextures(1, &id));
 }
 
 void Texture::Bind(unsigned int slot) const
 {
 	GLCall(glActiveTexture(GL_TEXTURE0 + slot));
-	GLCall(glBindTexture(GL_TEXTURE_2D, boneId));
+	GLCall(glBindTexture(GL_TEXTURE_2D, id));
 }
 
 void Texture::Unbind() const

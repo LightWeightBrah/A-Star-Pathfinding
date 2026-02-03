@@ -2,24 +2,25 @@
 #include <assimp/anim.h>
 #include "Model.h"
 #include "Bone.h"
+#include "Animation.h"
 
 class Animator 
 {
 private:
-    float currentTime;
-    float deltaTime;
-    aiAnimation* currentAnimation;
-    Model*       currentModel;
+    float                  currentTime;
+    float                  deltaTime;
 
-    std::vector<Bone>      bones;
+    Animation*             currentAnimation;
+    Model*                 currentModel;
+
     std::vector<glm::mat4> finalBoneMatrices;
 
 public:
     Animator(Model* model);
 
-    void UpdateAnimation(float deltaTime);
-    void PlayAnimation  (aiAnimation* animation);
-    void CalculateBoneTransform(const aiNode* node, glm::mat4 parentTransform);
+    void UpdateAnimation       (float deltaTime);
+    void PlayAnimation         (Animation* animation);
+    void CalculateBoneTransform(const AssimpNodeData* node, glm::mat4 parentTransform);
 
-    std::vector<glm::mat4> GetFinalBoneMatrices() { return finalBoneMatrices; }
+    const std::vector<glm::mat4>& GetFinalBoneMatrices() const { return finalBoneMatrices; }
 };

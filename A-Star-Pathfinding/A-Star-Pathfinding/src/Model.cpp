@@ -29,7 +29,8 @@ void Model::LoadModel(std::string path, bool flipUV)
 		return;
 	}
 	directory = path.substr(0, path.find_last_of("\\ / "));
-
+	
+	hasAnimations = scene->HasAnimations();
 	globalInverseTransform = glm::inverse
 	(AssimpUtilities::ConvertAssimpMatrixToGLM(scene->mRootNode->mTransformation));
 
@@ -109,9 +110,7 @@ void Model::ProcessMeshBones(aiMesh* mesh, std::vector<Vertex>& vertices)
 void Model::ProcessMeshSingleBone(aiMesh* mesh, std::vector<Vertex>& vertices, int boneIndex)
 {
 	aiBone* bone		= mesh->mBones[boneIndex];
-	unsigned int boneId = GetBoneId(bone);
-
-	totalBones++;
+	unsigned int id = GetBoneId(bone);
 
 	/*std::cout << "\nBone: " << boneIndex << " " << bone->mName.C_Str()
 		<< "\nNumber of vertices affected by this bone: " << bone->mNumWeights << std::endl;*/
@@ -124,14 +123,14 @@ void Model::ProcessMeshSingleBone(aiMesh* mesh, std::vector<Vertex>& vertices, i
 		unsigned int vertexId = vertexWeight.mVertexId;
 		float        weight   = vertexWeight.mWeight;
 		
-		SetBonesForVertex(vertices, vertexId, boneId, weight);
+		SetBonesForVertex(vertices, vertexId, id, weight);
 
 		/*std::cout << "\nVertex id: " << vertexWeight.mVertexId << "\nWeight: " 
 			<< vertexWeight.mWeight << std::endl;*/
 	}
 }
 
-void Model::SetBonesForVertex(std::vector<Vertex>& vertices, unsigned int vertexId, unsigned int boneId, float weight)
+void Model::SetBonesForVertex(std::vector<Vertex>& vertices, unsigned int vertexId, unsigned int id, float weight)
 {
 	for (unsigned int i = 0; i < MAX_NUM_BONES_PER_VERTEX; i++)
 	{
@@ -139,7 +138,7 @@ void Model::SetBonesForVertex(std::vector<Vertex>& vertices, unsigned int vertex
 
 		if (vertex.weights[i] == 0.0)
 		{
-			vertex.boneIDs[i] = boneId;
+			vertex.boneIDs[i] = id;
 			vertex.weights[i] = weight;
 			break;
 		}
@@ -148,21 +147,21 @@ void Model::SetBonesForVertex(std::vector<Vertex>& vertices, unsigned int vertex
 
 unsigned int Model::GetBoneId(aiBone* bone)
 {
-	unsigned int boneId = 0;
+	unsigned int id = 0;
 	std::string boneName(bone->mName.C_Str());
 
 	if (boneNameToInfo.find(boneName) == boneNameToInfo.end())
 	{
-		boneId							= boneNameToInfo.size();
-		boneNameToInfo[boneName].boneId = boneId;
+		id							= boneNameToInfo.size();
+		boneNameToInfo[boneName].id = id;
 		boneNameToInfo[boneName].offset = AssimpUtilities::ConvertAssimpMatrixToGLM(bone->mOffsetMatrix);
 	}
 	else
 	{
-		boneId = boneNameToInfo[boneName].boneId;
+		id = boneNameToInfo[boneName].id;
 	}
 
-	return boneId;
+	return id;
 }
 
 std::vector<TextureItem> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)

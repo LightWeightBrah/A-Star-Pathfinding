@@ -253,10 +253,10 @@ int main()
 
 		//Model characterModel("res/Models/solair masterpiece/Solair Final Model.obj", false);
 		Model characterModel("res/Models/vampire/dancing_vampire.dae", false);
-		Animator animator(&characterModel);
+		Animation danceAnimation("res/Models/vampire/dancing_vampire.dae", &characterModel);
 		
-		if (characterModel.GetScene() && characterModel.GetScene()->mNumAnimations > 0) 
-			animator.PlayAnimation(characterModel.GetScene()->mAnimations[0]);
+		Animator animator(&characterModel);
+		animator.PlayAnimation(&danceAnimation);
 
 		Shader characterShader("res/shaders/Model.shader");
 		characterShader.Unbind();
@@ -282,7 +282,6 @@ int main()
 			shader.SetUniformMatrix4fv("view", view);
 
 			aStar.FindPathBySteps(deltaTime);
-
 
 			for (int z = 0; z < aStar.height; z++)
 			{
@@ -346,49 +345,15 @@ int main()
 			characterShader.SetUniformMatrix4fv("model", modelMatrix);
 			renderer.DrawModel(characterModel, characterShader);*/
 
-			//characterModel.PlayAnimation((float)glfwGetTime());
 			animator.UpdateAnimation(deltaTime);
-			
-			auto transforms = animator.GetFinalBoneMatrices();
-			for (unsigned int i = 0; i < transforms.size(); i++)
-			{
-				std::string uniformName = "bones[" + std::to_string(i) + "]";
-				characterShader.SetUniformMatrix4fv(uniformName.c_str(), transforms[i]);
-			}
-
-			/*auto boneInfoMap = characterModel.GetBoneNameToInfo();
-			for (auto& it : boneInfoMap)
-			{
-				std::string name = "bones[" + std::to_string(it.second.boneId) + "]";
-				characterShader.SetUniformMatrix4fv(name.c_str(), it.second.finalTransformation);
-			}*/
 
 			glm::mat4 modelMatrix = glm::mat4(1.0f);
 			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.37, 20));
 			//modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
 			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.015f, 0.015f, 0.015f));
 			
-			/*bonesChangeCounter += deltaTime;
-
-			if (bonesChangeCounter >= bonesChangeInterval)
-			{
-				int displayIndex = boneIndex % characterModel.GetTotalBones();
-				characterShader.SetUniform1i("displayBoneIndex", displayIndex);
-				boneIndex++;
-				bonesChangeCounter = 0.0f;	
-			}*/
-
-
-			/*for (auto& finalTransform : characterModel.GetBoneNameToInfo())
-			{
-				characterShader.SetUniformMatrix4fv()
-			}*/
-
-
-
-
 			characterShader.SetUniformMatrix4fv("model", modelMatrix);
-			renderer.DrawModel(characterModel, characterShader);
+			renderer.DrawModel(characterModel, characterShader, &animator);
 
 
 

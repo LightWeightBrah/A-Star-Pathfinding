@@ -3,8 +3,8 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-Bone::Bone(const std::string& name, unsigned int id, const aiNodeAnim* channel)
-    : name(name), id(id), localTransform(1.0f)
+Bone::Bone(const std::string& name, const aiNodeAnim* channel)
+    : name(name), localTransform(1.0f)
 {
     for (unsigned int i = 0; i < channel->mNumPositionKeys; i++) 
     {

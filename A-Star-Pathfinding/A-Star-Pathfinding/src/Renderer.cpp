@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Renderer.h"
+#include "Animator.h"
 
 void GLClearError()
 {
@@ -32,9 +33,14 @@ void Renderer::Draw(const VertexArray& VAO, const ElementBuffer& EBO, const Shad
 	GLCall(glDrawElements(GL_TRIANGLES, EBO.GetCount(), GL_UNSIGNED_INT, 0));
 }
 
-void Renderer::DrawModel(const Model& model, Shader& shader) const
+void Renderer::DrawModel(const Model& model, Shader& shader, Animator* animator) const
 {
 	shader.Bind();
+
+	bool hasAnimations = (animator && model.HasAnimations());
+	shader.SetUniform1i("hasAnimations", hasAnimations);
+	if (hasAnimations)
+		shader.SetBoneMatrices(animator->GetFinalBoneMatrices());
 
 	for (const auto& mesh : model.GetMeshes())
 		DrawMesh(mesh, shader);
