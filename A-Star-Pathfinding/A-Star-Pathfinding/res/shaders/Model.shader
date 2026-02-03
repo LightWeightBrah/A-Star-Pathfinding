@@ -15,7 +15,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-const int MAX_BONES = 100;
+const int MAX_BONES = 200;
 uniform mat4 bones[MAX_BONES];
 uniform bool hasAnimations;
 

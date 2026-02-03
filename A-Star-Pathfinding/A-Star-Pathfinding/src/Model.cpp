@@ -28,11 +28,10 @@ void Model::LoadModel(std::string path, bool flipUV)
 		std::cout << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
 		return;
 	}
-	directory = path.substr(0, path.find_last_of("\\ / "));
-	
+	directory = path.substr(0, path.find_last_of("\\/"));
+
 	hasAnimations = scene->HasAnimations();
-	globalInverseTransform = glm::inverse
-	(AssimpUtilities::ConvertAssimpMatrixToGLM(scene->mRootNode->mTransformation));
+	globalInverseTransform = glm::inverse(AssimpUtilities::ConvertAssimpMatrixToGLM(scene->mRootNode->mTransformation));
 
 	ProcessNode(scene->mRootNode);
 
@@ -171,10 +170,14 @@ std::vector<TextureItem> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureT
 	{
 		aiString str;
 		mat->GetTexture(type, i, &str);
+
+		std::string path = std::string(str.C_Str());
+		std::string filename = path.substr(path.find_last_of("\\/") + 1);
+
+		std::string fullPath = directory + "/" + filename;
+
+
 		bool skip = false;
-
-		std::string fullPath = directory + "/" + str.C_Str();
-
 		for (unsigned int j = 0; j < texturesLoaded.size(); j++) 
 		{
 			if (texturesLoaded[j].texture->GetFilepath() == fullPath) 
@@ -187,7 +190,6 @@ std::vector<TextureItem> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureT
 
 		if (!skip) 
 		{
-			std::string fullPath = directory + "/" + str.C_Str();
 			auto tex = std::make_shared<Texture>(fullPath);
 			TextureItem texture;
 

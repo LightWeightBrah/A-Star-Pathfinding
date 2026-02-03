@@ -140,7 +140,7 @@ void Shader::SetBoneMatrices(const std::vector<glm::mat4>& matrices)
     
     if (location != -1 && !matrices.empty())
     {
-        unsigned int count = std::min((unsigned int)matrices.size(), 100u);
+        unsigned int count = std::min((unsigned int)matrices.size(), 200u);
         GLCall(glUniformMatrix4fv(location, count, GL_FALSE, glm::value_ptr(matrices[0])));
     }
 }

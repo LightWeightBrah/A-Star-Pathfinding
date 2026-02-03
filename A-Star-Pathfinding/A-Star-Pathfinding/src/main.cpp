@@ -252,11 +252,11 @@ int main()
 		shader.Unbind();
 
 		//Model characterModel("res/Models/solair masterpiece/Solair Final Model.obj", false);
-		Model characterModel("res/Models/vampire/dancing_vampire.dae", false);
-		Animation danceAnimation("res/Models/vampire/dancing_vampire.dae", &characterModel);
+		Model characterModel("res/Models/vampire mixamo fbx/Vampire A Lusth.fbx", false);
+		Animation breathingAnimation("res/Models/vampire mixamo fbx/Breathing Idle.fbx", &characterModel);
 		
 		Animator animator(&characterModel);
-		animator.PlayAnimation(&danceAnimation);
+		animator.PlayAnimation(&breathingAnimation);
 
 		Shader characterShader("res/shaders/Model.shader");
 		characterShader.Unbind();
