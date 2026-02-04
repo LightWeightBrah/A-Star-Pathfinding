@@ -41,10 +41,6 @@ void Animation::SetupBones(const aiAnimation* animation)
         auto channel = animation->mChannels[i];
         std::string boneName = channel->mNodeName.data;
 
-        //MIXAMO support
-        if (boneName.find("mixamorig:") != std::string::npos)
-            boneName = boneName.substr(10);
-
         bones.emplace(boneName, Bone(boneName, channel));
     }
 }

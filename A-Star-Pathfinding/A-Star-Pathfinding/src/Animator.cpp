@@ -28,20 +28,10 @@ void Animator::UpdateAnimation(float deltaTime)
 
 void Animator::CalculateBoneTransform(const AssimpNodeData* node, glm::mat4 parentTransform)
 {
-    std::string originalName = node->name;
-    std::string cleanName    = node->name;
+    std::string nodeName = node->name;
+    glm::mat4   nodeTransform = node->transformation;
 
-    //MIXAMO support
-    if (cleanName.find("mixamorig:") != std::string::npos)
-        cleanName = cleanName.substr(10);
-
-    glm::mat4 nodeTransform = node->transformation;
-
-    //FBX support
-    if (originalName.find("$AssimpFbx$") != std::string::npos)
-        nodeTransform = glm::mat4(1.0f);
-
-    Bone* bone = currentAnimation->FindBone(cleanName);
+    Bone* bone = currentAnimation->FindBone(nodeName);
     if (bone)
     {
         bone->Update(currentTime);
@@ -51,16 +41,9 @@ void Animator::CalculateBoneTransform(const AssimpNodeData* node, glm::mat4 pare
     glm::mat4 globalTransform = parentTransform * nodeTransform;
 
     auto& boneInfoMap = currentModel->GetBoneNameToInfo();
-
-    //Check oryginal and clean name, model can have bone with prefix or without it
-    if (boneInfoMap.count(originalName))
+    if (boneInfoMap.count(nodeName))
     {
-        const auto& info = boneInfoMap.at(originalName);
-        finalBoneMatrices[info.id] = currentModel->GetGlobalInverseTransform() * globalTransform * info.offset;
-    }
-    else if (boneInfoMap.count(cleanName))
-    {
-        const auto& info = boneInfoMap.at(cleanName);
+        const auto& info = boneInfoMap.at(nodeName);
         finalBoneMatrices[info.id] = currentModel->GetGlobalInverseTransform() * globalTransform * info.offset;
     }
 
