@@ -62,9 +62,9 @@ void HandleInput(GLFWwindow* window)
 {
 	const float cameraSpeed = 2.5f * deltaTime;
 
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
 		camera.HandleKeyboardHeight(true);
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE)
+	if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_RELEASE)
 		camera.HandleKeyboardHeight(false);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -256,14 +256,14 @@ int main()
 
 		//TODO: THIS ANIMATIONS FROM MIXAMO AREN'T WORKING AND NEED FIXING
 		// 
-		//Model characterModel("res/Models/vampire mixamo fbx/Vampire A Lusth.fbx", false);
-		//Animation animation("res/Models/vampire mixamo fbx/Breathing Idle.fbx", &characterModel);
+		Model characterModel("res/Models/vampire mixamo fbx/Vampire A Lusth.fbx", false);
+		Animation animation("res/Models/vampire mixamo fbx/Breathing Idle.fbx", &characterModel);
 		// 
 		//TODO: THIS ANIMATIONS FROM MIXAMO AREN'T WORKING AND NEED FIXING
 
 
-		Model characterModel("res/Models/vampire/dancing_vampire.dae", false);
-		Animation animation("res/Models/vampire/dancing_vampire.dae", &characterModel);
+		//Model characterModel("res/Models/vampire/dancing_vampire.dae", false);
+		//Animation animation("res/Models/vampire/dancing_vampire.dae", &characterModel);
 
 		Animator animator(&characterModel);
 		animator.PlayAnimation(&animation);

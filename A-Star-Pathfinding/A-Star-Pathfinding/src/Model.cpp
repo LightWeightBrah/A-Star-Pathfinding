@@ -17,7 +17,10 @@ void Model::LoadModel(std::string path, bool flipUV)
 {
 	std::cout << "Loading model: " << path << std::endl;
 
-	unsigned int flags = aiProcess_Triangulate | aiProcess_GenNormals;
+	unsigned int flags = aiProcess_Triangulate |
+		aiProcess_LimitBoneWeights |
+		aiProcess_PopulateArmatureData;
+
 	if (flipUV)
 		flags |= aiProcess_FlipUVs;
 
