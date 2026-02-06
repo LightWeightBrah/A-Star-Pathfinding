@@ -251,15 +251,16 @@ int main()
 		EBO.Unbind();
 		shader.Unbind();
 
-		//Model characterModel("res/Models/solair masterpiece/Solair Final Model.obj", false);
-		
+		Model characterModel("res/Models/solair masterpiece/Solaire normal scale animated.fbx", false);
+		Animation animation("res/Models/solair masterpiece/Solaire normal scale animated.fbx", &characterModel);
+
 
 		//Model characterModel("res/Models/vampire/dancing_vampire.dae", false);
 		//Animation animation("res/Models/vampire/dancing_vampire.dae", &characterModel);
 
 
-		Model characterModel("res/Models/Vampire Mixamo dae/Vampire A Lusth.dae", false);
-		Animation animation("res/Models/Vampire Mixamo dae/Breathing Idle.dae", &characterModel);
+		//Model characterModel("res/Models/Vampire Mixamo dae/Vampire A Lusth.dae", false);
+		//Animation animation("res/Models/Vampire Mixamo dae/Breathing Idle.dae", &characterModel);
 
 		Animator animator(&characterModel);
 		animator.PlayAnimation(&animation);
@@ -356,7 +357,7 @@ int main()
 			glm::mat4 modelMatrix = glm::mat4(1.0f);
 			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.37, 20));
 			//modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.015f, 0.015f, 0.015f));
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.0035f, 0.0035f, 0.0035f));
 			
 			characterShader.SetUniformMatrix4fv("model", modelMatrix);
 			renderer.DrawModel(characterModel, characterShader, &animator);
