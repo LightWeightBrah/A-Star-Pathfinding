@@ -26,7 +26,7 @@ private:
     void SetupBones                   (const aiAnimation* animation);
 
 public:
-    Animation(const std::string& path, Model* model);
+    Animation(const std::string& path, Model* model, unsigned int index = 0);
 
     Bone* FindBone(const std::string& name);
 

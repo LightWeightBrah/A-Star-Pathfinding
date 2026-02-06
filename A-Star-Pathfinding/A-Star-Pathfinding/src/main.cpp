@@ -251,8 +251,10 @@ int main()
 		EBO.Unbind();
 		shader.Unbind();
 
-		Model characterModel("res/Models/solair masterpiece/Solaire final gesture fix.fbx", false);
-		Animation animation("res/Models/solair masterpiece/Solaire final gesture fix.fbx", &characterModel);
+		Model characterModel("res/Models/solair masterpiece/Solaire All Animations.fbx", false);
+		Animation idleAnimation("res/Models/solair masterpiece/Solaire All Animations.fbx", &characterModel, 0);
+		Animation gestureAnimation("res/Models/solair masterpiece/Solaire All Animations.fbx", &characterModel, 1);
+		Animation runningAnimation("res/Models/solair masterpiece/Solaire All Animations.fbx", &characterModel, 2);
 
 
 		//Model characterModel("res/Models/vampire/dancing_vampire.dae", false);
@@ -263,7 +265,7 @@ int main()
 		//Animation animation("res/Models/Vampire Mixamo dae/Breathing Idle.dae", &characterModel);
 
 		Animator animator(&characterModel);
-		animator.PlayAnimation(&animation);
+		animator.PlayAnimation(&gestureAnimation);
 
 		Shader characterShader("res/shaders/Model.shader");
 		characterShader.Unbind();

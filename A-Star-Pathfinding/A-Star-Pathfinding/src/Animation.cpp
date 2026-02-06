@@ -2,7 +2,7 @@
 #include <iostream>
 #include "AssimpUtilities.h"
 
-Animation::Animation(const std::string& animationPath, Model* model)
+Animation::Animation(const std::string& animationPath, Model* model, unsigned int index)
 {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(animationPath, aiProcess_Triangulate);
@@ -13,7 +13,7 @@ Animation::Animation(const std::string& animationPath, Model* model)
         return;
     }
 
-    auto anim       =         scene->mAnimations[0];
+    auto anim       =         scene->mAnimations[index];
     duration        = (float) anim->mDuration;
     ticksPerSecond  = (float) anim->mTicksPerSecond;
 
