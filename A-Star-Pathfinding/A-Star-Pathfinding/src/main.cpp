@@ -251,8 +251,8 @@ int main()
 		EBO.Unbind();
 		shader.Unbind();
 
-		Model characterModel("res/Models/solair masterpiece/Solaire normal scale animated.fbx", false);
-		Animation animation("res/Models/solair masterpiece/Solaire normal scale animated.fbx", &characterModel);
+		Model characterModel("res/Models/solair masterpiece/Solaire final gesture fix.fbx", false);
+		Animation animation("res/Models/solair masterpiece/Solaire final gesture fix.fbx", &characterModel);
 
 
 		//Model characterModel("res/Models/vampire/dancing_vampire.dae", false);
