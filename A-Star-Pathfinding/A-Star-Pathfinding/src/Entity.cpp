@@ -25,11 +25,19 @@ void Entity::Update(float deltaTime)
 	glm::vec3 direction = target - position;
 
 	float distanceToTarget = glm::length(direction);
+	
+	rotation = glm::degrees(atan2(direction.x, direction.z));
 
 	if (distanceToTarget < 0.1f)
 	{
 		position = target;
 		movingPoints.pop();
+
+		if (movingPoints.empty())
+		{
+			rotation = 0.0f;
+			animator.PlayAnimation(&resources->animations.at(AnimationType::GESTURE));
+		}
 	}
 	else
 	{
@@ -48,6 +56,7 @@ glm::mat4 Entity::GetModelMatrix()
 {
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, position);
+	model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(0.00035f, 0.00035f, 0.00035f));
 
 	return model;
@@ -56,8 +65,15 @@ glm::mat4 Entity::GetModelMatrix()
 void Entity::UpdateAnimations(float deltaTime)
 {
 	bool isMoving = !movingPoints.empty();
-	AnimationType newAnimationType = isMoving ? AnimationType::RUNNING : AnimationType::IDLE;
 
+	Animation* gestureAnim = &resources->animations.at(AnimationType::GESTURE);
+	if (animator.GetCurrentAnimation() == gestureAnim && !isMoving)
+	{
+		animator.UpdateAnimation(deltaTime);
+		return;
+	}
+
+	AnimationType newAnimationType = isMoving ? AnimationType::RUNNING : AnimationType::IDLE;
 	Animation* animationtoPlay = &resources->animations.at(newAnimationType);
 	if(animator.GetCurrentAnimation() != animationtoPlay)
 		animator.PlayAnimation(animationtoPlay);

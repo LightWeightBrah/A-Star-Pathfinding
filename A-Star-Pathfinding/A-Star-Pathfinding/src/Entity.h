@@ -21,6 +21,8 @@ private:
 	Animator					animator;
 
 	glm::vec3 startPoisiton;
+	float rotation;
+
 	const float MOVE_SPEED	  = 2.5f;
 	const float FOOT_Y_HEIGHT = 0.55;
 
