@@ -7,7 +7,6 @@
 #include "Mesh.h"
 #include "AssimpUtilities.h"
 
-
 Model::Model(const std::string& path, bool flipUV)
 {
 	LoadModel(path, flipUV);
@@ -24,6 +23,7 @@ void Model::LoadModel(std::string path, bool flipUV)
 	if (flipUV)
 		flags |= aiProcess_FlipUVs;
 
+	Assimp::Importer importer;
 	scene = importer.ReadFile(path, flags);
 	
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 

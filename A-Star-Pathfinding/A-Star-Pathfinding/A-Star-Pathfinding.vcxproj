@@ -167,6 +167,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Event.cpp" />
+    <ClCompile Include="src\ResourceManager.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Animator.cpp" />
     <ClCompile Include="src\Bone.cpp" />
@@ -188,6 +191,9 @@
     <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Event.h" />
+    <ClInclude Include="src\ResourceManager.h" />
+    <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Animator.h" />
     <ClInclude Include="src\Bone.h" />

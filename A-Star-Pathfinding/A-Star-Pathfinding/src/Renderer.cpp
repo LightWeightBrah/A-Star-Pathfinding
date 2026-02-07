@@ -33,7 +33,7 @@ void Renderer::Draw(const VertexArray& VAO, const ElementBuffer& EBO, const Shad
 	GLCall(glDrawElements(GL_TRIANGLES, EBO.GetCount(), GL_UNSIGNED_INT, 0));
 }
 
-void Renderer::DrawModel(const Model& model, Shader& shader, Animator* animator) const
+void Renderer::DrawModel(const Model& model, Shader& shader, const Animator* animator) const
 {
 	shader.Bind();
 

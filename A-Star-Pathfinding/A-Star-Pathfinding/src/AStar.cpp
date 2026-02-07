@@ -137,28 +137,22 @@ void AStar::TraverseBackToStartSteps()
 	pathTracker->cellType = CELL::ROUTE;
 	pathTracker = pathTracker->parent;
 	fullPath.push_back(pathTracker);
+	
+	std::reverse(fullPath.begin(), fullPath.end());
 }
 
-void AStar::TravelWithModel(int& x, int& z, float deltaTime)
+std::vector<GridPoint> AStar::GetFullPath()
 {
-	if (modelFinished)
-		return;
+	if (fullPath.empty())
+		return {};
 
-	if (!finishedDrawing)
-		return;
+	std::vector<GridPoint> returnPath;
+	for (auto& node : fullPath)
+		returnPath.push_back({ node->x, node->y });
 
-	modelCounter += deltaTime;
-	if (modelCounter >= modelInterval)
-	{
-		Node* current = fullPath.back();
-		x = current->x;
-		z = current->y;
-		fullPath.pop_back();
+	fullPath.clear();
 
-		modelCounter = 0.0f;
-		if (fullPath.size() == 0)
-			modelFinished = true;
-	}
+	return returnPath;
 }
 
 void AStar::FindPathFull()
@@ -242,9 +236,10 @@ void AStar::TraverseBackToStartFull()
 
 	finishedDrawing = true;
 
+	std::reverse(fullPath.begin(), fullPath.end());
 }
 
-void AStar::Reset(int& modelX, int& modelZ)
+void AStar::Reset()
 {
 	openList.clear();
 	closedList.clear();
@@ -253,14 +248,10 @@ void AStar::Reset(int& modelX, int& modelZ)
 	pathFound = false;
 	drawingPath = false;
 	finishedDrawing = false;
-	modelFinished = false;
 	pathTracker = nullptr;
 	neighbourStep = 0;
 	astarCounter = 0.0f;
 	modelCounter = modelInterval;
-
-	modelX = 0;
-	modelZ = width - 1;
 
 	startX = -1, startY = -1;
 	endX   = -1, endY   = -1;

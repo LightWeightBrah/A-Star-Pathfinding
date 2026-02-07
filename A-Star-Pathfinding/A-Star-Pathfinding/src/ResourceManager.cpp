@@ -1,0 +1,31 @@
+#include "ResourceManager.h"
+
+std::map<std::string, std::shared_ptr<ModelData>> ResourceManager::modelsRegistered;
+
+void ResourceManager::LoadModel(const std::string& name, const std::string& path)
+{
+	if (modelsRegistered.count(name))
+		return;
+
+	auto data = std::make_shared<ModelData>();
+
+	data->model = Model(path, false);
+
+	data->animations[AnimationType::IDLE]	 = Animation(path, &data->model, 0);
+	data->animations[AnimationType::GESTURE] = Animation(path, &data->model, 1);
+	data->animations[AnimationType::RUNNING] = Animation(path, &data->model, 2);
+
+	modelsRegistered[name] = data;
+	std::cout << "Resource Manager: Registered Model " << name << std::endl;
+}
+
+std::shared_ptr<ModelData> ResourceManager::GetModelData(const std::string& name)
+{
+	auto it = modelsRegistered.find(name);
+	if (it == modelsRegistered.end())
+	{
+		std::cout << "ERROR: Model \"" << name << "\" not found in ResourceManager..." << std::endl;
+		return nullptr;
+	}
+	return it->second;
+}

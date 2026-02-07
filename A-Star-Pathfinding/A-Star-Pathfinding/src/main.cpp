@@ -25,6 +25,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/version.h>
 #include "Animator.h"
+#include "Entity.h"
+#include "Event.h"
 
 const unsigned int WINDOW_WIDTH = 1200;
 const unsigned int WINDOW_HEIGHT = 800;
@@ -37,21 +39,14 @@ float lastFrame = 0.0f;
 float lastX = WINDOW_WIDTH / 2;
 float lastY = WINDOW_HEIGHT / 2;
 
-float astarInterval	= 0.1f;
-float astarCounter	= 0.0f;
-
-float bonesChangeInterval = 0.5f;
-float bonesChangeCounter  = 0.0f;
-int   boneIndex = 0;
-
-int modelX = 0, modelZ = 19;
-
 bool firstMouse = true;
 
 Camera camera(glm::vec3(9.4f, 34.2f, 30.8f), -60.1f, -89.9);
 
 AStar aStar("grid.txt");
 
+Event onResetEvent;
+Event onFullPathEvent;
 
 void OnWindowResized(GLFWwindow* window, int width, int height)
 {
@@ -88,12 +83,12 @@ void OnSingleKey(GLFWwindow* window, int key, int scancode, int action, int mods
 		switch (key)
 		{
 		case GLFW_KEY_R:
-			aStar.Reset(modelX, modelZ);
+			onResetEvent.Invoke();
 			break;
 
 		case GLFW_KEY_F:
-			aStar.Reset(modelX, modelZ);
-			aStar.FindPathFull();
+			onResetEvent.Invoke();
+			onFullPathEvent.Invoke();
 			break;
 
 		case GLFW_KEY_ESCAPE:
@@ -124,6 +119,24 @@ void OnMouse(GLFWwindow* window, double xPos, double yPos)
 void OnScroll(GLFWwindow* window, double xOffset, double yOffset)
 {
 	camera.HandleScrolling(yOffset);
+}
+
+glm::vec3 InterpolatePosition(glm::vec3 currentPosition, glm::vec3 destination, float& delta, float& counter, float& time)
+{
+	if (currentPosition == destination)
+		return currentPosition;
+
+	counter += delta;
+
+	float moveFactor = counter / time;
+	glm::vec3 positionsDifference = destination - currentPosition;
+
+	currentPosition += positionsDifference * moveFactor;
+
+	if (counter >= time)
+		counter = 0.0f;
+
+	return currentPosition;
 }
 
 float verticies[] = {
@@ -251,10 +264,10 @@ int main()
 		EBO.Unbind();
 		shader.Unbind();
 
-		Model characterModel("res/Models/solair masterpiece/Solaire All Animations.fbx", false);
-		Animation idleAnimation("res/Models/solair masterpiece/Solaire All Animations.fbx", &characterModel, 0);
-		Animation gestureAnimation("res/Models/solair masterpiece/Solaire All Animations.fbx", &characterModel, 1);
-		Animation runningAnimation("res/Models/solair masterpiece/Solaire All Animations.fbx", &characterModel, 2);
+		//Model characterModel("res/Models/solair masterpiece/Solaire All Animations.fbx", false);
+		//Animation idleAnimation("res/Models/solair masterpiece/Solaire All Animations.fbx", &characterModel, 0);
+		//Animation gestureAnimation("res/Models/solair masterpiece/Solaire All Animations.fbx", &characterModel, 1);
+		//Animation runningAnimation("res/Models/solair masterpiece/Solaire All Animations.fbx", &characterModel, 2);
 
 
 		//Model characterModel("res/Models/vampire/dancing_vampire.dae", false);
@@ -264,8 +277,16 @@ int main()
 		//Model characterModel("res/Models/Vampire Mixamo dae/Vampire A Lusth.dae", false);
 		//Animation animation("res/Models/Vampire Mixamo dae/Breathing Idle.dae", &characterModel);
 
-		Animator animator(&characterModel);
-		animator.PlayAnimation(&gestureAnimation);
+		//Animator animator(&characterModel);
+		//animator.PlayAnimation(&gestureAnimation);
+		
+		ResourceManager::LoadModel("Solaire", "res/Models/solair masterpiece/Solaire All Animations.fbx");
+		Entity solaireEntity(glm::vec3(0.0f, 0.55f, 19.0f), "Solaire");
+
+		onResetEvent.AddListener([&]() { solaireEntity.Reset(); });
+		onResetEvent.AddListener([&]() { aStar.Reset(); });
+
+		onFullPathEvent.AddListener([&]() { aStar.FindPathFull(); });
 
 		Shader characterShader("res/shaders/Model.shader");
 		characterShader.Unbind();
@@ -346,26 +367,17 @@ int main()
 			characterShader.SetUniformMatrix4fv("projection", projection);
 			characterShader.SetUniformMatrix4fv("view", view);
 
-			/*glm::mat4 modelMatrix = glm::mat4(1.0f);
-			aStar.TravelWithModel(modelX, modelZ, deltaTime);
-			modelMatrix = glm::translate(modelMatrix, glm::vec3(modelX, 0.37, modelZ));
-			modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.035f, 0.035f, 0.035f));
+			auto movingPath = aStar.GetFullPath();
+			if (!movingPath.empty())
+				solaireEntity.SetPath(movingPath);
+
+			solaireEntity.Update(deltaTime);
+
+			glm::mat4 modelMatrix = solaireEntity.GetModelMatrix();
 			characterShader.SetUniformMatrix4fv("model", modelMatrix);
-			renderer.DrawModel(characterModel, characterShader);*/
-
-			animator.UpdateAnimation(deltaTime);
-
-			glm::mat4 modelMatrix = glm::mat4(1.0f);
-			modelMatrix = glm::translate(modelMatrix, glm::vec3(0, 0.37, 20));
-			//modelMatrix = glm::rotate(modelMatrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.0035f, 0.0035f, 0.0035f));
 			
-			characterShader.SetUniformMatrix4fv("model", modelMatrix);
-			renderer.DrawModel(characterModel, characterShader, &animator);
-
-
-
+			renderer.DrawModel(solaireEntity.GetCharacterModel(), characterShader, solaireEntity.GetAnimator());
+			 
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();

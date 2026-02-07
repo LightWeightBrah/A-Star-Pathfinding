@@ -14,7 +14,6 @@ struct BoneInfo
 class Model 
 {
 private:
-	Assimp::Importer				importer;
 	const aiScene*					scene;
 	std::string						directory;
 
@@ -42,6 +41,7 @@ private:
 	std::vector<TextureItem> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 
 public:
+	Model() = default;
 	Model(const std::string& path, bool flipUV);
 
 	inline const bool HasAnimations()			const { return hasAnimations; }
