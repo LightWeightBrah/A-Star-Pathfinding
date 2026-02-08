@@ -50,6 +50,8 @@ void Entity::Reset()
 {
 	position	 = startPoisiton;
 	movingPoints = std::queue<glm::vec3>();
+	rotation	 = 0.0f;
+	animator.PlayAnimation(&resources->animations.at(AnimationType::IDLE));
 }
 
 glm::mat4 Entity::GetModelMatrix()

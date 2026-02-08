@@ -121,24 +121,6 @@ void OnScroll(GLFWwindow* window, double xOffset, double yOffset)
 	camera.HandleScrolling(yOffset);
 }
 
-glm::vec3 InterpolatePosition(glm::vec3 currentPosition, glm::vec3 destination, float& delta, float& counter, float& time)
-{
-	if (currentPosition == destination)
-		return currentPosition;
-
-	counter += delta;
-
-	float moveFactor = counter / time;
-	glm::vec3 positionsDifference = destination - currentPosition;
-
-	currentPosition += positionsDifference * moveFactor;
-
-	if (counter >= time)
-		counter = 0.0f;
-
-	return currentPosition;
-}
-
 float verticies[] = {
 	//positions				//colors			//textures
 	//front
@@ -236,7 +218,6 @@ int main()
 
 	Renderer renderer;
 
-
 	glEnable(GL_DEPTH_TEST);
 	renderer.Clear(0.05f, 0.05f, 0.05f, 1.0f);
 	glfwSwapBuffers(window);
@@ -264,22 +245,6 @@ int main()
 		EBO.Unbind();
 		shader.Unbind();
 
-		//Model characterModel("res/Models/solair masterpiece/Solaire All Animations.fbx", false);
-		//Animation idleAnimation("res/Models/solair masterpiece/Solaire All Animations.fbx", &characterModel, 0);
-		//Animation gestureAnimation("res/Models/solair masterpiece/Solaire All Animations.fbx", &characterModel, 1);
-		//Animation runningAnimation("res/Models/solair masterpiece/Solaire All Animations.fbx", &characterModel, 2);
-
-
-		//Model characterModel("res/Models/vampire/dancing_vampire.dae", false);
-		//Animation animation("res/Models/vampire/dancing_vampire.dae", &characterModel);
-
-
-		//Model characterModel("res/Models/Vampire Mixamo dae/Vampire A Lusth.dae", false);
-		//Animation animation("res/Models/Vampire Mixamo dae/Breathing Idle.dae", &characterModel);
-
-		//Animator animator(&characterModel);
-		//animator.PlayAnimation(&gestureAnimation);
-		
 		ResourceManager::LoadModel("Solaire", "res/Models/solair masterpiece/Solaire All Animations.fbx");
 		Entity solaireEntity(glm::vec3(0.0f, 0.55f, 19.0f), "Solaire");
 
@@ -367,9 +332,14 @@ int main()
 			characterShader.SetUniformMatrix4fv("projection", projection);
 			characterShader.SetUniformMatrix4fv("view", view);
 
-			auto movingPath = aStar.GetFullPath();
-			if (!movingPath.empty())
-				solaireEntity.SetPath(movingPath);
+			if (aStar.IsFinished())
+			{
+				auto movingPath = aStar.GetFullPath();
+				if (!movingPath.empty())
+				{
+					solaireEntity.SetPath(movingPath);
+				}
+			}
 
 			solaireEntity.Update(deltaTime);
 

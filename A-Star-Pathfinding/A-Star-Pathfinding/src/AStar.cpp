@@ -129,6 +129,8 @@ void AStar::TraverseBackToStartSteps()
 
 	if (pathTracker == startNode)
 	{
+		std::reverse(fullPath.begin(), fullPath.end());
+
 		drawingPath = false;
 		finishedDrawing = true;
 		return;
@@ -138,7 +140,6 @@ void AStar::TraverseBackToStartSteps()
 	pathTracker = pathTracker->parent;
 	fullPath.push_back(pathTracker);
 	
-	std::reverse(fullPath.begin(), fullPath.end());
 }
 
 std::vector<GridPoint> AStar::GetFullPath()

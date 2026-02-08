@@ -54,6 +54,8 @@ public:
 	inline Node* GetStartNode() const { return startNode; }
 	inline Node* GetEndNode()   const { return endNode; }
 
+	const inline bool IsFinished() const { return finishedDrawing; }
+
 
 private:
 	bool RunAStarStep();
