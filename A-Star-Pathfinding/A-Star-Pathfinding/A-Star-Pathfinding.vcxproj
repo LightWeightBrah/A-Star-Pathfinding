@@ -358,7 +358,9 @@
     <ClInclude Include="src\Texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\shaders\LightSource.shader" />
     <None Include="map_generator.exe" />
+    <None Include="res\shaders\Reflectable.shader" />
     <None Include="res\shaders\Model.shader" />
     <None Include="res\shaders\Basic.shader" />
     <None Include="src\external\glm\detail\func_common.inl" />

@@ -256,6 +256,47 @@ int main()
 		Shader characterShader("res/shaders/Model.shader");
 		characterShader.Unbind();
 
+
+		//TESTING LIGHTING BELOW
+		//TESTING LIGHTING BELOW
+		//TESTING LIGHTING BELOW
+
+		//LIGHT SOURCE
+		Shader lightSourceShader("res/shaders/LightSource.shader");
+
+		VertexArray   lightSourceVAO;
+		VertexBuffer  lightSourceVBO(verticies, sizeof(verticies));
+		ElementBuffer lightSourceEBO(indicies, sizeof(indicies));
+
+		lightSourceVAO.AddAttrib(0, 3, GL_FLOAT, false, 8 * sizeof(float), (void*)0);
+		lightSourceVAO.AddAttrib(1, 3, GL_FLOAT, false, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		lightSourceVAO.AddAttrib(2, 2, GL_FLOAT, false, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+
+		lightSourceVAO.Unbind();
+		lightSourceVBO.Unbind();
+		lightSourceEBO.Unbind();
+		lightSourceShader.Unbind();
+
+		//REFLECTABLE OBJECT
+		Shader reflectableShader("res/shaders/Reflectable.shader");
+
+		VertexArray   reflectableVAO;
+		VertexBuffer  reflectableVBO(verticies, sizeof(verticies));
+		ElementBuffer reflectableEBO(indicies, sizeof(indicies));
+
+		reflectableVAO.AddAttrib(0, 3, GL_FLOAT, false, 8 * sizeof(float), (void*)0);
+		reflectableVAO.AddAttrib(1, 3, GL_FLOAT, false, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+		reflectableVAO.AddAttrib(2, 2, GL_FLOAT, false, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+
+		reflectableVAO.Unbind();
+		reflectableVBO.Unbind();
+		reflectableEBO.Unbind();
+		reflectableShader.Unbind();
+
+		//TESTING LIGHTING ABOVE
+		//TESTING LIGHTING ABOVE
+		//TESTING LIGHTING ABOVE
+
 		while (!glfwWindowShouldClose(window))
 		{
 			float currentFrame = glfwGetTime();
@@ -343,11 +384,61 @@ int main()
 
 			solaireEntity.Update(deltaTime);
 
-			glm::mat4 modelMatrix = solaireEntity.GetModelMatrix();
-			characterShader.SetUniformMatrix4fv("model", modelMatrix);
+			glm::mat4 solaireModelMatrix = solaireEntity.GetModelMatrix();
+			characterShader.SetUniformMatrix4fv("model", solaireModelMatrix);
 			
 			renderer.DrawModel(solaireEntity.GetCharacterModel(), characterShader, solaireEntity.GetAnimator());
 			 
+
+
+			//TESTING LIGHTING BELOW
+			//TESTING LIGHTING BELOW
+			//TESTING LIGHTING BELOW
+
+
+			//LIGHT SOURCE
+			glm::mat4 lightSourceModelMatrix = glm::mat4(1.0f);
+			lightSourceModelMatrix = glm::translate(lightSourceModelMatrix, glm::vec3(10.0f, 20.0f, 20.0f));
+			lightSourceVAO.Bind();
+			lightSourceEBO.Bind();
+			lightSourceShader.Bind();
+
+			lightSourceShader.SetUniformMatrix4fv("projection", projection);
+			lightSourceShader.SetUniformMatrix4fv("view", view);
+			lightSourceShader.SetUniformMatrix4fv("model", lightSourceModelMatrix);
+
+			renderer.Draw(lightSourceVAO, lightSourceEBO, lightSourceShader);
+
+
+
+			//REFLECTABLE OBJECT
+			glm::mat4 reflectableModelMatrix = glm::mat4(1.0f);
+			reflectableModelMatrix = glm::translate(reflectableModelMatrix, glm::vec3(10.0f, 15.0f, 20.0f));
+			reflectableVAO.Bind();
+			reflectableEBO.Bind();
+			reflectableShader.Bind();
+
+			reflectableShader.SetUniformMatrix4fv("projection", projection);
+			reflectableShader.SetUniformMatrix4fv("view", view);
+			reflectableShader.SetUniformMatrix4fv("model", reflectableModelMatrix);
+
+			//CONFIG OF LIGHT SOURCE AND OBJECT COLORS
+			reflectableShader.SetUniform3f("lightSourceColor", 0.22f, 0.43f, 0.78f);
+			reflectableShader.SetUniform3f("objectColor",      1.0f,  1.0f,  1.0f);
+			renderer.Draw(reflectableVAO, reflectableEBO, reflectableShader);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();

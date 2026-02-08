@@ -916,6 +916,8 @@
     </None>
     <None Include="map_generator.exe" />
     <None Include="res\shaders\Model.shader" />
+    <None Include="res\shaders\LightSource.shader" />
+    <None Include="res\shaders\Reflectable.shader" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\grid.txt" />
