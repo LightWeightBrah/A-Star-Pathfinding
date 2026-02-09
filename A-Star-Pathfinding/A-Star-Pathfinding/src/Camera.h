@@ -45,6 +45,7 @@ public:
 	void PrintCamera();
 
 	glm::mat4 GetViewMatrix();
+	inline const glm::vec3 GetCameraPosition() const { return position; }
 	inline float GetFov() const { return fov; }
 
 private:

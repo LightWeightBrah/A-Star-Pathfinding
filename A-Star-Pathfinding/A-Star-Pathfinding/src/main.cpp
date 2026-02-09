@@ -124,40 +124,40 @@ void OnScroll(GLFWwindow* window, double xOffset, double yOffset)
 float verticies[] = {
 	//positions				//colors			//textures
 	//front
-	 0.5f,  0.5f,  0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
-	 0.5f, -0.5f,  0.5f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
-	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
-	-0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left		
+	 0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 1.0f,	 1.0f, 1.0f,	//top right		
+	 0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 1.0f,	 1.0f, 0.0f,	//bottom right	
+	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 1.0f,	 0.0f, 0.0f,	//bottom left	
+	-0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 1.0f,    0.0f, 1.0f,	//top left		
 
 	//back
-	 0.5f,  0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
-	 0.5f, -0.5f, -0.5f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
-	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
-	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left		
+	 0.5f,  0.5f, -0.5f,	0.0f, 0.0f, -1.0f,	 1.0f, 1.0f,	//top right		
+	 0.5f, -0.5f, -0.5f,	0.0f, 0.0f, -1.0f,	 1.0f, 0.0f,	//bottom right	
+	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, -1.0f,	 0.0f, 0.0f,	//bottom left	
+	-0.5f,  0.5f, -0.5f,	0.0f, 0.0f, -1.0f,   0.0f, 1.0f,	//top left		
 
 	//up
-	 0.5f,  0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
-	 0.5f,  0.5f,  0.5f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
-	-0.5f,  0.5f,  0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
-	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left		
+	 0.5f,  0.5f, -0.5f,	0.0f, 1.0f, 0.0f,	 1.0f, 1.0f,	//top right		
+	 0.5f,  0.5f,  0.5f,	0.0f, 1.0f, 0.0f,	 1.0f, 0.0f,	//bottom right	
+	-0.5f,  0.5f,  0.5f,	0.0f, 1.0f, 0.0f,	 0.0f, 0.0f,	//bottom left	
+	-0.5f,  0.5f, -0.5f,	0.0f, 1.0f, 0.0f,    0.0f, 1.0f,	//top left		
 
 	//bottom
-	 0.5f, -0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
-	 0.5f, -0.5f,  0.5f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
-	-0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
-	-0.5f, -0.5f, -0.5f,	1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left
+	 0.5f, -0.5f, -0.5f,	0.0f, -1.0f, 0.0f,	 1.0f, 1.0f,	//top right		
+	 0.5f, -0.5f,  0.5f,	0.0f, -1.0f, 0.0f,	 1.0f, 0.0f,	//bottom right	
+	-0.5f, -0.5f,  0.5f,	0.0f, -1.0f, 0.0f,	 0.0f, 0.0f,	//bottom left	
+	-0.5f, -0.5f, -0.5f,	0.0f, -1.0f, 0.0f,   0.0f, 1.0f,	//top left
 
 	//right
-	 0.5f,  0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
-	 0.5f, -0.5f, -0.5f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
-	 0.5f, -0.5f,  0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
-	 0.5f,  0.5f,  0.5f,	1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left		
+	 0.5f,  0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	 1.0f, 1.0f,	//top right		
+	 0.5f, -0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	 1.0f, 0.0f,	//bottom right	
+	 0.5f, -0.5f,  0.5f,	1.0f, 0.0f, 0.0f,	 0.0f, 0.0f,	//bottom left	
+	 0.5f,  0.5f,  0.5f,	1.0f, 0.0f, 0.0f,    0.0f, 1.0f,	//top left		
 
 	//left
-	-0.5f,  0.5f,  0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f,	//top right		
-	-0.5f, -0.5f,  0.5f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f,	//bottom right	
-	-0.5f, -0.5f, -0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f,	//bottom left	
-	-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 0.0f,   0.0f, 1.0f,	//top left		
+	-0.5f,  0.5f,  0.5f,	-1.0f, 0.0f, 0.0f,	 1.0f, 1.0f,	//top right		
+	-0.5f, -0.5f,  0.5f,	-1.0f, 0.0f, 0.0f,	 1.0f, 0.0f,	//bottom right	
+	-0.5f, -0.5f, -0.5f,	-1.0f, 0.0f, 0.0f,	 0.0f, 0.0f,	//bottom left	
+	-0.5f,  0.5f, -0.5f,	-1.0f, 0.0f, 0.0f,   0.0f, 1.0f,	//top left		
 };
 
 unsigned int indicies[] = {
@@ -398,7 +398,16 @@ int main()
 
 			//LIGHT SOURCE
 			glm::mat4 lightSourceModelMatrix = glm::mat4(1.0f);
-			lightSourceModelMatrix = glm::translate(lightSourceModelMatrix, glm::vec3(10.0f, 20.0f, 20.0f));
+			glm::vec3 lightSourcePrePosition = glm::vec3(14.0f, 18.0f, 23.0f);
+			const float speedMultiplier = 2.0f;
+			const float valueMultiplier = 3.0f;
+			glm::vec3 lightSourcePosition = glm::vec3(sin(glfwGetTime() * speedMultiplier) * valueMultiplier,
+			         + sin(glfwGetTime() * 3.0f) * valueMultiplier,
+				     + cos(glfwGetTime() * speedMultiplier) * valueMultiplier) + lightSourcePrePosition;
+
+			lightSourceModelMatrix = glm::translate(lightSourceModelMatrix, lightSourcePosition);
+			lightSourceModelMatrix = glm::rotate(lightSourceModelMatrix, glm::radians((float)glfwGetTime() * 100.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+
 			lightSourceVAO.Bind();
 			lightSourceEBO.Bind();
 			lightSourceShader.Bind();
@@ -413,7 +422,7 @@ int main()
 
 			//REFLECTABLE OBJECT
 			glm::mat4 reflectableModelMatrix = glm::mat4(1.0f);
-			reflectableModelMatrix = glm::translate(reflectableModelMatrix, glm::vec3(10.0f, 15.0f, 20.0f));
+			reflectableModelMatrix = glm::translate(reflectableModelMatrix, glm::vec3(14.0f, 18.0f, 23.0f));
 			reflectableVAO.Bind();
 			reflectableEBO.Bind();
 			reflectableShader.Bind();
@@ -423,8 +432,11 @@ int main()
 			reflectableShader.SetUniformMatrix4fv("model", reflectableModelMatrix);
 
 			//CONFIG OF LIGHT SOURCE AND OBJECT COLORS
-			reflectableShader.SetUniform3f("lightSourceColor", 0.22f, 0.43f, 0.78f);
-			reflectableShader.SetUniform3f("objectColor",      1.0f,  1.0f,  1.0f);
+			reflectableShader.SetUniform3f("lightSourceColor", 1.0f,  1.0f,  1.0f);
+			reflectableShader.SetUniform3f("lightSourcePosition", lightSourcePosition.x, lightSourcePosition.y, lightSourcePosition.z);
+			reflectableShader.SetUniform3f("objectColor",      0.6f,  1.0f,  1.0f);
+			glm::vec3 cameraPositon = camera.GetCameraPosition();
+			reflectableShader.SetUniform3f("viewerPosition",   cameraPositon.x, cameraPositon.y, cameraPositon.z);
 			renderer.Draw(reflectableVAO, reflectableEBO, reflectableShader);
 
 
