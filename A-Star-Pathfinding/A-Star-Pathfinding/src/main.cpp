@@ -432,9 +432,27 @@ int main()
 			reflectableShader.SetUniformMatrix4fv("model", reflectableModelMatrix);
 
 			//CONFIG OF LIGHT SOURCE AND OBJECT COLORS
-			reflectableShader.SetUniform3f("lightSourceColor", 1.0f,  1.0f,  1.0f);
-			reflectableShader.SetUniform3f("lightSourcePosition", lightSourcePosition.x, lightSourcePosition.y, lightSourcePosition.z);
-			reflectableShader.SetUniform3f("objectColor",      0.6f,  1.0f,  1.0f);
+			reflectableShader.SetUniform3f("lightSource.position", lightSourcePosition.x, lightSourcePosition.y, lightSourcePosition.z);
+			reflectableShader.SetUniform3f("lightSource.ambientStrength",  0.2f, 0.2f, 0.2f);
+			reflectableShader.SetUniform3f("lightSource.diffuseStrength",  0.5f, 0.5f, 0.5f);
+			reflectableShader.SetUniform3f("lightSource.specularStrength", 1.0f, 1.0f, 1.0f);
+
+			glm::vec3 lightSourceColor;
+			lightSourceColor.x = sin(glfwGetTime() * 2.0f);
+			lightSourceColor.y = sin(glfwGetTime() * 0.7f);
+			lightSourceColor.z = sin(glfwGetTime() * 1.3f);
+
+			glm::vec3 lightSourceDiffuseColor = lightSourceColor	    * glm::vec3(0.5f);
+			glm::vec3 lightSourceAmbientColor = lightSourceDiffuseColor * glm::vec3(0.2f);
+
+			reflectableShader.SetUniform3f("material.ambientColor", lightSourceAmbientColor.x, lightSourceAmbientColor.y, lightSourceAmbientColor.z);
+			reflectableShader.SetUniform3f("material.diffuseColor", lightSourceDiffuseColor.x, lightSourceDiffuseColor.y, lightSourceDiffuseColor.z);
+			reflectableShader.SetUniform3f("material.specularColor", 0.5,  0.5f,  0.5f);
+			reflectableShader.SetUniform1f("material.shininess", 32.0f);
+			
+			
+
+
 			glm::vec3 cameraPositon = camera.GetCameraPosition();
 			reflectableShader.SetUniform3f("viewerPosition",   cameraPositon.x, cameraPositon.y, cameraPositon.z);
 			renderer.Draw(reflectableVAO, reflectableEBO, reflectableShader);
