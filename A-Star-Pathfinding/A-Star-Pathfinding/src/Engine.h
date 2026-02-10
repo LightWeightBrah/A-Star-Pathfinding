@@ -9,7 +9,7 @@ class Engine
 {
 private:
 	GLFWwindow*						window;
-	std::unique_ptr<Renderer>		renderer;
+	Renderer						renderer;
 	std::unique_ptr<Scene>			scene;
 
 	Event onCloseEvent;

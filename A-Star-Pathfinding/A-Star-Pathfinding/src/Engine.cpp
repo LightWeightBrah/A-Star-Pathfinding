@@ -113,7 +113,8 @@ void Engine::ProcessInput()
 
 void Engine::Render()
 {
-
+	renderer.Clear(0.05f, 0.05f, 0.05f, 1.0f);
+	scene->Render(renderer);
 }
 
 void Engine::Shutdown()

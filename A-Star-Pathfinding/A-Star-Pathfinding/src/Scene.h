@@ -1,9 +1,7 @@
 #pragma once
 
-class Shader;
 class Camera;
-class Entity;
-class Astar;
+class Renderer;
 
 class Scene
 {
@@ -22,7 +20,7 @@ public:
 	void OnWindowResize(float windowWidth, float windowHeight);
 	void ProcessInput();
 	void Update();
-	void Render();
+	void Render(Renderer& renderer);
 	void Clear();
 	
 };

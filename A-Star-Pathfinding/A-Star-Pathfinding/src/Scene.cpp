@@ -59,7 +59,7 @@ void Scene::Update()
 
 }
 
-void Scene::Render()
+void Scene::Render(Renderer& renderer)
 {
 
 }

@@ -22,9 +22,12 @@ class ResourceManager
 {
 private:
 	static std::map<std::string, std::shared_ptr<ModelData>> modelsRegistered;
+	static std::map<std::string, std::shared_ptr<Texture>>	 texturesRegistered;
 
 public:
-	static void LoadModel(const std::string& name, const std::string& path);
+	static void LoadModel  (const std::string& name, const std::string& path);
+	static void LoadTexture(const std::string& name, const std::string& path);
 	
-	static std::shared_ptr<ModelData> GetModelData(const std::string& name);
+	static std::shared_ptr<ModelData> GetModelData  (const std::string& name);
+	static std::shared_ptr<Texture>	  GetTextureData(const std::string& name);
 };
