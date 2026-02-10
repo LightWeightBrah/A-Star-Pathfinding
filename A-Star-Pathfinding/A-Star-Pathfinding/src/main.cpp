@@ -9,7 +9,6 @@
 #include "Node.h"
 #include "Grid.h"
 #include "AStar.h"
-#include "App.h"
 #include "Renderer.h"
 #include "Camera.h"
 #include "Model.h"

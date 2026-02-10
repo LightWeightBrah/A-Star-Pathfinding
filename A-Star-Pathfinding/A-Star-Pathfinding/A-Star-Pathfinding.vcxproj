@@ -167,6 +167,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\InputManager.cpp" />
+    <ClCompile Include="src\Engine.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Event.cpp" />
     <ClCompile Include="src\external\imgui\imgui.cpp" />
     <ClCompile Include="src\external\imgui\imgui_demo.cpp" />
@@ -186,7 +189,6 @@
     <ClCompile Include="src\external\glm\detail\glm.cpp" />
     <ClCompile Include="src\external\stb\stb_image.cpp" />
     <ClCompile Include="src\Shader.cpp" />
-    <ClCompile Include="src\App.cpp" />
     <ClCompile Include="src\AStar.cpp" />
     <ClCompile Include="src\Grid.cpp" />
     <ClCompile Include="src\ElementBuffer.cpp" />
@@ -196,8 +198,12 @@
     <ClCompile Include="src\VertexBuffer.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\InputManager.h" />
+    <ClInclude Include="src\Engine.h" />
+    <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Event.h" />
     <ClInclude Include="src\external\imgui\imconfig.h" />
     <ClInclude Include="src\external\imgui\imgui.h" />
@@ -362,7 +368,6 @@
     <ClInclude Include="src\external\glm\vector_relational.hpp" />
     <ClInclude Include="src\external\stb\stb_image.h" />
     <ClInclude Include="src\Shader.h" />
-    <ClInclude Include="src\App.h" />
     <ClInclude Include="src\AStar.h" />
     <ClInclude Include="src\Grid.h" />
     <ClInclude Include="src\ElementBuffer.h" />
@@ -372,6 +377,7 @@
     <ClInclude Include="src\VertexBuffer.h" />
     <ClInclude Include="src\VertexArray.h" />
     <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\Time.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\LightSource.shader" />
