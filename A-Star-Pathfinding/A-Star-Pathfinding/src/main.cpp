@@ -14,6 +14,10 @@
 #include "Camera.h"
 #include "Model.h"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 #include "GL/glew.h"
 #include <GLFW/glfw3.h>
 #include "stb/stb_image.h"
@@ -40,6 +44,7 @@ float lastX = WINDOW_WIDTH / 2;
 float lastY = WINDOW_HEIGHT / 2;
 
 bool firstMouse = true;
+bool isMenuOpen = false;
 
 Camera camera(glm::vec3(9.4f, 34.2f, 30.8f), -60.1f, -89.9);
 
@@ -47,6 +52,7 @@ AStar aStar("grid.txt");
 
 Event onResetEvent;
 Event onFullPathEvent;
+Event onMenuEvent;
 
 void OnWindowResized(GLFWwindow* window, int width, int height)
 {
@@ -91,6 +97,10 @@ void OnSingleKey(GLFWwindow* window, int key, int scancode, int action, int mods
 			onFullPathEvent.Invoke();
 			break;
 
+		case GLFW_KEY_TAB:
+			onMenuEvent.Invoke();
+			break;
+
 		case GLFW_KEY_ESCAPE:
 			glfwSetWindowShouldClose(window, true);
 			break;
@@ -98,8 +108,26 @@ void OnSingleKey(GLFWwindow* window, int key, int scancode, int action, int mods
 	}
 }
 
+void OnMenuOpen(GLFWwindow* window)
+{
+	isMenuOpen = !isMenuOpen;
+
+	if (isMenuOpen)
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+	else
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		firstMouse = true;
+	}
+}
+
 void OnMouse(GLFWwindow* window, double xPos, double yPos)
 {
+	if (isMenuOpen)
+		return;
+
 	if (firstMouse)
 	{
 		lastX = xPos;
@@ -187,7 +215,10 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "SunFinder", NULL, NULL);
+
+	float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor());
+
+	GLFWwindow* window = glfwCreateWindow((int)(WINDOW_WIDTH * main_scale), (int)(WINDOW_HEIGHT * main_scale), "SunFinder", NULL, NULL);
 	if (!window)
 	{
 		std::cout << "ERROR: Failed to create GLFW window" << std::endl;
@@ -200,13 +231,17 @@ int main()
 		std::cout << "ERROR: Failed to initalize GLEW" << std::endl;
 		return -1;
 	}
+	
+	//INFO DEBUG
 	std::cout << glGetString(GL_VERSION) << std::endl;
+	
 	int nrAttributes;
 	GLCall(glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes));
 	std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
 
 	Assimp::Importer importer;
 	std::cout << "Wersja Assimpa: " << aiGetVersionMajor() << std::endl;
+	//INFO DEBUG
 
 	GLCall(glEnable(GL_DEPTH_TEST));
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -218,7 +253,25 @@ int main()
 
 	Renderer renderer;
 
-	glEnable(GL_DEPTH_TEST);
+	//SETUP IM_GUI
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+	ImGui::StyleColorsDark();
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	style.ScaleAllSizes(main_scale);
+	style.FontScaleDpi = main_scale;
+
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 330");
+	//SETUP IM_GUI
+
+
+
 	renderer.Clear(0.05f, 0.05f, 0.05f, 1.0f);
 	glfwSwapBuffers(window);
 	glfwPollEvents();
@@ -252,6 +305,8 @@ int main()
 		onResetEvent.AddListener([&]() { aStar.Reset(); });
 
 		onFullPathEvent.AddListener([&]() { aStar.FindPathFull(); });
+		
+		onMenuEvent.AddListener([&]() { OnMenuOpen(window); });
 
 		Shader characterShader("res/shaders/Model.shader");
 		characterShader.Unbind();
@@ -297,6 +352,18 @@ int main()
 		//TESTING LIGHTING ABOVE
 		//TESTING LIGHTING ABOVE
 
+		const float lightStartPosition = 17.0f;
+		glm::vec3 lightSourcePosition = glm::vec3(lightStartPosition);
+
+		glm::vec3 materialAmbientColor  = glm::vec3(0.2f);
+		glm::vec3 materialDiffuseColor  = glm::vec3(0.5f);
+		glm::vec3 materialSpecularColor = glm::vec3(0.5f);
+		float shininess = 32.0f;
+
+		glm::vec3 lightSourceAmbientColor = glm::vec3(0.2f);
+		glm::vec3 lightSourceDiffuseColor = glm::vec3(0.5f);
+		glm::vec3 lightSourceSpecularColor = glm::vec3(1.0f);
+
 		while (!glfwWindowShouldClose(window))
 		{
 			float currentFrame = glfwGetTime();
@@ -306,6 +373,12 @@ int main()
 			HandleInput(window);
 
 			renderer.Clear(0.05f, 0.05f, 0.05f, 1.0f);
+
+			//IM_GUI START
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+			ImGui::Begin("Oh, hello there...");
 
 			shader.Bind();
 			texture1.Bind();
@@ -398,26 +471,16 @@ int main()
 
 			//LIGHT SOURCE
 			glm::mat4 lightSourceModelMatrix = glm::mat4(1.0f);
-			glm::vec3 lightSourcePrePosition = glm::vec3(14.0f, 18.0f, 23.0f);
-			const float speedMultiplier = 2.0f;
-			const float valueMultiplier = 3.0f;
-			glm::vec3 lightSourcePosition = glm::vec3(sin(glfwGetTime() * speedMultiplier) * valueMultiplier,
-			         + sin(glfwGetTime() * 3.0f) * valueMultiplier,
-				     + cos(glfwGetTime() * speedMultiplier) * valueMultiplier) + lightSourcePrePosition;
-
 			lightSourceModelMatrix = glm::translate(lightSourceModelMatrix, lightSourcePosition);
-			lightSourceModelMatrix = glm::rotate(lightSourceModelMatrix, glm::radians((float)glfwGetTime() * 100.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-
+			lightSourceModelMatrix = glm::scale(lightSourceModelMatrix, glm::vec3(0.3f, 0.3f, 0.3f));
+			
 			lightSourceVAO.Bind();
 			lightSourceEBO.Bind();
 			lightSourceShader.Bind();
 
-			lightSourceShader.SetUniformMatrix4fv("projection", projection);
-			lightSourceShader.SetUniformMatrix4fv("view", view);
-			lightSourceShader.SetUniformMatrix4fv("model", lightSourceModelMatrix);
-
-			renderer.Draw(lightSourceVAO, lightSourceEBO, lightSourceShader);
-
+			lightSourceShader.SetUniformMatrix4fv("projection",		projection			  );
+			lightSourceShader.SetUniformMatrix4fv("view"      ,		view				  );
+			lightSourceShader.SetUniformMatrix4fv("model"     ,		lightSourceModelMatrix);
 
 
 			//REFLECTABLE OBJECT
@@ -427,53 +490,56 @@ int main()
 			reflectableEBO.Bind();
 			reflectableShader.Bind();
 
-			reflectableShader.SetUniformMatrix4fv("projection", projection);
-			reflectableShader.SetUniformMatrix4fv("view", view);
-			reflectableShader.SetUniformMatrix4fv("model", reflectableModelMatrix);
+			reflectableShader.SetUniformMatrix4fv("projection",		projection			  );
+			reflectableShader.SetUniformMatrix4fv("view"	  ,		view				  );
+			reflectableShader.SetUniformMatrix4fv("model"	  ,		reflectableModelMatrix);
 
-			//CONFIG OF LIGHT SOURCE AND OBJECT COLORS
-			reflectableShader.SetUniform3f("lightSource.position", lightSourcePosition.x, lightSourcePosition.y, lightSourcePosition.z);
-			reflectableShader.SetUniform3f("lightSource.ambientStrength",  0.2f, 0.2f, 0.2f);
-			reflectableShader.SetUniform3f("lightSource.diffuseStrength",  0.5f, 0.5f, 0.5f);
-			reflectableShader.SetUniform3f("lightSource.specularStrength", 1.0f, 1.0f, 1.0f);
+			//MATERIAL
+			ImGui::Text("Material settings:");
+			ImGui::ColorEdit3("materialAmbientColor" ,		(float*)(&materialAmbientColor)   );
+			ImGui::ColorEdit3("materialDiffuseColor" ,		(float*)(&materialDiffuseColor)   );
+			ImGui::ColorEdit3("materialSpecularColor",		(float*)(&materialSpecularColor)  );
+			ImGui::SliderFloat("shininess"			 ,		(float*)(&shininess), 0.0f, 256.0f);
 
-			glm::vec3 lightSourceColor;
-			lightSourceColor.x = sin(glfwGetTime() * 2.0f);
-			lightSourceColor.y = sin(glfwGetTime() * 0.7f);
-			lightSourceColor.z = sin(glfwGetTime() * 1.3f);
+			reflectableShader.SetUniform3f("material.ambientColor" ,	materialAmbientColor);
+			reflectableShader.SetUniform3f("material.diffuseColor" ,	materialDiffuseColor);
+			reflectableShader.SetUniform3f("material.specularColor",	materialSpecularColor);
+			reflectableShader.SetUniform1f("material.shininess"	   ,	shininess);
+			//MATERIAL
 
-			glm::vec3 lightSourceDiffuseColor = lightSourceColor	    * glm::vec3(0.5f);
-			glm::vec3 lightSourceAmbientColor = lightSourceDiffuseColor * glm::vec3(0.2f);
+			//LIGHT SOURCE
+			ImGui::Text("Light source settings:");
+			ImGui::ColorEdit3("lightSourceAmbientColor" ,		(float*)(&lightSourceAmbientColor));
+			ImGui::ColorEdit3("lightSourceDiffuseColor" ,		(float*)(&lightSourceDiffuseColor));
+			ImGui::ColorEdit3("lightSourceSpecularColor",		(float*)(&lightSourceSpecularColor));
+			ImGui::SliderFloat3("lightSourcePosition"   ,		(float*)(&lightSourcePosition), -10.0f + lightStartPosition, 10.0f + lightStartPosition);
 
-			reflectableShader.SetUniform3f("material.ambientColor", lightSourceAmbientColor.x, lightSourceAmbientColor.y, lightSourceAmbientColor.z);
-			reflectableShader.SetUniform3f("material.diffuseColor", lightSourceDiffuseColor.x, lightSourceDiffuseColor.y, lightSourceDiffuseColor.z);
-			reflectableShader.SetUniform3f("material.specularColor", 0.5,  0.5f,  0.5f);
-			reflectableShader.SetUniform1f("material.shininess", 32.0f);
-			
-			
+			reflectableShader.SetUniform3f("lightSource.position"        ,	lightSourcePosition);
+			reflectableShader.SetUniform3f("lightSource.ambientStrength" ,  lightSourceAmbientColor);
+			reflectableShader.SetUniform3f("lightSource.diffuseStrength" ,  lightSourceDiffuseColor);
+			reflectableShader.SetUniform3f("lightSource.specularStrength",  lightSourceSpecularColor);
+			//LIGHT SOURCE
+		
+			reflectableShader.SetUniform3f("viewerPosition", camera.GetCameraPosition());
 
-
-			glm::vec3 cameraPositon = camera.GetCameraPosition();
-			reflectableShader.SetUniform3f("viewerPosition",   cameraPositon.x, cameraPositon.y, cameraPositon.z);
 			renderer.Draw(reflectableVAO, reflectableEBO, reflectableShader);
+			renderer.Draw(lightSourceVAO, lightSourceEBO, lightSourceShader);
 
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+			ImGui::End();
 
-
-
-
-
-
-
-
-
-
-
-
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 			glfwSwapBuffers(window);
 			glfwPollEvents();
 		}
 	}
+
+	//IM_GUI CLEANUP
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();
 	return 0;
