@@ -11,36 +11,28 @@ void Camera::HandleKeyboardMove(MOVEMENT direction, float deltaTime)
 {
 	float speed = this->movementSpeed * deltaTime;
 
-	glm::vec3 moveFront;
-	glm::vec3 moveRight;
+	glm::vec3 moveFront = glm::normalize(glm::vec3(front.x, 0.0f, front.z));
+	glm::vec3 moveRight = glm::normalize(glm::vec3(right.x, 0.0f, right.z));
 
-	if (stayOnHeight)
-	{
-		moveFront = glm::vec3(front.x, 0.0f, front.z);
-		moveRight = glm::vec3(right.x, 0.0f, right.z);
-	}
-	else
-	{
-		moveFront = front;
-		moveRight = right;
-	}
+	glm::vec3 targetFront = stayOnHeight ? moveFront : front;
+	glm::vec3 targetRight = stayOnHeight ? moveRight : right;
 
 	if (direction == MOVEMENT::FORWARD)
-		position += moveFront	*	speed;
+		position += targetFront		*	speed;
 	if (direction == MOVEMENT::BACKWARD)
-		position -= moveFront	*	speed;
+		position -= targetFront		*	speed;
 	if (direction == MOVEMENT::LEFT)
-		position -= moveRight	*	speed;
+		position -= targetRight		*	speed;
 	if (direction == MOVEMENT::RIGHT)
-		position += moveRight	*	speed;
-	if (direction == MOVEMENT::UP)
-		position += worldUp		*	speed;
-	if (direction == MOVEMENT::DOWN)
-		position -= worldUp		*	speed;
+		position += targetRight		*	speed;
 
+	if (direction == MOVEMENT::UP)
+		position += worldUp			*	speed;
+	if (direction == MOVEMENT::DOWN)
+		position -= worldUp			*	speed;
 }
 
-void Camera::HandleMouse(float xOffset, float yOffset)
+void Camera::HandleMouseMovement(float xOffset, float yOffset)
 {
 	xOffset *= mouseSensitivity;
 	yOffset *= mouseSensitivity;
@@ -64,20 +56,19 @@ void Camera::HandleScrolling(float yOffset)
 		fov = 1.0f;
 	if (fov > 45.0f)
 		fov = 45.0f;
+
+	UpdateProjectionMatrix();
 }
 
-void Camera::PrintCamera()
+void Camera::UpdateProjectionMatrix()
 {
-	std::cout << "Camera position is: [" << position.x << ", " << position.y
-		<< ", " << position.z << "]\n";
-
-	std::cout << "Camera pitch is: [" << pitch << "]\n ";
-	std::cout << "Camera yaw   is: [" << yaw   << "]\n ";
+	projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, 0.1f, 100.0f);
 }
 
-glm::mat4 Camera::GetViewMatrix()
+void Camera::SetViewportSize(float windowWidth, float windowHeight)
 {
-	return glm::lookAt(position, position + front, up);
+	aspectRatio = windowWidth / windowHeight;
+	UpdateProjectionMatrix();
 }
 
 void Camera::UpdateCamera()

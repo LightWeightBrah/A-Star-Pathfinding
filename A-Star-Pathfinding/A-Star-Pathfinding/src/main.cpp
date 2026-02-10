@@ -63,9 +63,9 @@ void HandleInput(GLFWwindow* window)
 	const float cameraSpeed = 2.5f * deltaTime;
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS)
-		camera.HandleKeyboardHeight(true);
+		camera.HandleStayOnHeight(true);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_RELEASE)
-		camera.HandleKeyboardHeight(false);
+		camera.HandleStayOnHeight(false);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera.HandleKeyboardMove(MOVEMENT::FORWARD, deltaTime);
@@ -140,12 +140,12 @@ void OnMouse(GLFWwindow* window, double xPos, double yPos)
 	lastX = xPos;
 	lastY = yPos;
 
-	camera.HandleMouse(xoffset, yoffset);
+	camera.HandleMouseMovement(xoffset, yoffset);
 }
 
 void OnScroll(GLFWwindow* window, double xOffset, double yOffset)
 {
-	camera.HandleScrolling(yOffset);
+	//camera.HandleScrolling(yOffset);
 }
 
 float verticies[] = {
@@ -519,7 +519,7 @@ int main()
 			reflectableShader.SetUniform3f("lightSource.specularStrength",  lightSourceSpecularColor);
 			//LIGHT SOURCE
 		
-			reflectableShader.SetUniform3f("viewerPosition", camera.GetCameraPosition());
+			reflectableShader.SetUniform3f("viewerPosition", camera.GetPosition());
 
 			renderer.Draw(reflectableVAO, reflectableEBO, reflectableShader);
 			renderer.Draw(lightSourceVAO, lightSourceEBO, lightSourceShader);

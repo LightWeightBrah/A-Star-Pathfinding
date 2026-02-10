@@ -1,54 +1,58 @@
-#pragma once
+	#pragma once
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+	#include <glm/glm.hpp>
+	#include <glm/gtc/matrix_transform.hpp>
 
-enum MOVEMENT
-{
-	FORWARD = 0,
-	BACKWARD,
-	LEFT,
-	RIGHT,
-	UP,
-	DOWN,
-	STAY_ON_HEIGHT
-};
+	enum class MOVEMENT
+	{
+		FORWARD = 0,
+		BACKWARD,
+		LEFT,
+		RIGHT,
+		UP,
+		DOWN,
+	};
 
-class Camera
-{
-private:
-	glm::vec3 position;
+	class Camera
+	{
+	public:
+		Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float pitch = 0.0f, float yaw = -90.0f);
 
-	glm::vec3 front		=	glm::vec3(0.0f, 0.0f, -1.0f);
-	glm::vec3 up		=   glm::vec3(0.0f, 1.0f,  0.0f);
-	glm::vec3 right		=   glm::vec3(1.0f, 0.0f,  0.0f);
-	glm::vec3 worldUp	=   glm::vec3(0.0f, 1.0f,  0.0f);
+		void HandleKeyboardMove		(MOVEMENT direction, float deltaTime);
+		void HandleMouseMovement	(float	  xOffset  , float yOffset);
+		void HandleScrolling		(float					   yOffset);
 
-	float pitch		=    0.0f;
-	float yaw		=  -90.0f;
-	float fov		=   45.0f;
+		inline void HandleStayOnHeight(bool stayOnHeight) { this->stayOnHeight = stayOnHeight; }
 
-	float movementSpeed		= 6.5f;
-	float mouseSensitivity	= 0.1f;
+		void UpdateProjectionMatrix();
+		void SetViewportSize		(float windowWidth, float windowHeight);
 
-	bool stayOnHeight = false;
+		inline const glm::mat4	GetViewMatrix()			const { return glm::lookAt(position, position + front, up); } ;
+		inline const glm::mat4	GetProjectionMatrix()	const { return projectionMatrix; }
 
-public:
-	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float pitch = 0.0f, float yaw = -90.0f);
+		inline const glm::vec3	GetPosition()			const { return position; }
+		inline float			GetFov()				const { return fov; }
 
-	void HandleKeyboardMove(MOVEMENT direction, float deltaTime);
-	inline void HandleKeyboardHeight(bool stayOnHeight) { this->stayOnHeight = stayOnHeight; }
-	
-	void HandleMouse(float xOffset, float yOffset);
-	void HandleScrolling(float yOffset);
+	private:
+		glm::vec3 position;
 
-	void PrintCamera();
+		glm::vec3 front		=	glm::vec3(0.0f, 0.0f, -1.0f);
+		glm::vec3 up		=   glm::vec3(0.0f, 1.0f,  0.0f);
+		glm::vec3 right		=   glm::vec3(1.0f, 0.0f,  0.0f);
+		glm::vec3 worldUp	=   glm::vec3(0.0f, 1.0f,  0.0f);
 
-	glm::mat4 GetViewMatrix();
-	inline const glm::vec3 GetCameraPosition() const { return position; }
-	inline float GetFov() const { return fov; }
+		float pitch		=    0.0f;
+		float yaw		=  -90.0f;
+		float fov		=   45.0f;
 
-private:
-	void UpdateCamera();
+		float movementSpeed		= 6.5f;
+		float mouseSensitivity	= 0.1f;
 
-};
+		bool  stayOnHeight		= false;
+
+		glm::mat4	projectionMatrix	= glm::mat4(1.0f);
+		float		aspectRatio			= 0.0f;
+
+	private:
+		void UpdateCamera();
+	};

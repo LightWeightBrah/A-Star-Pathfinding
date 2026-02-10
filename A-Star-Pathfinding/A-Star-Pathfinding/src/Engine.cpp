@@ -56,11 +56,10 @@ bool Engine::Init()
 
 	float xScale, yScale;
 	glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &xScale, &yScale);
-	float displayScale = xScale;
 
 	window = glfwCreateWindow(
-		static_cast<int>((WINDOW_WIDTH  * displayScale)),
-		static_cast<int>((WINDOW_HEIGHT * displayScale)),
+		static_cast<int>((WINDOW_WIDTH  * xScale)),
+		static_cast<int>((WINDOW_HEIGHT * yScale)),
 		"SunFinder", NULL, NULL);
 
 	if (!window)
@@ -78,21 +77,27 @@ bool Engine::Init()
 		return false;
 	}
 
+	scene = std::make_unique<Scene>();
+
 	std::cout << glGetString(GL_VERSION) << std::endl;
+	
 	GLCall(glEnable(GL_DEPTH_TEST));
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetWindowUserPointer(window, this);
 
 	SetCallbacks();
 	SubsribeToEvents();
 	
-	scene.Init();
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	scene->Init(static_cast<float>(width), static_cast<float>(height));
 
 	return true;
 }
 
 void Engine::Update(float deltaTime)
 {
-	scene.Update();
+	scene->Update();
 }
 
 void Engine::ProcessInput()
@@ -103,7 +108,7 @@ void Engine::ProcessInput()
 	if (InputManager::IsKeyDown(GLFW_KEY_TAB))
 		onMenuEvent.Invoke();
 
-	scene.ProcessInput();
+	scene->ProcessInput();
 }
 
 void Engine::Render()
@@ -113,7 +118,7 @@ void Engine::Render()
 
 void Engine::Shutdown()
 {
-	scene.Clear();
+	scene->Clear();
 
 	if (window)
 		glfwDestroyWindow(window);
@@ -123,8 +128,20 @@ void Engine::Shutdown()
 
 void Engine::SetCallbacks()
 {
-	glfwSetFramebufferSizeCallback(window,
-		[](GLFWwindow* window, int width, int height) { glViewport(0, 0, width, height); });
+	glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) 
+	{ 
+		glViewport(0, 0, width, height);
+
+		Engine* engine = static_cast<Engine*>(glfwGetWindowUserPointer(window));
+
+		if (!(engine && engine->scene))
+		{
+			std::cout << "ERROR: NO ENGINE OR NO SCENE CREATED" << std::endl;
+			return;
+		}
+
+		engine->scene->OnWindowResize(static_cast<float>(width), static_cast<float>(height));
+	});
 
 	glfwSetCursorPosCallback(window, InputManager::OnMouse);
 	glfwSetKeyCallback(window, InputManager::OnSingleKey);
