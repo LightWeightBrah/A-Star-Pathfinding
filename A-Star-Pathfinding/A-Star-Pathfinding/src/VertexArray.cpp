@@ -1,5 +1,7 @@
 #include <GL/glew.h>
+
 #include "Renderer.h"
+#include "BufferLayout.h"
 
 VertexArray::VertexArray()
 {
@@ -12,19 +14,44 @@ VertexArray::~VertexArray()
 	GLCall(glDeleteVertexArrays(1, &id));
 }
 
-void VertexArray::AddAttrib(unsigned int index, unsigned int size, 
-	unsigned int type, bool normalized, unsigned int stride, const void* offset) const
+void VertexArray::AddBuffer(const VertexBuffer& VBO, const BufferLayout& layout)
 {
-	GLCall(glVertexAttribPointer(index, size, type, 
-		normalized ? GL_TRUE : GL_FALSE, stride, (void*)offset));
-	GLCall(glEnableVertexAttribArray(index));
-}
+	Bind();
+	VBO.Bind();
 
-void VertexArray::AddIntegerAttrib(unsigned int index, unsigned int size,
-	unsigned int type, unsigned int stride, const void* offset) const
-{
-	GLCall(glVertexAttribIPointer(index, size, type, stride, (void*)offset));
-	GLCall(glEnableVertexAttribArray(index));
+	const auto& elements	= layout.GetBufferElements();
+	unsigned int offset		= 0;
+
+	for (unsigned int i = 0; i < elements.size(); i++)
+	{
+		const auto& element = elements[i];
+
+		GLCall(glEnableVertexAttribArray(i));
+
+		if (element.type == GL_UNSIGNED_INT)
+		{
+			GLCall(glVertexAttribIPointer(
+				i, 
+				element.count, 
+				element.type, 
+				layout.GetStride(), 
+				(const void*)offset
+			));
+		}
+		else
+		{
+			GLCall(glVertexAttribPointer(
+				i,
+				element.count,
+				element.type,
+				element.normalized ? GL_TRUE : GL_FALSE,
+				layout.GetStride(),
+				(const void*)offset
+			));
+		}
+
+		offset += element.count * BufferElement::GetSizeOfType(element.type);
+	}
 }
 
 void VertexArray::Bind() const

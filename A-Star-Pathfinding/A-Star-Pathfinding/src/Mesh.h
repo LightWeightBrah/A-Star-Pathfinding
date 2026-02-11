@@ -9,15 +9,19 @@
 #include "ElementBuffer.h"
 #include "Texture.h"
 #include "Shader.h"
+#include "Config.h"
 
-#define MAX_NUM_BONES_PER_VERTEX 4
+class BufferLayout;
 
-struct Vertex 
+struct StaticVertex
 {
 	glm::vec3 Position;
 	glm::vec3 Normal;
 	glm::vec2 TexCoords;
+};
 
+struct SkinnedVertex : StaticVertex
+{
 	unsigned int boneIDs[MAX_NUM_BONES_PER_VERTEX];
 	float		 weights[MAX_NUM_BONES_PER_VERTEX];
 };
@@ -31,19 +35,16 @@ struct TextureItem
 class Mesh	
 {
 private:
-	std::vector<Vertex>		  vertices;
-	std::vector<unsigned int> indices;
-	std::vector<TextureItem>  textures;
+	std::vector<unsigned int>		indices;
+	std::vector<TextureItem>		textures;
 
-	std::unique_ptr<VertexArray>   VAO;
-	std::unique_ptr<VertexBuffer>  VBO;
-	std::unique_ptr<ElementBuffer> EBO;
-
-private:
-	void SetupMesh();
+	std::unique_ptr<VertexArray>	VAO;
+	std::unique_ptr<VertexBuffer>	VBO;
+	std::unique_ptr<ElementBuffer>	EBO;
 
 public:
-	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<TextureItem> textures);
+	Mesh(const void* vertexData, unsigned int dataSize, std::vector<unsigned int> indices, 
+		std::vector<TextureItem> textures, const BufferLayout& bufferLayout);
 
 	void BindTextures(const Shader& shader) const;
 

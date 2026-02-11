@@ -5,11 +5,17 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "BufferLayout.h"
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<TextureItem> textures)
-: vertices(vertices), indices(indices), textures(textures)
+Mesh::Mesh(const void* vertexData, unsigned int dataSize, std::vector<unsigned int> indices,
+		std::vector<TextureItem> textures, const BufferLayout& bufferLayout)
+	: indices(indices), textures(textures)
 {
-	SetupMesh();
+	VAO = std::make_unique<VertexArray>();
+	VBO = std::make_unique<VertexBuffer>(vertexData, dataSize);
+	EBO = std::make_unique<ElementBuffer>(&indices[0], indices.size() * sizeof(unsigned int));
+
+	VAO->AddBuffer(*VBO, bufferLayout);
 }
 
 void Mesh::BindTextures(const Shader& shader) const
@@ -26,18 +32,4 @@ void Mesh::BindTextures(const Shader& shader) const
 
 		shader.SetUniform1i(name + number, i);
 	}
-}
-
-void Mesh::SetupMesh() 
-{
-	VAO = std::make_unique<VertexArray>();
-	VBO = std::make_unique<VertexBuffer>(&vertices[0], vertices.size() * sizeof(Vertex));
-	EBO = std::make_unique<ElementBuffer>(&indices[0], indices.size()  * sizeof(unsigned int));
-
-	VAO->AddAttrib(0, 3, GL_FLOAT, false, sizeof(Vertex), (void*)0);
-	VAO->AddAttrib(1, 3, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
-	VAO->AddAttrib(2, 2, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
-	
-	VAO->AddIntegerAttrib(3, 4, GL_INT,			 sizeof(Vertex), (void*)offsetof(Vertex, boneIDs));
-	VAO->AddAttrib		 (4, 4, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, weights));
 }

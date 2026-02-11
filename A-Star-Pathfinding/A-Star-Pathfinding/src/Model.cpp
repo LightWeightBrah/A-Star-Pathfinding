@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "Mesh.h"
 #include "AssimpUtilities.h"
+#include "VertexLayouts.h"
 
 Model::Model(const std::string& path, bool flipUV)
 {
@@ -58,33 +59,14 @@ void Model::ProcessNode(aiNode* node)
 
 Mesh Model::ProcessMesh(aiMesh* mesh)
 {
-	std::vector<Vertex>		  vertices;
 	std::vector<unsigned int> indices;
 	std::vector<TextureItem>  meshTextures;
-
-	for (unsigned int i = 0; i < mesh->mNumVertices; i++)
-	{
-		Vertex v;
-		v.Position = { mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z };
-		v.Normal   = { mesh->mNormals[i].x , mesh->mNormals[i].y , mesh->mNormals[i].z  };
-		v.TexCoords = mesh->mTextureCoords[0] ? glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y) : glm::vec2(0.0f);
-		for (unsigned int j = 0; j < MAX_NUM_BONES_PER_VERTEX; j++)
-		{
-			v.boneIDs[j] = 0;
-			v.weights[j] = 0.0f;
-		}
-		
-		vertices.push_back(v);
-	}
 
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 	{
 		for (unsigned int j = 0; j < mesh->mFaces[i].mNumIndices; j++)
 			indices.push_back(mesh->mFaces[i].mIndices[j]);
 	}
-
-	if (mesh->HasBones())
-		ProcessMeshBones(mesh, vertices);
 
 	if (mesh->mMaterialIndex >= 0)
 	{
@@ -96,20 +78,31 @@ Mesh Model::ProcessMesh(aiMesh* mesh)
 		std::vector<TextureItem> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 		meshTextures.insert(meshTextures.end(), specularMaps.begin(), specularMaps.end());
 	}
+	
+	if (mesh->HasBones())
+	{
+		std::vector<SkinnedVertex> vertices(mesh->mNumVertices);
+		SetVertexData(mesh, vertices);
+		ProcessMeshBones(mesh, vertices);
 
-	std::cout << "\nMesh: " << mesh->mName.C_Str() << "\nTotal number of Vertices : " << vertices.size()
-		<< "\nTotal Indices: " << indices.size() << "\nTotal Bones: " << mesh->mNumBones << std::endl;
+		return Mesh(vertices.data(), vertices.size() * sizeof(SkinnedVertex),
+			indices, meshTextures, VertexLayouts::GetSkinnedLayout());
+	}
 
-	return Mesh(vertices, indices, meshTextures);
+	std::vector<StaticVertex> vertices(mesh->mNumVertices);
+	SetVertexData(mesh, vertices);
+
+	return Mesh(vertices.data(), vertices.size() * sizeof(StaticVertex),
+		indices, meshTextures, VertexLayouts::GetStaticLayout());
 }
 
-void Model::ProcessMeshBones(aiMesh* mesh, std::vector<Vertex>& vertices)
+void Model::ProcessMeshBones(aiMesh* mesh, std::vector<SkinnedVertex>& vertices)
 {
 	for (int i = 0; i < mesh->mNumBones; i++)
 		ProcessMeshSingleBone(mesh, vertices, i);
 }
 
-void Model::ProcessMeshSingleBone(aiMesh* mesh, std::vector<Vertex>& vertices, int boneIndex)
+void Model::ProcessMeshSingleBone(aiMesh* mesh, std::vector<SkinnedVertex>& vertices, int boneIndex)
 {
 	aiBone* bone		= mesh->mBones[boneIndex];
 	unsigned int id = GetBoneId(bone);
@@ -132,11 +125,11 @@ void Model::ProcessMeshSingleBone(aiMesh* mesh, std::vector<Vertex>& vertices, i
 	}
 }
 
-void Model::SetBonesForVertex(std::vector<Vertex>& vertices, unsigned int vertexId, unsigned int id, float weight)
+void Model::SetBonesForVertex(std::vector<SkinnedVertex>& vertices, unsigned int vertexId, unsigned int id, float weight)
 {
 	for (unsigned int i = 0; i < MAX_NUM_BONES_PER_VERTEX; i++)
 	{
-		Vertex& vertex = vertices[vertexId];
+		SkinnedVertex& vertex = vertices[vertexId];
 
 		if (vertex.weights[i] == 0.0)
 		{
