@@ -1,6 +1,10 @@
 #pragma once
+#include <memory>
 
-namespace Primitives
+class Mesh;
+
+class Primitives
 {
-	std::vector<Vertex>
-}
+public:
+	static std::unique_ptr<Mesh> CreateCube();
+};

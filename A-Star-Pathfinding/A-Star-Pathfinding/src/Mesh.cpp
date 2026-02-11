@@ -6,6 +6,8 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "BufferLayout.h"
+#include "VertexArray.h"
+#include "Texture.h"
 
 Mesh::Mesh(const void* vertexData, unsigned int dataSize, std::vector<unsigned int> indices,
 		std::vector<TextureItem> textures, const BufferLayout& bufferLayout)

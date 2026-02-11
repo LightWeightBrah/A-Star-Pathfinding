@@ -27,14 +27,14 @@ out vec4 FragColor;
 in vec3 ourColor;
 in vec2 texCoord;
 
-uniform sampler2D texture1;
-uniform sampler2D texture2;
+uniform sampler2D texture_diffuse1;
+uniform sampler2D texture_specular1;
 uniform vec3 objectColor;
 
 void main()
 {
-	vec4 tex1 = texture(texture1, texCoord);
-	vec4 tex2 = texture(texture2, texCoord);
+	vec4 tex1 = texture(texture_diffuse1, texCoord);
+	vec4 tex2 = texture(texture_specular1, texCoord);
 	vec4 combined = mix(tex1, tex2, tex2.a);
 
 	vec4 tintedColor = combined * vec4(objectColor, 1.0f);

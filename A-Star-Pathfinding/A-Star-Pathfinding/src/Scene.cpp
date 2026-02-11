@@ -4,6 +4,7 @@
 #include "Time.h"
 #include "InputManager.h"
 #include "Camera.h"
+#include "ResourceManager.h"
 
 Scene::Scene() 
 	: camera(glm::vec3(0.0f, 0.0f, 0.0f))
@@ -19,6 +20,10 @@ Scene::~Scene()
 void Scene::Init(float windowWidth, float windowHeight)
 {
 	OnWindowResize(windowWidth, windowHeight);
+
+	ResourceManager::LoadTexture("res/Textures/container.jpg", "cube_container");
+	ResourceManager::LoadTexture("res/Textures/chad.png"     , "cube_chad");
+
 }
 
 void Scene::OnWindowResize(float windowWidth, float windowHeight)

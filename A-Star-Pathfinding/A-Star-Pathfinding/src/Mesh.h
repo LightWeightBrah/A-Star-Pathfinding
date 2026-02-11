@@ -1,30 +1,20 @@
 #pragma once
 
+#include <string>
 #include <memory>
 #include <vector>
 #include <glm/glm.hpp>
 
-#include "VertexArray.h"
-#include "VertexBuffer.h"
-#include "ElementBuffer.h"
-#include "Texture.h"
-#include "Shader.h"
 #include "Config.h"
 
+class Texture;
+class Shader;
+
+class VertexArray;
+class VertexBuffer;
+class ElementBuffer;
+
 class BufferLayout;
-
-struct StaticVertex
-{
-	glm::vec3 Position;
-	glm::vec3 Normal;
-	glm::vec2 TexCoords;
-};
-
-struct SkinnedVertex : StaticVertex
-{
-	unsigned int boneIDs[MAX_NUM_BONES_PER_VERTEX];
-	float		 weights[MAX_NUM_BONES_PER_VERTEX];
-};
 
 struct TextureItem 
 {

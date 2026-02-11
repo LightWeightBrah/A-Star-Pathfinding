@@ -1,9 +1,12 @@
 #pragma once
+#include <map>
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
 #include "Mesh.h"
-#include <map>
+#include "VertexTypes.h"
 
 struct BoneInfo
 {
