@@ -11,9 +11,8 @@ class Scene
 {
 private:
 	std::unique_ptr<Entity>		entity;
-	std::unique_ptr<Shader>		shader;
 
-	Camera camera;
+	Camera						camera;
 
 	//Solaire	  solaireEntity;
 	//Astar       aStar;

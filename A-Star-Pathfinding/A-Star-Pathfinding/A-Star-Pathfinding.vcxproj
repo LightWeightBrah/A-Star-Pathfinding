@@ -169,6 +169,8 @@
   <ItemGroup>
     <ClCompile Include="src\InputManager.cpp" />
     <ClCompile Include="src\Engine.cpp" />
+    <ClCompile Include="src\Material.cpp" />
+    <ClCompile Include="src\Primitives.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Event.cpp" />
     <ClCompile Include="src\external\imgui\imgui.cpp" />
@@ -195,14 +197,20 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Node.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Solaire.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
     <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\AssimpUtilities.h" />
+    <ClInclude Include="src\BufferLayout.h" />
+    <ClInclude Include="src\Config.h" />
     <ClInclude Include="src\InputManager.h" />
     <ClInclude Include="src\Engine.h" />
+    <ClInclude Include="src\Material.h" />
+    <ClInclude Include="src\Primitives.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Event.h" />
     <ClInclude Include="src\external\imgui\imconfig.h" />
@@ -374,10 +382,13 @@
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\Node.h" />
     <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\Solaire.h" />
     <ClInclude Include="src\VertexBuffer.h" />
     <ClInclude Include="src\VertexArray.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Time.h" />
+    <ClInclude Include="src\VertexLayouts.h" />
+    <ClInclude Include="src\VertexTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\LightSource.shader" />

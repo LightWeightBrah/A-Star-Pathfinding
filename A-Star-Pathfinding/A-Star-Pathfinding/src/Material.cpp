@@ -4,29 +4,47 @@
 #include "Shader.h"
 
 Material::Material(
-	std::shared_ptr<Shader> shader,
-	const glm::vec3&		ambient,
-	const glm::vec3&		diffuse,
-	const glm::vec3&		specular,
-	float					shiny
-)
-	: shader(std::move(shader))
-	, ambientColor(ambient)
-	, diffuseColor(diffuse)
-	, specularColor(specular)
-	, shininess(shiny)
+	std::shared_ptr<Shader> shader)
+	: 
+	shader(std::move(shader))
 {
 
 }
 
-void Material::Apply()
+Material& Material::Apply()
 {
 	if (!shader)
-		return;
+		return *this;
 
 	shader->Bind();
-	shader->SetUniform3f("material.ambientColor",	ambientColor);
-	shader->SetUniform3f("material.diffuseColor",	diffuseColor);
-	shader->SetUniform3f("material.specularColor",	specularColor);
-	shader->SetUniform1f("material.shininess",		shininess);
+	shader->SetUniform3f("material.ambientColor",	data.ambientColor);
+	shader->SetUniform3f("material.diffuseColor",	data.diffuseColor);
+	shader->SetUniform3f("material.specularColor",	data.specularColor);
+	shader->SetUniform1f("material.shininess",		data.shininess);
+
+	return *this;
+}
+
+Material& Material::SetAmbient(const glm::vec3& color)
+{
+	data.ambientColor = color;
+	return *this;
+}
+
+Material& Material::SetDiffuse(const glm::vec3& color)
+{
+	data.diffuseColor = color;
+	return *this;
+}
+
+Material& Material::SetSpecular(const glm::vec3& color)
+{
+	data.specularColor = color;
+	return *this;
+}
+
+Material& Material::SetShininess(float shininess)
+{
+	data.shininess = shininess;
+	return *this;
 }

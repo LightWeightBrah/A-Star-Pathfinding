@@ -9,6 +9,7 @@
 #include "Shader.h"
 #include "Renderer.h"
 #include "Entity.h"
+#include "Material.h"
 
 Scene::Scene() 
 	: camera(glm::vec3(0.0f, 0.0f, 0.0f))
@@ -28,8 +29,17 @@ void Scene::Init(float windowWidth, float windowHeight)
 	ResourceManager::LoadTexture("cube_container", "res/Textures/container.jpg");
 	ResourceManager::LoadTexture("cube_chad"     , "res/Textures/chad.png"     );
 
-	shader	= std::make_unique<Shader>("res/Shaders/Basic.shader");
-	entity->	= Primitives::CreateCube();
+	auto shader		= std::make_unique<Shader>("res/Shaders/Basic.shader");
+	auto material	= std::make_shared<Material>(shader);
+	auto cubeMesh = Primitives::CreateCube();
+
+	material->SetAmbient(glm::vec3(0.1f))
+		.SetDiffuse(glm::vec3(0.8f, 0.6f, 0.0f))
+		.SetSpecular(glm::vec3(1.0f))
+		.SetShininess(64.0f);
+
+	entity = std::make_unique<Entity>(cubeMesh, material);
+	entity->SetPosition(glm::vec3(0.0f, 5.0f, 5.0f));
 }
 
 void Scene::OnWindowResize(float windowWidth, float windowHeight)
@@ -72,23 +82,14 @@ void Scene::Update()
 
 void Scene::Render(Renderer& renderer)
 {
-	if (!cubeMesh || !cubeShader)
+	if (!entity)
+	{
+		std::cout << "ERROR: No entity in scene" << std::endl;
 		return;
+	}
 
-
-	cubeShader->Bind();
-	cubeMesh  ->BindTextures(*cubeShader);
-
-	cubeShader->SetUniformMatrix4fv("projection", camera.GetProjectionMatrix());
-	cubeShader->SetUniformMatrix4fv("view"		, camera.GetViewMatrix());
-
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(5.0f, 5.0f, 5.0f));
-	cubeShader->SetUniformMatrix4fv("model", model);
-	
-	cubeShader->SetUniform3f("objectColor", glm::vec3(1.0f, 0.5f, 1.0f));
-
-	renderer.Draw(cubeMesh->GetVAO(), cubeMesh->GetEBO(), *cubeShader);
+	renderer.Clear(0.05f, 0.05f, 0.05f, 1.0f);
+	renderer.DrawEntity(*entity, camera);
 }
 
 void Scene::Clear()

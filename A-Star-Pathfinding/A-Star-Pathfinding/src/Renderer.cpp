@@ -65,23 +65,34 @@ void Renderer::DrawMesh(const Mesh& mesh, Shader& shader) const
 	Draw(mesh.GetVAO(), mesh.GetEBO(), shader);
 }
 
-void Renderer::DrawEntity(Entity& entity, Shader& shader, const Camera& camera) const
+void Renderer::DrawEntity(Entity& entity, const Camera& camera) const
 {
-	if (!entity.GetMesh())
+	auto mesh	  = entity.GetMesh();
+	auto material = entity.GetMaterial();
+
+	if (!mesh)
 	{
 		std::cout << "ERROR: Entity has no mesh" << std::endl;
 		return;
 	}
 
-	shader.Bind();
+	if (!material)
+	{
+		std::cout << "ERROR: Entity has no material" << std::endl;
+		return;
+	}
 
-	shader.SetUniformMatrix4fv("model",		 entity.GetModelMatrix());
-	shader.SetUniformMatrix4fv("view",		 camera.GetViewMatrix());
-	shader.SetUniformMatrix4fv("projection", camera.GetProjectionMatrix());
+	auto shader = material->GetShader();
+
+	shader->Bind();
+
+	shader->SetUniformMatrix4fv("model",		 entity.GetModelMatrix());
+	shader->SetUniformMatrix4fv("view",		 camera.GetViewMatrix());
+	shader->SetUniformMatrix4fv("projection", camera.GetProjectionMatrix());
 
 	if (entity.GetMaterial())
 		entity.GetMaterial()->Apply();
 	
-	DrawMesh(*entity.GetMesh());
+	DrawMesh(*entity.GetMesh(), *shader);
 }
 

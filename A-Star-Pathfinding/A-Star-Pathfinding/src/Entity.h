@@ -33,8 +33,14 @@ class Entity
 public:
 	Entity(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material);
 
-	void SetPosition(const glm::vec3& position);
-	
+	Entity& SetPosition(const glm::vec3& position);
+	Entity& SetRotation(const glm::vec3& rotation);
+	Entity& SetScale(const glm::vec3& scale);
+
+	Entity& SetMesh(std::shared_ptr<Mesh> mesh);
+	Entity& SetMaterial(std::shared_ptr<Material> material);
+
+
 	const glm::mat4&				 GetModelMatrix();
 	const std::shared_ptr<Mesh>&	 GetMesh()				const { return mesh; }
 	const std::shared_ptr<Material>& GetMaterial()			const { return material; }

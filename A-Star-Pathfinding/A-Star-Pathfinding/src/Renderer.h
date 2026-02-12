@@ -34,5 +34,5 @@ public:
 	void Draw(const VertexArray& VAO, const ElementBuffer& EBO, const Shader& shader) const;
 	void DrawMesh(const Mesh& mesh, Shader& shader) const;
 	void DrawModel(const Model& model, Shader& shader, const Animator* animator) const;
-	void DrawEntity(Entity& entity, Shader& shader, const Camera& camera) const;
+	void DrawEntity(Entity& entity, const Camera& camera) const;
 };

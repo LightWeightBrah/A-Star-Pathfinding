@@ -8,22 +8,28 @@ class Shader;
 class Material
 {
 public:
-	Material(
-		std::shared_ptr<Shader> shader,
-		const glm::vec3&		ambient			= glm::vec3(0.2f),
-		const glm::vec3&		diffuse			= glm::vec3(0.5f),
-		const glm::vec3&		specular		= glm::vec3(0.5f),
-		float					shiny			= 32.0f
-	);
+	struct Data
+	{
+		glm::vec3				ambientColor	= glm::vec3(0.2f);
+		glm::vec3				diffuseColor	= glm::vec3(0.5f);
+		glm::vec3				specularColor	= glm::vec3(0.5f);
 
-	void Apply();
+		float					shininess		= 32.0f;
+	};
+
+	Material(std::shared_ptr<Shader> shader);
+
+	Material& SetAmbient(const glm::vec3& color);
+	Material& SetDiffuse(const glm::vec3& color);
+	Material& SetSpecular(const glm::vec3& color);
+	Material& SetShininess(float shininess);
+
+	Material& Apply();
+
+	inline const Data& GetData()			   const { return data; }
+	inline std::shared_ptr<Shader> GetShader() const { return shader; }
 
 private:
 	std::shared_ptr<Shader>		shader;
-
-	glm::vec3					ambientColor;
-	glm::vec3					diffuseColor;
-	glm::vec3					specularColor;
-
-	float						shininess;
+	Data						data;
 };

@@ -1,8 +1,10 @@
 #include <iostream>
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position, float pitch, float yaw) : 
-	position(position), pitch(pitch), yaw(yaw)
+Camera::Camera(glm::vec3 position, float pitch, float yaw) 
+	: position(position)
+	, pitch(pitch)
+	, yaw(yaw)
 {
 	UpdateCamera();
 }
@@ -17,19 +19,15 @@ void Camera::HandleKeyboardMove(MOVEMENT direction, float deltaTime)
 	glm::vec3 targetFront = stayOnHeight ? moveFront : front;
 	glm::vec3 targetRight = stayOnHeight ? moveRight : right;
 
-	if (direction == MOVEMENT::FORWARD)
-		position += targetFront		*	speed;
-	if (direction == MOVEMENT::BACKWARD)
-		position -= targetFront		*	speed;
-	if (direction == MOVEMENT::LEFT)
-		position -= targetRight		*	speed;
-	if (direction == MOVEMENT::RIGHT)
-		position += targetRight		*	speed;
-
-	if (direction == MOVEMENT::UP)
-		position += worldUp			*	speed;
-	if (direction == MOVEMENT::DOWN)
-		position -= worldUp			*	speed;
+	switch (direction)
+	{
+	case MOVEMENT::FORWARD:		position += targetFront * speed;	break;
+	case MOVEMENT::BACKWARD:	position -= targetFront * speed;	break;
+	case MOVEMENT::LEFT:		position -= targetRight * speed;	break;
+	case MOVEMENT::RIGHT:		position += targetRight * speed;	break;
+	case MOVEMENT::UP:			position += worldUp		* speed;	break;
+	case MOVEMENT::DOWN: 		position -= worldUp		* speed;	break;
+	}
 }
 
 void Camera::HandleMouseMovement(float xOffset, float yOffset)
