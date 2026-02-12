@@ -1,15 +1,21 @@
 #pragma once
+#include <memory>
 
-class Camera;
+#include "Camera.h"
+
+class Shader;
 class Renderer;
+class Entity;
 
 class Scene
 {
 private:
-	//Shader		basicShader;
-	Camera      camera;
+	std::unique_ptr<Entity>		entity;
+	std::unique_ptr<Shader>		shader;
 
-	//Entity		solaireEntity;
+	Camera camera;
+
+	//Solaire	  solaireEntity;
 	//Astar       aStar;
 
 public:

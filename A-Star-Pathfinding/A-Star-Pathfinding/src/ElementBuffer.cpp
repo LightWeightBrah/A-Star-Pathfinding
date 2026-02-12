@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "ElementBuffer.h"
 
 ElementBuffer::ElementBuffer(const unsigned int* data, unsigned int size) 
 {

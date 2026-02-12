@@ -1,84 +1,24 @@
 #include "Entity.h"
 
-Entity::Entity(glm::vec3 startPosition, const std::string& filepath) :
-	position(startPosition), startPoisiton(startPosition)
+Entity::Entity(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material)
+	: mesh(std::move(mesh)), material(std::move(material))
 {
-	resources = ResourceManager::GetModelData(filepath);
-	animator  = Animator  (&resources->model);
-	animator.PlayAnimation(&resources->animations.at(AnimationType::IDLE));
+
 }
 
-void Entity::SetPath(std::vector<GridPoint> gridPoints)
+void Entity::SetPosition(const glm::vec3& position)
 {
-	for (auto& point : gridPoints)
-		movingPoints.push({ point.x, FOOT_Y_HEIGHT, point.z });
+	transform.position = position;
+	isDirty = true;
 }
 
-void Entity::Update(float deltaTime)
+const glm::mat4& Entity::GetModelMatrix()
 {
-	UpdateAnimations(deltaTime);
-
-	if (movingPoints.empty())
-		return;
-
-	glm::vec3 target = movingPoints.front();
-	glm::vec3 direction = target - position;
-
-	float distanceToTarget = glm::length(direction);
-	
-	rotation = glm::degrees(atan2(direction.x, direction.z));
-
-	if (distanceToTarget < 0.1f)
+	if (isDirty)
 	{
-		position = target;
-		movingPoints.pop();
-
-		if (movingPoints.empty())
-		{
-			rotation = 0.0f;
-			animator.PlayAnimation(&resources->animations.at(AnimationType::GESTURE));
-		}
-	}
-	else
-	{
-		glm::vec3 moveDirection = glm::normalize(direction);
-		position += moveDirection * MOVE_SPEED * deltaTime;
-	}
-}
-
-void Entity::Reset()
-{
-	position	 = startPoisiton;
-	movingPoints = std::queue<glm::vec3>();
-	rotation	 = 0.0f;
-	animator.PlayAnimation(&resources->animations.at(AnimationType::IDLE));
-}
-
-glm::mat4 Entity::GetModelMatrix()
-{
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, position);
-	model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.00035f, 0.00035f, 0.00035f));
-
-	return model;
-}
-
-void Entity::UpdateAnimations(float deltaTime)
-{
-	bool isMoving = !movingPoints.empty();
-
-	Animation* gestureAnim = &resources->animations.at(AnimationType::GESTURE);
-	if (animator.GetCurrentAnimation() == gestureAnim && !isMoving)
-	{
-		animator.UpdateAnimation(deltaTime);
-		return;
+		cachedModelMatrix = transform.GetModelMatrix();
+		isDirty = false;
 	}
 
-	AnimationType newAnimationType = isMoving ? AnimationType::RUNNING : AnimationType::IDLE;
-	Animation* animationtoPlay = &resources->animations.at(newAnimationType);
-	if(animator.GetCurrentAnimation() != animationtoPlay)
-		animator.PlayAnimation(animationtoPlay);
-
-	animator.UpdateAnimation(deltaTime);
+	return cachedModelMatrix;
 }

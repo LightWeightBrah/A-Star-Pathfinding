@@ -1,6 +1,19 @@
 #include <iostream>
+
 #include "Renderer.h"
+
+#include "ElementBuffer.h"
+#include "VertexArray.h"
+
+#include "Shader.h"
+#include "Material.h"
+
+#include "Mesh.h"
+#include "Model.h"
 #include "Animator.h"
+
+#include "Camera.h"
+#include "Entity.h"
 
 void GLClearError()
 {
@@ -51,3 +64,24 @@ void Renderer::DrawMesh(const Mesh& mesh, Shader& shader) const
 	mesh.BindTextures(shader);
 	Draw(mesh.GetVAO(), mesh.GetEBO(), shader);
 }
+
+void Renderer::DrawEntity(Entity& entity, Shader& shader, const Camera& camera) const
+{
+	if (!entity.GetMesh())
+	{
+		std::cout << "ERROR: Entity has no mesh" << std::endl;
+		return;
+	}
+
+	shader.Bind();
+
+	shader.SetUniformMatrix4fv("model",		 entity.GetModelMatrix());
+	shader.SetUniformMatrix4fv("view",		 camera.GetViewMatrix());
+	shader.SetUniformMatrix4fv("projection", camera.GetProjectionMatrix());
+
+	if (entity.GetMaterial())
+		entity.GetMaterial()->Apply();
+	
+	DrawMesh(*entity.GetMesh());
+}
+

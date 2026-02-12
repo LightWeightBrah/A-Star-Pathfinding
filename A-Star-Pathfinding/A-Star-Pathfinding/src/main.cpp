@@ -28,7 +28,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/version.h>
 #include "Animator.h"
-#include "Entity.h"
+#include "Solaire.h"
 #include "Event.h"
 
 const unsigned int WINDOW_WIDTH = 1200;
@@ -298,7 +298,7 @@ int main()
 		shader.Unbind();
 
 		ResourceManager::LoadModel("Solaire", "res/Models/solair masterpiece/Solaire All Animations.fbx");
-		Entity solaireEntity(glm::vec3(0.0f, 0.55f, 19.0f), "Solaire");
+		Solaire solaireEntity(glm::vec3(0.0f, 0.55f, 19.0f), "Solaire");
 
 		onResetEvent.AddListener([&]() { solaireEntity.Reset(); });
 		onResetEvent.AddListener([&]() { aStar.Reset(); });

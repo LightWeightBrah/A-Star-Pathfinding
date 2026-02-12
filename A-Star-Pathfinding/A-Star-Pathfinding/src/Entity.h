@@ -1,43 +1,49 @@
 #pragma once
-
-#include <vector>
-#include <queue>
+#include <memory>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
-#include "AStar.h"
-#include "ResourceManager.h"
-#include "Animator.h"
+class Mesh;
+class Material;
+
+struct Transform
+{
+	glm::vec3 position		= glm::vec3(0.0f);
+	glm::vec3 rotation		= glm::vec3(0.0f);
+	glm::vec3 scale			= glm::vec3(1.0f);
+
+	glm::mat4 GetModelMatrix() const
+	{
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, position);
+
+		model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		model = glm::scale(model, scale);
+
+		return model;
+	}
+};
 
 class Entity
 {
-private:
-	glm::vec3 position;
-	std::queue<glm::vec3> movingPoints;
-
-	std::shared_ptr<ModelData>	resources;
-	Animator					animator;
-
-	glm::vec3 startPoisiton;
-	float	  rotation		  = 0.0f;
-
-	const float MOVE_SPEED	  = 2.5f;
-	const float FOOT_Y_HEIGHT = 0.55;
-
 public:
-	Entity(glm::vec3 startPosition, const std::string& filepath);
+	Entity(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material);
 
-	void SetPath(std::vector<GridPoint> gridPoints);
-	void Update (float deltaTime);
-	void Reset();
-
-	inline const Model& GetCharacterModel() const { return  resources->model; }
-	inline const Animator* GetAnimator  ()  const { return &animator; }
+	void SetPosition(const glm::vec3& position);
 	
-	glm::mat4 GetModelMatrix();
+	const glm::mat4&				 GetModelMatrix();
+	const std::shared_ptr<Mesh>&	 GetMesh()				const { return mesh; }
+	const std::shared_ptr<Material>& GetMaterial()			const { return material; }
 
 private:
-	void UpdateAnimations(float deltaTime);
+	std::shared_ptr<Mesh>			 mesh;
+	std::shared_ptr<Material>		 material;
+									 
+	Transform						 transform;
+	glm::mat4						 cachedModelMatrix		= glm::mat4(1.0f);
+	bool							 isDirty				= true;
 };
