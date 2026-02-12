@@ -1,6 +1,7 @@
 #pragma once
 
 class BufferLayout;
+class VertexBuffer;
 
 class VertexArray
 {

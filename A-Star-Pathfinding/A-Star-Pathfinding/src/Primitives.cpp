@@ -1,6 +1,7 @@
 #include <vector>
 
 #include "Primitives.h"
+#include "Mesh.h"
 #include "VertexTypes.h"
 #include "VertexLayouts.h"
 #include "ResourceManager.h"

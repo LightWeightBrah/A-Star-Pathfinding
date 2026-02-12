@@ -1,4 +1,9 @@
+#include "GL/glew.h"
+
 #include <glm/glm.hpp>
+
+#include "VertexBuffer.h"
+#include "ElementBuffer.h"
 
 #include "Scene.h"
 #include "Time.h"
@@ -38,7 +43,7 @@ void Scene::Init(float windowWidth, float windowHeight)
 		.SetSpecular(glm::vec3(1.0f))
 		.SetShininess(64.0f);
 
-	entity = std::make_unique<Entity>(cubeMesh, material);
+	entity = std::make_unique<Entity>(std::move(cubeMesh), material);
 	entity->SetPosition(glm::vec3(0.0f, 5.0f, 5.0f));
 }
 

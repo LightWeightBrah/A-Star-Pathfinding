@@ -1,9 +1,13 @@
 #pragma once
+#include <memory>
+
+#include "Renderer.h"
 #include "Event.h"
 
 class GLFWwindow;
 class Scene;
 class Renderer;
+class Event;
 
 class Engine
 {
