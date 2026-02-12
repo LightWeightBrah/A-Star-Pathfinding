@@ -1,10 +1,13 @@
 #include "Entity.h"
+#include "Mesh.h"
 
 Entity::Entity(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material)
 	: mesh(std::move(mesh)), material(std::move(material))
 {
 
 }
+
+const unsigned int Entity::GetIndicesCount() const { return static_cast<unsigned int>(mesh->GetIndexCount()); }
 
 Entity& Entity::SetPosition(const glm::vec3& position)
 {

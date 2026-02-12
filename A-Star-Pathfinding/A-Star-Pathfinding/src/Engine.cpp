@@ -116,6 +116,13 @@ void Engine::ProcessInput()
 void Engine::Render()
 {
 	renderer.Clear(0.05f, 0.05f, 0.05f, 1.0f);
+
+	if (!scene)
+	{
+		std::cout << "ERROR: Scene is NULL during Render" << std::endl;
+		return;
+	}
+
 	scene->Render(renderer);
 }
 

@@ -45,6 +45,8 @@ public:
 	const std::shared_ptr<Mesh>&	 GetMesh()				const { return mesh; }
 	const std::shared_ptr<Material>& GetMaterial()			const { return material; }
 
+	const unsigned int				 GetIndicesCount()		const;
+
 private:
 	std::shared_ptr<Mesh>			 mesh;
 	std::shared_ptr<Material>		 material;

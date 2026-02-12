@@ -34,7 +34,7 @@ void Scene::Init(float windowWidth, float windowHeight)
 	ResourceManager::LoadTexture("cube_container", "res/Textures/container.jpg");
 	ResourceManager::LoadTexture("cube_chad"     , "res/Textures/chad.png"     );
 
-	auto shader		= std::make_unique<Shader>("res/Shaders/Basic.shader");
+	auto shader		= std::make_shared<Shader>("res/Shaders/Reflectable.shader");
 	auto material	= std::make_shared<Material>(shader);
 	auto cubeMesh = Primitives::CreateCube();
 
@@ -44,7 +44,8 @@ void Scene::Init(float windowWidth, float windowHeight)
 		.SetShininess(64.0f);
 
 	entity = std::make_unique<Entity>(std::move(cubeMesh), material);
-	entity->SetPosition(glm::vec3(0.0f, 5.0f, 5.0f));
+	entity->SetPosition(glm::vec3(0.0f, 5.0f, -5.0f));
+	entity->SetScale(glm::vec3(5.0f));
 }
 
 void Scene::OnWindowResize(float windowWidth, float windowHeight)
@@ -89,9 +90,16 @@ void Scene::Render(Renderer& renderer)
 {
 	if (!entity)
 	{
-		std::cout << "ERROR: No entity in scene" << std::endl;
+		std::cout << "ERORR: Scene::Render::Entity is NULL" << std::endl;
 		return;
 	}
+
+	if (!entity->GetMesh())
+	{
+		std::cout << "ERORR: Scene::Render::Entity::Mesh is NULL" << std::endl;
+		return;
+	}
+
 
 	renderer.Clear(0.05f, 0.05f, 0.05f, 1.0f);
 	renderer.DrawEntity(*entity, camera);
