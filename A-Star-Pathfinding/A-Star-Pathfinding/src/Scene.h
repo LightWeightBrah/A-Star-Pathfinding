@@ -6,13 +6,15 @@
 class Shader;
 class Renderer;
 class Entity;
+class LightSource;
 
 class Scene
 {
 private:
-	std::unique_ptr<Entity>		entity;
+	std::unique_ptr<Entity>			entity;
+	std::unique_ptr<LightSource>	lightSource;
 
-	Camera						camera;
+	Camera							camera;
 
 	//Solaire	  solaireEntity;
 	//Astar       aStar;

@@ -10,11 +10,11 @@ class Material
 public:
 	struct Data
 	{
-		glm::vec3				ambientColor	= glm::vec3(0.2f);
-		glm::vec3				diffuseColor	= glm::vec3(0.5f);
-		glm::vec3				specularColor	= glm::vec3(0.5f);
+		glm::vec3		ambientColor		= glm::vec3(0.2f);
+		glm::vec3		diffuseColor		= glm::vec3(0.5f);
+		glm::vec3		specularColor		= glm::vec3(0.5f);
 
-		float					shininess		= 32.0f;
+		float			shininess			= 32.0f;
 	};
 
 	Material(std::shared_ptr<Shader> shader);

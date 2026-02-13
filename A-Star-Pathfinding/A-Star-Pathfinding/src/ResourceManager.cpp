@@ -3,6 +3,7 @@
 
 std::map<std::string, std::shared_ptr<ModelData>> ResourceManager::modelsRegistered;
 std::map<std::string, std::shared_ptr<Texture>>   ResourceManager::texturesRegistered;
+std::map<std::string, std::shared_ptr<Shader>>    ResourceManager::shadersRegistered;
 
 void ResourceManager::LoadModel(const std::string& name, const std::string& path)
 {
@@ -32,6 +33,17 @@ void ResourceManager::LoadTexture(const std::string& name, const std::string& pa
 	std::cout << "Resource Manager: Registered Texture '" << name << "'" << std::endl;
 }
 
+void ResourceManager::LoadShader(const std::string& name, const std::string& path)
+{
+	if (shadersRegistered.count(name))
+		return;
+
+	auto shader = std::make_shared<Shader>(path);
+	shadersRegistered[name] = shader;
+
+	std::cout << "Resource Manager: Registered Shader '" << name << "'" << std::endl;
+}
+
 std::shared_ptr<ModelData> ResourceManager::GetModelData(const std::string& name)
 {
 	auto it = modelsRegistered.find(name);
@@ -49,6 +61,17 @@ std::shared_ptr<Texture> ResourceManager::GetTextureData(const std::string& name
 	if (it == texturesRegistered.end())
 	{
 		std::cout << "ERROR: Texture \"" << name << "\" not found in ResourceManager..." << std::endl;
+		return nullptr;
+	}
+	return it->second;
+}
+
+std::shared_ptr<Shader> ResourceManager::GetShaderData(const std::string& name)
+{
+	auto it = shadersRegistered.find(name);
+	if (it == shadersRegistered.end())
+	{
+		std::cout << "ERROR: Shader \"" << name << "\" not found in ResourceManager..." << std::endl;
 		return nullptr;
 	}
 	return it->second;

@@ -167,6 +167,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\LightSource.cpp" />
     <ClCompile Include="src\InputManager.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\Material.cpp" />
@@ -204,6 +205,8 @@
     <ClCompile Include="src\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Header.h" />
+    <ClInclude Include="src\LightSource.h" />
     <ClInclude Include="src\AssimpUtilities.h" />
     <ClInclude Include="src\BufferLayout.h" />
     <ClInclude Include="src\Config.h" />

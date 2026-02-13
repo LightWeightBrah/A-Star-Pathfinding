@@ -15,6 +15,7 @@
 #include "Renderer.h"
 #include "Entity.h"
 #include "Material.h"
+#include "LightSource.h"
 
 Scene::Scene() 
 	: camera(glm::vec3(0.0f, 0.0f, 0.0f))
@@ -31,21 +32,26 @@ void Scene::Init(float windowWidth, float windowHeight)
 {
 	OnWindowResize(windowWidth, windowHeight);
 
-	ResourceManager::LoadTexture("cube_container", "res/Textures/container.jpg");
-	ResourceManager::LoadTexture("cube_chad"     , "res/Textures/chad.png"     );
+	ResourceManager::LoadTexture("cube_container",	"res/Textures/container.jpg");
+	ResourceManager::LoadTexture("cube_chad",		"res/Textures/chad.png");
+	ResourceManager::LoadShader ("reflectable",		"res/shaders/Reflectable.shader");
+	ResourceManager::LoadShader ("lightSource",		"res/shaders/LightSource.shader");
 
-	auto shader		= std::make_shared<Shader>("res/Shaders/Reflectable.shader");
-	auto material	= std::make_shared<Material>(shader);
+	auto cubeShader	= ResourceManager::GetShaderData("reflectable");
+	auto cubeMaterial = std::make_shared<Material>(cubeShader);
 	auto cubeMesh = Primitives::CreateCube();
 
-	material->SetAmbient(glm::vec3(0.1f))
+	cubeMaterial->SetAmbient(glm::vec3(0.1f))
 		.SetDiffuse(glm::vec3(0.8f, 0.6f, 0.0f))
 		.SetSpecular(glm::vec3(1.0f))
 		.SetShininess(64.0f);
 
-	entity = std::make_unique<Entity>(std::move(cubeMesh), material);
-	entity->SetPosition(glm::vec3(0.0f, 5.0f, -5.0f));
-	entity->SetScale(glm::vec3(5.0f));
+	entity = std::make_unique<Entity>(std::move(cubeMesh), cubeMaterial);
+	entity->SetPosition(glm::vec3(0.0f, 5.0f, 5.0f));
+
+	auto lightShader = ResourceManager::GetShaderData("lightSource");
+	lightSource = std::make_unique<LightSource>(lightShader);
+	lightSource->SetPosition(glm::vec3(2.0f, 5.0f, 4.0f));
 }
 
 void Scene::OnWindowResize(float windowWidth, float windowHeight)
@@ -90,19 +96,29 @@ void Scene::Render(Renderer& renderer)
 {
 	if (!entity)
 	{
-		std::cout << "ERORR: Scene::Render::Entity is NULL" << std::endl;
+		std::cout << "ERROR: Scene::Render Entity is NULL" << std::endl;
 		return;
 	}
 
 	if (!entity->GetMesh())
 	{
-		std::cout << "ERORR: Scene::Render::Entity::Mesh is NULL" << std::endl;
+		std::cout << "ERROR: Scene::Render Entity's Mesh is NULL" << std::endl;
 		return;
 	}
 
-
-	renderer.Clear(0.05f, 0.05f, 0.05f, 1.0f);
+	renderer.Clear(0.05f, 0.15f, 0.25f, 1.0f);
+	
+	auto cubeShader = ResourceManager::GetShaderData("reflectable");
+	lightSource->Apply(*cubeShader);
 	renderer.DrawEntity(*entity, camera);
+
+	auto lightShader = ResourceManager::GetShaderData("lightSource");
+
+	lightSource->GetShader()->SetUniformMatrix4fv("projection", camera.GetProjectionMatrix());
+	lightSource->GetShader()->SetUniformMatrix4fv("view", camera.GetViewMatrix());
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, lightSource->GetData().position);
+	lightSource->GetShader()->SetUniformMatrix4fv("model", model);
 }
 
 void Scene::Clear()

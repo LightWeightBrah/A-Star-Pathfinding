@@ -36,9 +36,9 @@ struct LightSource
 {
 	vec3 position;
 
-	vec3 ambientStrength;
-	vec3 diffuseStrength;
-	vec3 specularStrength;
+	vec3 ambientIntensity;
+	vec3 diffuseIntensity;
+	vec3 specularIntensity;
 
 };
 
@@ -63,19 +63,19 @@ void main()
 	vec3 baseColor = combined.rgb;
 
 	//ambient light
-	vec3 ambient = lightSource.ambientStrength * material.ambientColor * baseColor;
+	vec3 ambient = lightSource.ambientIntensity * material.ambientColor * baseColor;
 
 	//diffuse light
 	vec3 norm = normalize(Normal);
 	vec3 lightDirection = normalize(lightSource.position - FragPos);
 	float dotProductAngle = max(dot(norm, lightDirection), 0.0f);
-	vec3 diffuse = lightSource.diffuseStrength * (dotProductAngle * material.diffuseColor * baseColor);
+	vec3 diffuse = lightSource.diffuseIntensity * (dotProductAngle * material.diffuseColor * baseColor);
 
 	//specular light
 	vec3 viewerDirection = normalize(viewerPosition - FragPos);
 	vec3 reflectDirection = reflect(-lightDirection, norm);
 	float spec = pow(max(dot(viewerDirection, reflectDirection), 0.0f), material.shininess);
-	vec3 specular = lightSource.specularStrength * (spec * material.specularColor);
+	vec3 specular = lightSource.specularIntensity * (spec * material.specularColor);
 
 	vec3 result = ambient + diffuse + specular;
 
