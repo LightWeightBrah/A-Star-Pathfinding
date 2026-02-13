@@ -18,6 +18,10 @@ public:
 	};
 
 	Material(std::shared_ptr<Shader> shader);
+	
+	//DESTRUCTOR: same thing like in Mesh.h, compiler need to know
+	//how to delete the Shader in shared_ptr so we gotta know the Shader destructor
+	~Material();
 
 	Material& SetAmbient(const glm::vec3& color);
 	Material& SetDiffuse(const glm::vec3& color);
@@ -26,8 +30,8 @@ public:
 
 	Material& Apply();
 
-	inline const Data& GetData()			   const { return data; }
-	inline std::shared_ptr<Shader> GetShader() const { return shader; }
+	inline const Data&			GetData()		const { return data; }
+	std::shared_ptr<Shader>		GetShader()		const;
 
 private:
 	std::shared_ptr<Shader>		shader;

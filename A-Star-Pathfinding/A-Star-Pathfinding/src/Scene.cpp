@@ -18,7 +18,7 @@
 #include "LightSource.h"
 
 Scene::Scene() 
-	: camera(glm::vec3(0.0f, 0.0f, 0.0f))
+	: camera(glm::vec3(1.2f, 5.6f, 11.35f))
 {
 
 }
@@ -114,11 +114,14 @@ void Scene::Render(Renderer& renderer)
 
 	auto lightShader = ResourceManager::GetShaderData("lightSource");
 
+	lightShader->Bind();
 	lightSource->GetShader()->SetUniformMatrix4fv("projection", camera.GetProjectionMatrix());
 	lightSource->GetShader()->SetUniformMatrix4fv("view", camera.GetViewMatrix());
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, lightSource->GetData().position);
 	lightSource->GetShader()->SetUniformMatrix4fv("model", model);
+
+	renderer.DrawMesh(*entity->GetMesh(), *lightShader);
 }
 
 void Scene::Clear()

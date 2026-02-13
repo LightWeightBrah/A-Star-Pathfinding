@@ -1,5 +1,6 @@
 #include "ResourceManager.h"
 #include "Texture.h"
+#include "Shader.h"
 
 std::map<std::string, std::shared_ptr<ModelData>> ResourceManager::modelsRegistered;
 std::map<std::string, std::shared_ptr<Texture>>   ResourceManager::texturesRegistered;

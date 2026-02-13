@@ -19,6 +19,8 @@ void Camera::HandleKeyboardMove(MOVEMENT direction, float deltaTime)
 	glm::vec3 targetFront = stayOnHeight ? moveFront : front;
 	glm::vec3 targetRight = stayOnHeight ? moveRight : right;
 
+	std::cout << "pos " << position.x << " " << position.y << " " << position.z << "\n";
+
 	switch (direction)
 	{
 	case MOVEMENT::FORWARD:		position += targetFront * speed;	break;

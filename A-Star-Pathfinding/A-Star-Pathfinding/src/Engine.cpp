@@ -35,10 +35,10 @@ void Engine::Run()
 
 		Render();
 
+		InputManager::Clear();
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-
-		InputManager::Clear();
 	}
 
 	Shutdown();
