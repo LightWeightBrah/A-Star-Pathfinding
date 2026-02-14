@@ -45,18 +45,18 @@ void Scene::Init(float windowWidth, float windowHeight)
 
 	cubeMaterial->SetAmbient(glm::vec3(1.0f, 0.5f, 0.31f))
 		.SetDiffuse(glm::vec3(1.0f, 0.5f, 0.31f))
-		.SetSpecular(glm::vec3(0.5f))
+		.SetSpecular(glm::vec3(0.5, 0.5f, 0.5f))
 		.SetShininess(32.0f);
 
 	entity = std::make_unique<Entity>(std::move(cubeMesh), cubeMaterial);
-	entity->SetPosition(glm::vec3(0.0f, 3.0f, 5.0f));
+	entity->SetPosition(glm::vec3(1.0f, 4.0f, 1.0f));
 
 	lightSource = std::make_unique<LightSource>(std::move(lightMesh), lightShader);
-	lightSource->SetPosition(glm::vec3(2.0f, 5.0f, 4.0f));
+	lightSource->SetPosition(glm::vec3(3.0f, 6.0f, 2.0f));
 
-	lightSource->SetAmbient(glm::vec3(0.2f))
-		.SetDiffuse(glm::vec3(0.5f))
-		.SetSpecular(glm::vec3(1.0f));
+	lightSource->SetAmbient(glm::vec3(0.2f, 0.2f, 0.2f))
+		.SetDiffuse(glm::vec3(0.5f, 0.5f, 0.5f))
+		.SetSpecular(glm::vec3(1.0f, 1.0f, 1.0f));
 
 }
 
@@ -95,7 +95,22 @@ void Scene::ProcessInput()
 
 void Scene::Update()
 {
+	float time = glfwGetTime();
 
+	glm::vec3 lightSourceColor;
+	lightSourceColor.x = sin(time * 2.0f);
+	lightSourceColor.y = sin(time * 0.7f);
+	lightSourceColor.z = sin(time * 1.3f);
+
+	glm::vec3 diffuseColor = lightSourceColor * glm::vec3(0.5f);
+	glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+
+	auto mat = entity->GetMaterial();
+
+	mat->SetAmbient(glm::vec3(ambientColor))
+		.SetDiffuse(glm::vec3(diffuseColor))
+		.SetSpecular(glm::vec3(0.5, 0.5f, 0.5f))
+		.SetShininess(32.0f);
 }
 
 void Scene::Render(Renderer& renderer)
