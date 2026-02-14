@@ -19,7 +19,7 @@ void Camera::HandleKeyboardMove(MOVEMENT direction, float deltaTime)
 	glm::vec3 targetFront = stayOnHeight ? moveFront : front;
 	glm::vec3 targetRight = stayOnHeight ? moveRight : right;
 
-	std::cout << "pos " << position.x << " " << position.y << " " << position.z << "\n";
+	//std::cout << "pos " << position.x << " " << position.y << " " << position.z << "\n";
 
 	switch (direction)
 	{
@@ -69,6 +69,17 @@ void Camera::SetViewportSize(float windowWidth, float windowHeight)
 {
 	aspectRatio = windowWidth / windowHeight;
 	UpdateProjectionMatrix();
+}
+
+SceneData Camera::GetSceneData() const
+{
+	SceneData data;
+
+	data.viewMatrix			= GetViewMatrix();
+	data.projectionMatrix	= GetProjectionMatrix();
+	data.cameraPosition		= GetPosition();
+	
+	return data;
 }
 
 void Camera::UpdateCamera()

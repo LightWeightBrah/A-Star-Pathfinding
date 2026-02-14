@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "SceneData.h"
 
 enum class MOVEMENT
 {
@@ -29,7 +30,9 @@ public:
 	inline const glm::mat4	GetProjectionMatrix()	const { return projectionMatrix; }
 	inline const glm::vec3	GetPosition()			const { return position; }
 	inline float			GetFov()				const { return fov; }
-
+	
+	SceneData				GetSceneData()			const;
+	
 	inline void				HandleStayOnHeight(bool stayOnHeight) { this->stayOnHeight = stayOnHeight; }
 private:
 	glm::vec3	position;

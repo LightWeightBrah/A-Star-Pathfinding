@@ -57,21 +57,22 @@ uniform		sampler2D		texture_specular1;
 
 void main()
 {
-	vec4 tex1 = texture(texture_diffuse1, TexCoord);
-	vec4 tex2 = texture(texture_specular1, TexCoord);
-	vec4 combined = mix(tex1, tex2, tex2.a);
-	vec3 baseColor = combined.rgb;
+	// vec4 tex1 = texture(texture_diffuse1, TexCoord);
+	// vec4 tex2 = texture(texture_specular1, TexCoord);
+	// vec4 combined = mix(tex1, tex2, tex2.a);
+	// vec3 baseColor = combined.rgb;
+	// vec3 baseColor = texture(texture_diffuse1, TexCoord).rgb;
 
-	//ambient light
-	vec3 ambient = lightSource.ambientIntensity * material.ambientColor * baseColor;
+	// ambient light
+	vec3 ambient = lightSource.ambientIntensity * material.ambientColor;//* baseColor;
 
-	//diffuse light
+	// diffuse light
 	vec3 norm = normalize(Normal);
 	vec3 lightDirection = normalize(lightSource.position - FragPos);
 	float dotProductAngle = max(dot(norm, lightDirection), 0.0f);
-	vec3 diffuse = lightSource.diffuseIntensity * (dotProductAngle * material.diffuseColor * baseColor);
+	vec3 diffuse = lightSource.diffuseIntensity * (dotProductAngle * material.diffuseColor);//* baseColor);
 
-	//specular light
+	// specular light
 	vec3 viewerDirection = normalize(viewerPosition - FragPos);
 	vec3 reflectDirection = reflect(-lightDirection, norm);
 	float spec = pow(max(dot(viewerDirection, reflectDirection), 0.0f), material.shininess);

@@ -206,6 +206,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header.h" />
+    <ClInclude Include="src\SceneData.h" />
     <ClInclude Include="src\LightSource.h" />
     <ClInclude Include="src\AssimpUtilities.h" />
     <ClInclude Include="src\BufferLayout.h" />
@@ -392,6 +393,7 @@
     <ClInclude Include="src\Time.h" />
     <ClInclude Include="src\VertexLayouts.h" />
     <ClInclude Include="src\VertexTypes.h" />
+    <ClInclude Include="src\Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\LightSource.shader" />

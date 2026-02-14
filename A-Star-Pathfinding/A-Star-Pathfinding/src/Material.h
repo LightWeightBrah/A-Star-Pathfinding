@@ -11,7 +11,7 @@ public:
 	struct Data
 	{
 		glm::vec3		ambientColor		= glm::vec3(0.2f);
-		glm::vec3		diffuseColor		= glm::vec3(0.5f);
+		glm::vec3		diffuseColor		= glm::vec3(1.0f);
 		glm::vec3		specularColor		= glm::vec3(0.5f);
 
 		float			shininess			= 32.0f;
@@ -28,7 +28,7 @@ public:
 	Material& SetSpecular(const glm::vec3& color);
 	Material& SetShininess(float shininess);
 
-	Material& Apply();
+	Material& ApplyLight();
 
 	inline const Data&			GetData()		const { return data; }
 	std::shared_ptr<Shader>		GetShader()		const;

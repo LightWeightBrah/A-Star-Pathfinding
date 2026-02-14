@@ -37,21 +37,27 @@ void Scene::Init(float windowWidth, float windowHeight)
 	ResourceManager::LoadShader ("reflectable",		"res/shaders/Reflectable.shader");
 	ResourceManager::LoadShader ("lightSource",		"res/shaders/LightSource.shader");
 
-	auto cubeShader	= ResourceManager::GetShaderData("reflectable");
-	auto cubeMaterial = std::make_shared<Material>(cubeShader);
-	auto cubeMesh = Primitives::CreateCube();
+	auto cubeShader		= ResourceManager::GetShaderData("reflectable");
+	auto lightShader	= ResourceManager::GetShaderData("lightSource");
+	auto cubeMaterial	= std::make_shared<Material>(cubeShader);
+	auto cubeMesh		= Primitives::CreateCube();
+	auto lightMesh		= Primitives::CreateCube();
 
-	cubeMaterial->SetAmbient(glm::vec3(0.1f))
-		.SetDiffuse(glm::vec3(0.8f, 0.6f, 0.0f))
-		.SetSpecular(glm::vec3(1.0f))
-		.SetShininess(64.0f);
+	cubeMaterial->SetAmbient(glm::vec3(1.0f, 0.5f, 0.31f))
+		.SetDiffuse(glm::vec3(1.0f, 0.5f, 0.31f))
+		.SetSpecular(glm::vec3(0.5f))
+		.SetShininess(32.0f);
 
 	entity = std::make_unique<Entity>(std::move(cubeMesh), cubeMaterial);
-	entity->SetPosition(glm::vec3(0.0f, 5.0f, 5.0f));
+	entity->SetPosition(glm::vec3(0.0f, 3.0f, 5.0f));
 
-	auto lightShader = ResourceManager::GetShaderData("lightSource");
-	lightSource = std::make_unique<LightSource>(lightShader);
+	lightSource = std::make_unique<LightSource>(std::move(lightMesh), lightShader);
 	lightSource->SetPosition(glm::vec3(2.0f, 5.0f, 4.0f));
+
+	lightSource->SetAmbient(glm::vec3(0.2f))
+		.SetDiffuse(glm::vec3(0.5f))
+		.SetSpecular(glm::vec3(1.0f));
+
 }
 
 void Scene::OnWindowResize(float windowWidth, float windowHeight)
@@ -108,20 +114,13 @@ void Scene::Render(Renderer& renderer)
 
 	renderer.Clear(0.05f, 0.15f, 0.25f, 1.0f);
 	
-	auto cubeShader = ResourceManager::GetShaderData("reflectable");
-	lightSource->Apply(*cubeShader);
-	renderer.DrawEntity(*entity, camera);
+	SceneData data		= camera.GetSceneData();
+	data.lightSource	= lightSource.get();
 
-	auto lightShader = ResourceManager::GetShaderData("lightSource");
+	renderer.BeginScene(data);
 
-	lightShader->Bind();
-	lightSource->GetShader()->SetUniformMatrix4fv("projection", camera.GetProjectionMatrix());
-	lightSource->GetShader()->SetUniformMatrix4fv("view", camera.GetViewMatrix());
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, lightSource->GetData().position);
-	lightSource->GetShader()->SetUniformMatrix4fv("model", model);
+	renderer.DrawScene(*entity);
 
-	renderer.DrawMesh(*entity->GetMesh(), *lightShader);
 }
 
 void Scene::Clear()

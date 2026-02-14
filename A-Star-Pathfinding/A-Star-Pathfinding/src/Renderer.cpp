@@ -14,6 +14,7 @@
 
 #include "Camera.h"
 #include "Entity.h"
+#include "LightSource.h"
 
 void GLClearError()
 {
@@ -65,34 +66,64 @@ void Renderer::DrawMesh(const Mesh& mesh, Shader& shader) const
 	Draw(mesh.GetVAO(), mesh.GetEBO(), shader);
 }
 
-void Renderer::DrawEntity(Entity& entity, const Camera& camera) const
+void Renderer::BeginScene(SceneData& data)
 {
-	auto mesh	  = entity.GetMesh();
-	auto material = entity.GetMaterial();
+	sceneData = data;
+}
 
-	if (!mesh)
+void Renderer::DrawScene(Entity& entity) const
+{
+	//TODO: CHANGE TO ASSERT 
+	if (!entity.GetMesh())
 	{
 		std::cout << "ERROR: Entity has no mesh" << std::endl;
 		return;
 	}
 
-	if (!material)
+	if (!entity.GetMaterial())
 	{
 		std::cout << "ERROR: Entity has no material" << std::endl;
 		return;
 	}
 
-	auto shader = material->GetShader();
+	if (!sceneData.lightSource)
+	{
+		std::cout << "ERROR: SceneData has no lightSource" << std::endl;
+		return;
+	}
+	//TODO : CHANGE TO ASSERT
+
+	DrawEntity(entity);
+	DrawLightSource();
+}
+
+void Renderer::DrawEntity(Entity& entity) const
+{
+	auto entityShader = entity.GetMaterial()->GetShader();
+
+	entityShader->Bind();
+
+	entityShader->SetUniformMatrix4fv("model",			entity.GetModelMatrix());
+	entityShader->SetUniformMatrix4fv("view",			sceneData.viewMatrix);
+	entityShader->SetUniformMatrix4fv("projection",		sceneData.projectionMatrix);
+	entityShader->SetUniform3f       ("viewerPosition",	sceneData.cameraPosition);
+
+	sceneData.lightSource->ApplyLight(*entityShader);
+	entity.GetMaterial()->ApplyLight();
+
+	DrawMesh(*entity.GetMesh(), *entityShader);
+}
+
+void Renderer::DrawLightSource() const
+{
+	auto light  = sceneData.lightSource;
+	auto shader = light->GetShader();
 
 	shader->Bind();
 
-	shader->SetUniformMatrix4fv("model",		 entity.GetModelMatrix());
-	shader->SetUniformMatrix4fv("view",		 camera.GetViewMatrix());
-	shader->SetUniformMatrix4fv("projection", camera.GetProjectionMatrix());
+	shader->SetUniformMatrix4fv("model",		light->GetModelMatrix());
+	shader->SetUniformMatrix4fv("view",			sceneData.viewMatrix);
+	shader->SetUniformMatrix4fv("projection",	sceneData.projectionMatrix);
 
-	if (entity.GetMaterial())
-		entity.GetMaterial()->Apply();
-	
-	DrawMesh(*entity.GetMesh(), *shader);
+	DrawMesh(*light->GetMesh(), *shader);
 }
-

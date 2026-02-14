@@ -1,5 +1,6 @@
 #pragma once
 #include <GL/glew.h>
+#include "SceneData.h"
 
 class ElementBuffer;
 class VertexArray;
@@ -31,8 +32,17 @@ class Renderer
 public:
 	void Clear(float r, float g, float b, float a) const;
 	
+	
 	void Draw(const VertexArray& VAO, const ElementBuffer& EBO, const Shader& shader) const;
 	void DrawMesh(const Mesh& mesh, Shader& shader) const;
 	void DrawModel(const Model& model, Shader& shader, const Animator* animator) const;
-	void DrawEntity(Entity& entity, const Camera& camera) const;
+	
+	void BeginScene(SceneData& data);
+	void DrawScene(Entity& entity) const;
+
+private:
+	SceneData sceneData;
+
+	void DrawEntity(Entity& entity) const;
+	void DrawLightSource() const;
 };

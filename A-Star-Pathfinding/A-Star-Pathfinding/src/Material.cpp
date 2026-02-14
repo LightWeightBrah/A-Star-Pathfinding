@@ -14,7 +14,7 @@ Material::Material(
 //DESTUCTOR: now compiler can see how to delete Shader shared_ptr member
 Material::~Material() = default;
 
-Material& Material::Apply()
+Material& Material::ApplyLight()
 {
 	if (!shader)
 		return *this;
